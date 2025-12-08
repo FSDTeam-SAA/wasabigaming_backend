@@ -1,0 +1,169 @@
+import AppError from '../../error/appError';
+import { fileUploader } from '../../helper/fileUploder';
+import pagination, { IOption } from '../../helper/pagenation';
+import sendMailer from '../../helper/sendMailer';
+import { userRole } from './user.constant';
+
+import { IUser } from './user.interface';
+import User from './user.model';
+
+const createUser = async (payload: IUser) => {
+  const randomPassword = Math.random().toString(36).slice(-8);
+  payload.password = randomPassword;
+  payload.role = userRole.student;
+  payload.registered = true;
+  const result = await User.create(payload);
+  if (!result) {
+    throw new AppError(400, 'Failed to create user');
+  }
+
+  await sendMailer(
+    payload.email,
+    '🎓 New Student Account Created',
+    `
+  <div style="font-family: Arial, sans-serif; background: #f6f6f6; padding: 20px;">
+    <div style="max-width: 500px; margin: auto; background: #ffffff; padding: 25px; border-radius: 8px;">
+      
+      <h2 style="color: #4A90E2; text-align: center;">🎉 Welcome to Our Platform!</h2>
+
+      <p>Hello,</p>
+      <p>Your student account has been successfully created. Below are your login details:</p>
+
+      <div style="
+        background: #f0f4ff; 
+        padding: 15px; 
+        border-left: 4px solid #4A90E2; 
+        border-radius: 4px;
+        margin: 20px 0;
+      ">
+        <p style="margin: 5px 0;"><strong>Email:</strong> ${payload.email}</p>
+        <p style="margin: 5px 0;"><strong>Password:</strong> ${payload.password}</p>
+      </div>
+
+      <p>Please keep your login information safe.</p>
+
+      <br />
+      <p>Regards,<br /><strong>Your School Management Team</strong></p>
+
+    </div>
+  </div>
+  `,
+  );
+
+  return result;
+};
+
+const getAllUser = async (params: any, options: IOption) => {
+  const { page, limit, skip, sortBy, sortOrder } = pagination(options);
+  const { searchTerm, year, ...filterData } = params;
+
+  const andCondition: any[] = [];
+  const userSearchableFields = ['name', 'email', 'role'];
+
+  if (searchTerm) {
+    andCondition.push({
+      $or: userSearchableFields.map((field) => ({
+        [field]: { $regex: searchTerm, $options: 'i' },
+      })),
+    });
+  }
+
+  if (Object.keys(filterData).length) {
+    andCondition.push({
+      $and: Object.entries(filterData).map(([field, value]) => ({
+        [field]: value,
+      })),
+    });
+  }
+
+  // YEAR Filter → createdAt
+  if (year) {
+    const startDate = new Date(`${year}-01-01T00:00:00.000Z`);
+    const endDate = new Date(`${year}-12-31T23:59:59.999Z`);
+
+    andCondition.push({
+      createdAt: {
+        $gte: startDate,
+        $lte: endDate,
+      },
+    });
+  }
+
+  const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
+
+  const result = await User.find(whereCondition)
+    .skip(skip)
+    .limit(limit)
+    .sort({ [sortBy]: sortOrder } as any);
+
+  if (!result) {
+    throw new AppError(404, 'Users not found');
+  }
+
+  const total = await User.countDocuments(whereCondition);
+
+  return {
+    data: result,
+    meta: {
+      total,
+      page,
+      limit,
+    },
+  };
+};
+
+const getUserById = async (id: string) => {
+  const result = await User.findById(id);
+  if (!result) {
+    throw new AppError(404, 'User not found');
+  }
+  return result;
+};
+
+const updateUserById = async (
+  id: string,
+  payload: IUser,
+  file?: Express.Multer.File,
+) => {
+  const user = await User.findById(id);
+  if (!user) {
+    throw new AppError(404, 'User not found');
+  }
+  if (file) {
+    const uploadProfile = await fileUploader.uploadToCloudinary(file);
+    if (!uploadProfile?.url) {
+      throw new AppError(400, 'Failed to upload profile image');
+    }
+    payload.profileImage = uploadProfile.url;
+  }
+  const result = await User.findByIdAndUpdate(id, payload, { new: true });
+  if (!result) {
+    throw new AppError(404, 'User not found');
+  }
+  return result;
+};
+
+const deleteUserById = async (id: string) => {
+  const result = await User.findByIdAndDelete(id);
+  if (!result) {
+    throw new AppError(404, 'User not found');
+  }
+  return result;
+};
+
+const profile = async (id: string) => {
+  const result = await User.findById(id);
+  if (!result) {
+    throw new AppError(404, 'User not found');
+  }
+  return result;
+};
+
+export const userService = {
+  createUser,
+  getAllUser,
+  getUserById,
+  updateUserById,
+  deleteUserById,
+  profile,
+};

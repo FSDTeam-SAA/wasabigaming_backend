@@ -1,0 +1,42 @@
+import { Types } from 'mongoose';
+
+export interface IEducation {
+  institution: string;
+  degree: string;
+  year: number;
+}
+
+export interface IExperience {
+  company: string;
+  role: string;
+  duration: string;
+}
+
+export interface IUser {
+  firstName?: string;
+  lastName?: string;
+  schoolName?: string;
+  email: string;
+  password: string;
+  role: 'student' | 'school' | 'admin';
+  profileImage?: string;
+  phone?: string;
+  otp?: string;
+  otpExpiry?: Date;
+  verified?: boolean;
+  registered?: boolean;
+  stripeAccountId?: string;
+  status?: 'active' | 'inactive';
+
+  schoolId?: Types.ObjectId; // If student belongs to a school
+  education?: IEducation[];
+  experience?: IExperience[];
+  skills?: string[];
+  grade?:string;
+
+  subscriptionPlan?: string;
+  subscriptionStatus?: string;
+
+  createdAt: Date;
+  updatedAt: Date;
+}
