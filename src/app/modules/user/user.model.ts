@@ -20,6 +20,12 @@ const userSchema = new Schema<IUser>(
     firstName: { type: String },
     lastName: { type: String },
     schoolName: { type: String },
+    schoolType: { type: String },
+    schoolStatus: {
+      type: String,
+      enum: ['approved', 'pending', 'rejected'],
+    },
+    aboutSchool: { type: String },
 
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
