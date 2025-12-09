@@ -12,13 +12,22 @@ router.post(
   lawfirmController.createLawfirm,
 );
 router.get('/', lawfirmController.getAllLawfirm);
+
+router.put(
+  '/:id/approved',
+  auth(userRole.admin),
+  lawfirmController.approvedLawfirm,
+);
+
 router.get('/:id', lawfirmController.getSingleLawfirm);
+
 router.put(
   '/:id',
   auth(userRole.admin),
   fileUploader.upload.single('logo'),
   lawfirmController.uploadLawfirm,
 );
+
 router.delete('/:id', auth(userRole.admin), lawfirmController.deleteLawfirm);
 
 export const lawfirmsRouter = router;
