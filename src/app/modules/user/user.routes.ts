@@ -23,6 +23,7 @@ router.put(
 
 router.get('/all-user', auth(userRole.admin), userController.getAllUser);
 router.get('/:id', auth(userRole.admin), userController.getUserById);
+router.put('/:id', auth(userRole.admin), userController.updateUserById);
 
 router.delete('/:id', auth(userRole.admin), userController.deleteUserById);
 

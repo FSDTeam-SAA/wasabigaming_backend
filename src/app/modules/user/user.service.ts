@@ -58,7 +58,7 @@ const getAllUser = async (params: any, options: IOption) => {
   const { searchTerm, year, ...filterData } = params;
 
   const andCondition: any[] = [];
-  const userSearchableFields = ['name', 'email', 'role'];
+  const userSearchableFields = ['firstName','lastName', 'email', 'role','schoolName','schoolType','schoolStatus','aboutSchool'];
 
   if (searchTerm) {
     andCondition.push({

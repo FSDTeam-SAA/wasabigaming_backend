@@ -7,7 +7,7 @@ import Task from './task.model';
 const createTask = async (userId: string, payload: ITask) => {
   const user = await User.findById(userId);
   if (!user) throw new AppError(404, 'User not found');
-  const result = await Task.create({ ...payload });
+  const result = await Task.create({ ...payload, createdBy: user._id });
   if (!result) throw new AppError(400, 'Task creation failed');
   return result;
 };
@@ -126,7 +126,6 @@ const deleteTask = async (userId: string, id: string) => {
   const result = await Task.findByIdAndDelete(id);
   return result;
 };
-
 
 export const taskService = {
   createTask,

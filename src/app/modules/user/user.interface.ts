@@ -16,6 +16,9 @@ export interface IUser {
   firstName?: string;
   lastName?: string;
   schoolName?: string;
+  schoolType?: string;
+  schoolStatus?: 'approved' | 'pending' | 'rejected';
+  aboutSchool?: string;
   email: string;
   password: string;
   role: 'student' | 'school' | 'admin';
@@ -32,7 +35,7 @@ export interface IUser {
   education?: IEducation[];
   experience?: IExperience[];
   skills?: string[];
-  grade?:string;
+  grade?: string;
 
   subscriptionPlan?: string;
   subscriptionStatus?: string;

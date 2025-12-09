@@ -23,9 +23,14 @@ const createUser = catchAsync(async (req, res) => {
 const getAllUser = catchAsync(async (req, res) => {
   const filters = pick(req.query, [
     'searchTerm',
-    'role',
-    'name',
+    'firstName',
+    'lastName',
     'email',
+    'role',
+    'schoolName',
+    'schoolType',
+    'schoolStatus',
+    'aboutSchool',
     'year',
   ]);
   const options = pick(req.query, ['page', 'limit', 'sortBy', 'sortOrder']);
