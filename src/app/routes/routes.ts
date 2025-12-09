@@ -4,6 +4,7 @@ import { authRoutes } from '../modules/auth/auth.routes';
 import { dashboardRouter } from '../modules/dashboard/dashboard.routes';
 import { courseRouter } from '../modules/course/course.routes';
 import { quizzesRouter } from '../modules/quizzes/quizzes.routes';
+import { taskRouter } from '../modules/task/task.routes';
 
 const router = Router();
 
@@ -27,6 +28,10 @@ const moduleRoutes = [
   {
     path: '/quizzes',
     route: quizzesRouter,
+  },
+  {
+    path: '/task',
+    route: taskRouter,
   },
 ];
 
