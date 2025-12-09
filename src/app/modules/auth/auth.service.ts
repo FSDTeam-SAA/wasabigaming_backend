@@ -42,6 +42,7 @@ const registerUser = async (payload: Partial<IUser>) => {
     if (!payload.schoolName) {
       throw new AppError(400, 'School name is required');
     }
+    payload.schoolStatus = 'pending';
 
     user = await User.create(payload);
 
