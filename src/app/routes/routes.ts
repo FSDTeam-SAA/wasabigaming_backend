@@ -4,6 +4,9 @@ import { authRoutes } from '../modules/auth/auth.routes';
 import { dashboardRouter } from '../modules/dashboard/dashboard.routes';
 import { courseRouter } from '../modules/course/course.routes';
 import { quizzesRouter } from '../modules/quizzes/quizzes.routes';
+
+import { contactRouter } from "../modules/contact/contact.routes"
+
 import { taskRouter } from '../modules/task/task.routes';
 import { lawfirmsRouter } from '../modules/lawfirm/lawfirm.routes';
 
@@ -29,6 +32,11 @@ const moduleRoutes = [
   {
     path: '/quizzes',
     route: quizzesRouter,
+  },
+  {
+
+    path: '/contacts',
+    route: contactRouter,
   },
   {
     path: '/task',
