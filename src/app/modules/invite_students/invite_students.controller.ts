@@ -1,73 +1,88 @@
-// // ==================== contact.controller.ts ====================
-// import { contactService } from './contact.service';
-// import catchAsync from '../../utils/catchAsycn';
-// import sendResponse from '../../utils/sendResponse';
-// import pick from '../../helper/pick';
+// ==================== contact.controller.ts ====================
+import { studentInviteService } from './invite_students.service';
+import catchAsync from '../../utils/catchAsycn';
+import sendResponse from '../../utils/sendResponse';
+import pick from '../../helper/pick';
 
 
-// const createContact = catchAsync(async(req, res) =>  {
+const sendInvite = catchAsync(async(req, res) =>  {
    
-//       const contact = await contactService.createContact(req.body);
+      const inviteStudent = await studentInviteService.sendInvite(req.body);
+      
+      sendResponse(res, {
+        statusCode: 201,
+        success: true,
+        message: 'Store invite data sent invitation  successfully',
+        data: inviteStudent,
+      });
+});
 
-//       sendResponse(res, {
-//         statusCode: 201,
-//         success: true,
-//         message: 'Contact created successfully',
-//         data: contact,
-//       });
-// });
+const getAllInviteStudents = catchAsync(async(req, res) =>  {
 
-// const getAllContacts = catchAsync(async(req, res) =>  {
-
-//       const filters = pick(req.query, [
-//             'searchTerm',
-//             'fullName',
-//             'email',
-//       ]);
-//       const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+      const filters = pick(req.query, [
+            'searchTerm',
+            'fullName',
+            'email',
+      ]);
+      const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
 
     
-//       const result = await contactService.getAllContacts(filters, options);
+      const result = await studentInviteService.getAllInviteStudents(filters, options);
 
-//       sendResponse(res, {
-//         statusCode: 200,
-//         success: true,
-//         message: "Get all contact successfully",
-//         meta:result.meta,
-//         data: result.data
-//       })
-//   });
+      sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Get all invite data successfully",
+        meta:result.meta,
+        data: result.data
+      })
+  });
 
-// const getContactById = catchAsync(async(req, res) => {
+const getInviteStudentById = catchAsync(async(req, res) => {
 
-//       const { contactId } = req.params;
+      const { inviteStudentId } = req.params;
   
-//       const contact = await contactService.getContactById(contactId!);
+      const inviteStudent = await studentInviteService.getInviteStudentById(inviteStudentId!);
 
-//       sendResponse(res, {
-//         statusCode: 200,
-//         success: true,
-//         message: "Get single contact successfully",
-//         data:contact
-//       });
-//   });
+      sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Get single invite student successfully",
+        data: inviteStudent
+      });
+  });
 
-// const deleteContact = catchAsync(async(req, res) =>{
+const updateInviteStudent = catchAsync(async(req, res) => {
+
+    const { studentId } = req.params;
+
+    const updateInformation = await studentInviteService.updatedInviteStudent(req.body, studentId!);
+
+    sendResponse(res, {
+        statusCode: 200,
+        success:true,
+        message:"Updated data invite student ",
+        data:updateInformation
+    })
+})
+
+const deleteInviteStudent = catchAsync(async(req, res) =>{
      
-//     const { contactId } = req.params;
+    const { studentId } = req.params;
 
-//     await contactService.deleteContact(contactId!);
-//     sendResponse(res, {
-//         statusCode: 200,
-//         success: true,
-//         message:"Deleted contact successfully"
-//     })
-//   });
+    await studentInviteService.deleteInviteStudent(studentId!);
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message:"Deleted invite information successfully"
+    })
+  });
 
-//   export const contactController = {
-//     createContact,
-//     getAllContacts,
-//     getContactById,
-//     deleteContact
-//   }
+  export const inviteStudentController = {
+    sendInvite,
+    getAllInviteStudents,
+    getInviteStudentById,
+    deleteInviteStudent,
+    updateInviteStudent
+  }
 
