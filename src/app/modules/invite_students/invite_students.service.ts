@@ -7,52 +7,108 @@ import { fileUploader } from '../../helper/fileUploder';
 import User from '../user/user.model';
 import { userRole } from '../user/user.constant';
 
+// const csvFuleUpload = async (file: Express.Multer.File) => {
+//   if (!file) {
+//     throw new AppError(400, 'No file uploaded');
+//   }
+//   const csvFileUpload = await fileUploader.uploadToCloudinary(file);
+//   return csvFileUpload;
+// }
 
-const sendInvite = async (userId:string,payload:IInviteStudent, file?:Express.Multer.File) => {
+// const sendInvite = async (
+//   userId: string,
+//   payload: IInviteStudent,
+// ) => {
+//   const user = await User.findById(userId);
+//   if (!user) {
+//     throw new AppError(400, 'User not found');
+//   }
 
+//   if (user.role !== userRole.school)
+//     throw new AppError(403, 'Only school users can send invites');
+//   // Convert single student to array
+//   const students = Array.isArray(payload) ? payload : [payload];
+
+//   // Create final data array
+//   const formattedStudents = students.map((student) => ({
+//     ...student,
+//     createBy: user._id,
+//     url: csvFuleUpload
+//   }));
+
+//   const result = await InviteStudent.insertMany(formattedStudents);
+
+//   console.log('Invited Students: ', result);
+
+//   // const emailHtml = `
+//   //   <h2>Hello ${student.name},</h2>
+//   //   <p>You have been invited as a student.</p>
+//   //   <p>Please click the link below to get started:</p>
+//   //   <a href="${url}">Join Now</a>
+//   //   <br/><br/>
+//   //   <p>Regards,<br/>Best regards</p>
+//   // `;
+
+//   // await sendMailer(student.email, "Student Invitation", emailHtml);
+
+//   return result;
+// };
+
+const csvFileUpload = async (file: Express.Multer.File) => {
+  if (!file) {
+    throw new AppError(400, 'No file uploaded');
+  }
+  const uploadedFile = await fileUploader.uploadToCloudinary(file);
+  return uploadedFile.url; // return actual URL
+}
+
+const sendInvite = async (
+  userId: string,
+  payload: IInviteStudent | IInviteStudent[],
+  file: Express.Multer.File, // single file for all students
+) => {
   const user = await User.findById(userId);
   if (!user) {
     throw new AppError(400, 'User not found');
   }
 
-  if(user.role !== userRole.school) throw new AppError(403, 'Only school users can send invites');
- let uploadedUrl = null;
-  if (file) {
-    const uploadFile = await fileUploader.uploadToCloudinary(file);
-    uploadedUrl = uploadFile.url;
+  if (user.role !== userRole.school) {
+    throw new AppError(403, 'Only school users can send invites');
   }
 
-   // Convert single student to array
+  // Upload the file once for all students
+  const fileUrl = await csvFileUpload(file);
+
+  // Convert single student to array
   const students = Array.isArray(payload) ? payload : [payload];
 
-  // Create final data array
-  const formattedStudents = students.map(student => ({
+  // Format all students with the same file URL
+  const formattedStudents = students.map((student) => ({
     ...student,
-    url: uploadedUrl || student.url || null,
-    createBy: user._id
+    createBy: user._id,
+    url: fileUrl,
   }));
 
   const result = await InviteStudent.insertMany(formattedStudents);
-  
-  console.log("Invited Students: ", result);
+  // console.log('Invited Students: ', result);
 
-    
-
-    // const emailHtml = `
-    //   <h2>Hello ${student.name},</h2>
-    //   <p>You have been invited as a student.</p>
-    //   <p>Please click the link below to get started:</p>
-    //   <a href="${url}">Join Now</a>
-    //   <br/><br/>
-    //   <p>Regards,<br/>Best regards</p>
-    // `;
-
-    // await sendMailer(student.email, "Student Invitation", emailHtml);
-
-
+  // Optionally send emails
+  // for (const student of formattedStudents) {
+  //   const emailHtml = `
+  //     <h2>Hello ${student.name},</h2>
+  //     <p>You have been invited as a student.</p>
+  //     <p>Please click the link below to get started:</p>
+  //     <a href="${student.url}">Join Now</a>
+  //     <br/><br/>
+  //     <p>Regards,<br/>Best regards</p>
+  //   `;
+  //   await sendMailer(student.email, "Student Invitation", emailHtml);
+  // }
 
   return result;
 };
+
+
 
 const getAllInviteStudents = async (params: any, options: IOption) => {
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
