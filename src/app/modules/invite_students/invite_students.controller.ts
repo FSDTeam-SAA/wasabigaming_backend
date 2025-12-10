@@ -1,25 +1,14 @@
-// ==================== contact.controller.ts ====================
 import { studentInviteService } from './invite_students.service';
 import catchAsync from '../../utils/catchAsycn';
 import sendResponse from '../../utils/sendResponse';
 import pick from '../../helper/pick';
-import { parse } from 'csv-parse/sync';
 import AppError from '../../error/appError';
 
 const sendInvite = catchAsync(async (req, res) => {
   const userId = req.user?.id;
   const file = req.file as Express.Multer.File;
-  
-  // JSON parse করার সময় error handling যোগ করুন
-  let studentData;
-  try {
-    studentData = req.body.data ? JSON.parse(req.body.data) : req.body;
-  } catch (error) {
-    throw new AppError(400, 'Invalid JSON format in data field');
-  }
-  
-  const result = await studentInviteService.sendInvite(userId, studentData, file);
-
+  const fromdate = req.body.data ? JSON.parse(req.body.data) : req.body;
+  const result = await studentInviteService.sendInvite(userId, fromdate, file);
   sendResponse(res, {
     statusCode: 201,
     success: true,
