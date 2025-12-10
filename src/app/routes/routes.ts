@@ -9,6 +9,7 @@ import { contactRouter } from '../modules/contact/contact.routes';
 
 import { taskRouter } from '../modules/task/task.routes';
 import { lawfirmsRouter } from '../modules/lawfirm/lawfirm.routes';
+import { inviteStudentRouter } from '../modules/invite_students/invite_students.routes';
 import { applicationTrackerRouter } from '../modules/applicationTracker/applicationTracker.routes';
 
 const router = Router();
@@ -46,6 +47,9 @@ const moduleRoutes = [
     path: '/lawfirm',
     route: lawfirmsRouter,
   },
+   {
+    path: '/invite-student',
+    route: inviteStudentRouter},
   {
     path: '/application-tracker',
     route: applicationTrackerRouter,
