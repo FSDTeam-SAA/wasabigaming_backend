@@ -11,6 +11,7 @@ import { taskRouter } from '../modules/task/task.routes';
 import { lawfirmsRouter } from '../modules/lawfirm/lawfirm.routes';
 import { inviteStudentRouter } from '../modules/invite_students/invite_students.routes';
 import { applicationTrackerRouter } from '../modules/applicationTracker/applicationTracker.routes';
+import { websiteRouter } from '../modules/website/website.routes';
 
 const router = Router();
 
@@ -54,6 +55,10 @@ const moduleRoutes = [
   {
     path: '/application-tracker',
     route: applicationTrackerRouter,
+  },
+  {
+    path: '/website',
+    route: websiteRouter,
   },
 ];
 
