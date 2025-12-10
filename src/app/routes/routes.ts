@@ -5,11 +5,12 @@ import { dashboardRouter } from '../modules/dashboard/dashboard.routes';
 import { courseRouter } from '../modules/course/course.routes';
 import { quizzesRouter } from '../modules/quizzes/quizzes.routes';
 
-import { contactRouter } from "../modules/contact/contact.routes"
+import { contactRouter } from '../modules/contact/contact.routes';
 
 import { taskRouter } from '../modules/task/task.routes';
 import { lawfirmsRouter } from '../modules/lawfirm/lawfirm.routes';
 import { inviteStudentRouter } from '../modules/invite_students/invite_students.routes';
+import { applicationTrackerRouter } from '../modules/applicationTracker/applicationTracker.routes';
 
 const router = Router();
 
@@ -35,7 +36,6 @@ const moduleRoutes = [
     route: quizzesRouter,
   },
   {
-
     path: '/contacts',
     route: contactRouter,
   },
@@ -49,7 +49,10 @@ const moduleRoutes = [
   },
    {
     path: '/invite-student',
-    route: inviteStudentRouter,
+    route: inviteStudentRouter},
+  {
+    path: '/application-tracker',
+    route: applicationTrackerRouter,
   },
 ];
 

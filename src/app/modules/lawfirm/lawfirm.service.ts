@@ -146,10 +146,24 @@ const deleteLawfirm = async (userId: string, id: string) => {
   return result;
 };
 
+const approvedLawfirm = async (id: string) => {
+  const lawfirm = await LawFirm.findById(id);
+  if (!lawfirm) {
+    throw new AppError(400, 'lawfirm not found');
+  }
+  const result = await LawFirm.findByIdAndUpdate(
+    id,
+    { status: 'approved' },
+    { new: true },
+  );
+  return result;
+};
+
 export const lawfirmService = {
   createLawfirm,
   getAllLawfirm,
   getSingleLawfirm,
   uploadLawfirm,
   deleteLawfirm,
+  approvedLawfirm,
 };
