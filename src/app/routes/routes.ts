@@ -12,6 +12,7 @@ import { lawfirmsRouter } from '../modules/lawfirm/lawfirm.routes';
 import { inviteStudentRouter } from '../modules/invite_students/invite_students.routes';
 import { applicationTrackerRouter } from '../modules/applicationTracker/applicationTracker.routes';
 import { websiteRouter } from '../modules/website/website.routes';
+import { premiumRouter } from '../modules/premium/premium.routes';
 
 const router = Router();
 
@@ -59,6 +60,10 @@ const moduleRoutes = [
   {
     path: '/website',
     route: websiteRouter,
+  },
+  {
+    path: '/premium',
+    route: premiumRouter,
   },
 ];
 

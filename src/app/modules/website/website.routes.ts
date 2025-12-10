@@ -21,7 +21,7 @@ router.get(
 );
 router.get(
   '/key/:key',
-  auth(userRole.admin, userRole.school, userRole.student),
+  // auth(userRole.admin, userRole.school, userRole.student),
   websiteController.getWebsiteByKey,
 );
 router.put(
