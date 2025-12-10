@@ -49,7 +49,7 @@ const moduleRoutes = [
     route: lawfirmsRouter,
   },
   {
-    path: '/invite-student',
+    path: '/invite-students',
     route: inviteStudentRouter,
   },
   {

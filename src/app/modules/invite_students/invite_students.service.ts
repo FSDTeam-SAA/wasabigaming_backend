@@ -1,25 +1,57 @@
-// ==================== contact.service.ts ====================
 import InviteStudent from './invite_students.model';
 import { IInviteStudent } from './invite_students.interface';
 import AppError from '../../error/appError';
 import pagination, { IOption } from '../../helper/pagenation';
-import sendMailer from '../../helper/sendMailer';
+// import sendMailer from '../../helper/sendMailer';
+import { fileUploader } from '../../helper/fileUploder';
+import User from '../user/user.model';
+import { userRole } from '../user/user.constant';
 
-const sendInvite = async (inviteData: IInviteStudent) => {
-  const inviteStudent = await InviteStudent.create(inviteData);
 
-  const emailHtml = `
-        <h2>Hello ${inviteData.name},</h2>
-        <p>You have been invited as a student.</p>
-        <p>Please click the link below to get started:</p>
-        <a href="https://your-app-link.com">Join Now</a>
-        <br/><br/>
-        <p>Regards,<br/>Your Company</p>
-    `;
+const sendInvite = async (userId:string,payload:IInviteStudent, file?:Express.Multer.File) => {
 
-  await sendMailer(inviteStudent.email, 'Student Invitation', emailHtml);
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(400, 'User not found');
+  }
 
-  return inviteStudent;
+  if(user.role !== userRole.school) throw new AppError(403, 'Only school users can send invites');
+ let uploadedUrl = null;
+  if (file) {
+    const uploadFile = await fileUploader.uploadToCloudinary(file);
+    payload.url = uploadFile.url;
+  }
+
+   // Convert single student to array
+  const students = Array.isArray(payload) ? payload : [payload];
+
+  // Create final data array
+  const formattedStudents = students.map(student => ({
+    ...student,
+    url: uploadedUrl || student.url || null,
+    createBy: user._id
+  }));
+
+  const result = await InviteStudent.insertMany(formattedStudents);
+  
+  console.log("Invited Students: ", result);
+
+    
+
+    // const emailHtml = `
+    //   <h2>Hello ${student.name},</h2>
+    //   <p>You have been invited as a student.</p>
+    //   <p>Please click the link below to get started:</p>
+    //   <a href="${url}">Join Now</a>
+    //   <br/><br/>
+    //   <p>Regards,<br/>Best regards</p>
+    // `;
+
+    // await sendMailer(student.email, "Student Invitation", emailHtml);
+
+
+
+  return result;
 };
 
 const getAllInviteStudents = async (params: any, options: IOption) => {
