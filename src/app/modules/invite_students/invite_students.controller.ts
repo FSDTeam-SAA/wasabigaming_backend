@@ -3,6 +3,7 @@ import { studentInviteService } from './invite_students.service';
 import catchAsync from '../../utils/catchAsycn';
 import sendResponse from '../../utils/sendResponse';
 import pick from '../../helper/pick';
+import { parse } from 'csv-parse/sync';
 
 
 const sendInvite = catchAsync(async(req, res) =>  {
