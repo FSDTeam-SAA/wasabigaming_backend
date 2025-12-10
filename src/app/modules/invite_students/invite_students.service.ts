@@ -2,70 +2,22 @@ import InviteStudent from './invite_students.model';
 import { IInviteStudent } from './invite_students.interface';
 import AppError from '../../error/appError';
 import pagination, { IOption } from '../../helper/pagenation';
-// import sendMailer from '../../helper/sendMailer';
 import { fileUploader } from '../../helper/fileUploder';
 import User from '../user/user.model';
 import { userRole } from '../user/user.constant';
 
-// const csvFuleUpload = async (file: Express.Multer.File) => {
+// const csvFileUpload = async (file: Express.Multer.File) => {
 //   if (!file) {
 //     throw new AppError(400, 'No file uploaded');
 //   }
-//   const csvFileUpload = await fileUploader.uploadToCloudinary(file);
-//   return csvFileUpload;
-// }
-
-// const sendInvite = async (
-//   userId: string,
-//   payload: IInviteStudent,
-// ) => {
-//   const user = await User.findById(userId);
-//   if (!user) {
-//     throw new AppError(400, 'User not found');
-//   }
-
-//   if (user.role !== userRole.school)
-//     throw new AppError(403, 'Only school users can send invites');
-//   // Convert single student to array
-//   const students = Array.isArray(payload) ? payload : [payload];
-
-//   // Create final data array
-//   const formattedStudents = students.map((student) => ({
-//     ...student,
-//     createBy: user._id,
-//     url: csvFuleUpload
-//   }));
-
-//   const result = await InviteStudent.insertMany(formattedStudents);
-
-//   console.log('Invited Students: ', result);
-
-//   // const emailHtml = `
-//   //   <h2>Hello ${student.name},</h2>
-//   //   <p>You have been invited as a student.</p>
-//   //   <p>Please click the link below to get started:</p>
-//   //   <a href="${url}">Join Now</a>
-//   //   <br/><br/>
-//   //   <p>Regards,<br/>Best regards</p>
-//   // `;
-
-//   // await sendMailer(student.email, "Student Invitation", emailHtml);
-
-//   return result;
+//   const uploadedFile = await fileUploader.uploadToCloudinary(file);
+//   return uploadedFile.url; // return actual URL
 // };
-
-const csvFileUpload = async (file: Express.Multer.File) => {
-  if (!file) {
-    throw new AppError(400, 'No file uploaded');
-  }
-  const uploadedFile = await fileUploader.uploadToCloudinary(file);
-  return uploadedFile.url; // return actual URL
-}
 
 const sendInvite = async (
   userId: string,
   payload: IInviteStudent | IInviteStudent[],
-  file: Express.Multer.File, // single file for all students
+  file: Express.Multer.File, 
 ) => {
   const user = await User.findById(userId);
   if (!user) {
@@ -76,13 +28,14 @@ const sendInvite = async (
     throw new AppError(403, 'Only school users can send invites');
   }
 
-  // Upload the file once for all students
-  const fileUrl = await csvFileUpload(file);
+  let fileUrl = null;
 
-  // Convert single student to array
+  if (!file) {
+    throw new AppError(400, 'No file uploaded');
+  }
+  const uploadedFile = await fileUploader.uploadToCloudinary(file);
+  fileUrl = uploadedFile.url;
   const students = Array.isArray(payload) ? payload : [payload];
-
-  // Format all students with the same file URL
   const formattedStudents = students.map((student) => ({
     ...student,
     createBy: user._id,
@@ -90,7 +43,6 @@ const sendInvite = async (
   }));
 
   const result = await InviteStudent.insertMany(formattedStudents);
-  // console.log('Invited Students: ', result);
 
   // Optionally send emails
   // for (const student of formattedStudents) {
@@ -107,8 +59,6 @@ const sendInvite = async (
 
   return result;
 };
-
-
 
 const getAllInviteStudents = async (params: any, options: IOption) => {
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
