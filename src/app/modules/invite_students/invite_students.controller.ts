@@ -36,7 +36,8 @@ const getAllInviteStudents = catchAsync(async (req, res) => {
 });
 
 const getInviteStudentById = catchAsync(async (req, res) => {
-  const { inviteStudentId } = req.params;
+  const  inviteStudentId  = req.params.id;
+  console.log("inviteStudentId", inviteStudentId);
 
   const inviteStudent = await studentInviteService.getInviteStudentById(
     inviteStudentId!,
@@ -51,11 +52,13 @@ const getInviteStudentById = catchAsync(async (req, res) => {
 });
 
 const updateInviteStudent = catchAsync(async (req, res) => {
-  const { studentId } = req.params;
+  const studentId  = req.params.id;
+  const userId = req.user?.id;
 
   const updateInformation = await studentInviteService.updatedInviteStudent(
     req.body,
     studentId!,
+    userId!
   );
 
   sendResponse(res, {
@@ -67,9 +70,10 @@ const updateInviteStudent = catchAsync(async (req, res) => {
 });
 
 const deleteInviteStudent = catchAsync(async (req, res) => {
-  const { studentId } = req.params;
+  const studentId  = req.params.id;
+  const userId = req.user?.id;
 
-  await studentInviteService.deleteInviteStudent(studentId!);
+  await studentInviteService.deleteInviteStudent(studentId!, userId!);
   sendResponse(res, {
     statusCode: 200,
     success: true,
