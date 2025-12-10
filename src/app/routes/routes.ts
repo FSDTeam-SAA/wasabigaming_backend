@@ -47,9 +47,10 @@ const moduleRoutes = [
     path: '/lawfirm',
     route: lawfirmsRouter,
   },
-   {
+  {
     path: '/invite-student',
-    route: inviteStudentRouter},
+    route: inviteStudentRouter,
+  },
   {
     path: '/application-tracker',
     route: applicationTrackerRouter,

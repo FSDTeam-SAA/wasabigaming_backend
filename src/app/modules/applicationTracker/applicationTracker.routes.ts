@@ -16,4 +16,17 @@ router.post(
   applicationTrackerController.createApplication,
 );
 
+router.get('/', applicationTrackerController.getAllApplication);
+router.get('/:id', applicationTrackerController.getSingleApplication);
+router.put(
+  '/:id',
+  auth(userRole.admin, userRole.student),
+  applicationTrackerController.updateApplication,
+);
+router.delete(
+  '/:id',
+  auth(userRole.admin, userRole.student),
+  applicationTrackerController.deleteApplication,
+);
+
 export const applicationTrackerRouter = router;
