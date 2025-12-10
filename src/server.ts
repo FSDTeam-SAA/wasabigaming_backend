@@ -1,8 +1,16 @@
 import mongoose from 'mongoose';
 import app from './app';
 import config from './app/config';
+import socketIo from'socket.io';
+import http from 'http';
+import { initializeSocket } from './app/socket';
+
 
 const PORT = config.port;
+const server = http.createServer(app);
+
+const io = initializeSocket(server);
+app.set('io', io);
 
 const main = async () => {
   try {
@@ -13,7 +21,7 @@ const main = async () => {
     const mongo = await mongoose.connect(config.mongoUri);
     console.log(`✅ MongoDB connected: ${mongo.connection.host}`);
 
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`🚀 Server running on http://localhost:${PORT}`);
     });
   } catch (error: any) {
