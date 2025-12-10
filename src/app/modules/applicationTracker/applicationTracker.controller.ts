@@ -1,3 +1,4 @@
+import pick from '../../helper/pick';
 import catchAsync from '../../utils/catchAsycn';
 import sendResponse from '../../utils/sendResponse';
 import { applicationTrackerService } from './applicationTracker.service';
@@ -27,7 +28,64 @@ const createApplication = catchAsync(async (req, res) => {
   });
 });
 
+const getAllApplication = catchAsync(async (req, res) => {
+  const filters = pick(req.query, ['searchTerm', 'status']);
+  const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+  const result = await applicationTrackerService.getAllApplication(
+    filters,
+    options,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'All Application',
+    data: result,
+  });
+});
+
+const getSingleApplication = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await applicationTrackerService.getSingleApplication(id!);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Single Application',
+    data: result,
+  });
+});
+
+const updateApplication = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+  const result = await applicationTrackerService.updateApplication(
+    userId,
+    id!,
+    req.body,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Application Updated Successfully',
+    data: result,
+  });
+});
+const deleteApplication = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+  const result = await applicationTrackerService.deleteApplication(userId,id!);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Application Deleted Successfully',
+    data: result,
+  });
+});
+
 export const applicationTrackerController = {
   applicationTrackerOverview,
   createApplication,
+  getAllApplication,
+  updateApplication,
+  getSingleApplication,
+  deleteApplication,
 };
