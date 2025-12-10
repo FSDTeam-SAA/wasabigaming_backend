@@ -19,7 +19,7 @@ const sendInvite = async (userId:string,payload:IInviteStudent, file?:Express.Mu
  let uploadedUrl = null;
   if (file) {
     const uploadFile = await fileUploader.uploadToCloudinary(file);
-    payload.url = uploadFile.url;
+    uploadedUrl = uploadFile.url;
   }
 
    // Convert single student to array
