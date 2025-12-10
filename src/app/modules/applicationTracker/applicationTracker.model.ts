@@ -5,7 +5,7 @@ const applicationTrackerSchema = new mongoose.Schema<IApplicationTracker>(
   {
     schoolName: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'School',
+      ref: 'User',
       required: true,
     },
     applicationType: {

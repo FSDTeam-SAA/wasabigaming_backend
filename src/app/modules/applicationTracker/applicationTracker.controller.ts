@@ -29,7 +29,7 @@ const createApplication = catchAsync(async (req, res) => {
 });
 
 const getAllApplication = catchAsync(async (req, res) => {
-  const filters = pick(req.query, ['searchTerm', 'status']);
+  const filters = pick(req.query, ['searchTerm', 'status','applicationType']);
   const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
   const result = await applicationTrackerService.getAllApplication(
     filters,
@@ -39,7 +39,8 @@ const getAllApplication = catchAsync(async (req, res) => {
     statusCode: 200,
     success: true,
     message: 'All Application',
-    data: result,
+    meta: result.meta,
+    data: result.data,
   });
 });
 
@@ -72,7 +73,7 @@ const updateApplication = catchAsync(async (req, res) => {
 const deleteApplication = catchAsync(async (req, res) => {
   const { id } = req.params;
   const userId = req.user.id;
-  const result = await applicationTrackerService.deleteApplication(userId,id!);
+  const result = await applicationTrackerService.deleteApplication(userId, id!);
   sendResponse(res, {
     statusCode: 200,
     success: true,

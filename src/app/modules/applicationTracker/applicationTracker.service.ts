@@ -50,7 +50,7 @@ const getAllApplication = async (params: any, options: IOption) => {
   const { searchTerm, year, ...filterData } = params;
 
   const andCondition: any[] = [];
-  const userSearchableFields = ['status'];
+  const userSearchableFields = ['status', 'applicationType'];
 
   if (searchTerm) {
     andCondition.push({
@@ -86,7 +86,9 @@ const getAllApplication = async (params: any, options: IOption) => {
   const result = await ApplicationTracker.find(whereCondition)
     .skip(skip)
     .limit(limit)
-    .sort({ [sortBy]: sortOrder } as any);
+    .sort({ [sortBy]: sortOrder } as any)
+    .populate('createBy', '-password')
+    .populate('schoolName', '-password');
 
   if (!result) {
     throw new AppError(404, 'application tracker not found');
@@ -105,7 +107,9 @@ const getAllApplication = async (params: any, options: IOption) => {
 };
 
 const getSingleApplication = async (id: string) => {
-  const result = await ApplicationTracker.findById(id);
+  const result = await ApplicationTracker.findById(id)
+    .populate('createBy', '-password')
+    .populate('schoolName', '-password');
   if (!result) {
     throw new AppError(404, 'application tracker not found');
   }
