@@ -5,16 +5,41 @@ import pagination, { IOption } from '../../helper/pagenation';
 import { fileUploader } from '../../helper/fileUploder';
 import User from '../user/user.model';
 import { userRole } from '../user/user.constant';
+import sendMailer from '../../helper/sendMailer';
 
-// const csvFileUpload = async (file: Express.Multer.File) => {
+
+// const sendInvite = async (
+//   userId: string,
+//   payload: IInviteStudent | IInviteStudent[],
+//   file: Express.Multer.File, 
+// ) => {
+//   const user = await User.findById(userId);
+//   if (!user) {
+//     throw new AppError(400, 'User not found');
+//   }
+
+//   if (user.role !== userRole.school) {
+//     throw new AppError(403, 'Only school users can send invites');
+//   }
+
+//   let fileUrl = null;
+
 //   if (!file) {
 //     throw new AppError(400, 'No file uploaded');
 //   }
 //   const uploadedFile = await fileUploader.uploadToCloudinary(file);
-//   return uploadedFile.url; // return actual URL
-// };
+//   fileUrl = uploadedFile.url;
+//   const students = Array.isArray(payload) ? payload : [payload];
+//   const formattedStudents = students.map((student) => ({
+//     ...student,
+//     createBy: user._id,
+//     url: fileUrl,
+//   }));
 
-const sendInvite = async (
+//   const result = await InviteStudent.insertMany(formattedStudents);
+
+  // Optionally send emails
+ const sendInvite = async (
   userId: string,
   payload: IInviteStudent | IInviteStudent[],
   file: Express.Multer.File, 
@@ -28,13 +53,14 @@ const sendInvite = async (
     throw new AppError(403, 'Only school users can send invites');
   }
 
-  let fileUrl = null;
-
   if (!file) {
     throw new AppError(400, 'No file uploaded');
   }
+
+  // Upload file once for all students
   const uploadedFile = await fileUploader.uploadToCloudinary(file);
-  fileUrl = uploadedFile.url;
+  const fileUrl = uploadedFile.url;
+
   const students = Array.isArray(payload) ? payload : [payload];
   const formattedStudents = students.map((student) => ({
     ...student,
@@ -44,18 +70,20 @@ const sendInvite = async (
 
   const result = await InviteStudent.insertMany(formattedStudents);
 
-  // Optionally send emails
-  // for (const student of formattedStudents) {
-  //   const emailHtml = `
-  //     <h2>Hello ${student.name},</h2>
-  //     <p>You have been invited as a student.</p>
-  //     <p>Please click the link below to get started:</p>
-  //     <a href="${student.url}">Join Now</a>
-  //     <br/><br/>
-  //     <p>Regards,<br/>Best regards</p>
-  //   `;
-  //   await sendMailer(student.email, "Student Invitation", emailHtml);
-  // }
+  // Send emails concurrently
+  await Promise.all(
+    formattedStudents.map(student => {
+      const emailHtml = `
+        <h2>Hello ${student.name},</h2>
+        <p>You have been invited as a student.</p>
+        <p>Please click the link below to get started:</p>
+        <a href="${student.url}">Download file</a>
+        <br/><br/>
+        <p>Regards,<br/>Best regards</p>
+      `;
+      return sendMailer(student.email, "Student Invitation", emailHtml);
+    })
+  );
 
   return result;
 };
@@ -65,7 +93,7 @@ const getAllInviteStudents = async (params: any, options: IOption) => {
   const { searchTerm, year, ...filterData } = params;
 
   const andCondition: any[] = [];
-  const userSearchableFields = ['fullname', 'email'];
+  const userSearchableFields = ['name', 'email'];
   if (searchTerm) {
     andCondition.push({
       $or: userSearchableFields.map((field) => ({
@@ -127,7 +155,7 @@ const getInviteStudentById = async (id: string) => {
   return inviteStudent;
 };
 
-const updatedInviteStudent = async (updateData: IInviteStudent, id: string) => {
+const updatedInviteStudent = async (updateData: IInviteStudent, id: string, userId: string) => {
   const updatedStudentData = await InviteStudent.findById(id);
 
   if (!updatedStudentData) {
@@ -144,6 +172,13 @@ const updatedInviteStudent = async (updateData: IInviteStudent, id: string) => {
       throw new AppError(409, 'Email already exists');
     }
   }
+  const isOwner = updatedStudentData.createBy?.toString() === userId;
+  const isAdmin = (await User.findById(userId))?.role === userRole.admin;
+
+  if (!isOwner && !isAdmin) {
+    throw new AppError(403, 'You are not authorized to update this student data');
+  }
+
   const updated = await InviteStudent.findByIdAndUpdate(id, updateData, {
     new: true,
     runValidators: true,
@@ -151,14 +186,22 @@ const updatedInviteStudent = async (updateData: IInviteStudent, id: string) => {
   return updated;
 };
 
-const deleteInviteStudent = async (id: string) => {
-  const inviteStudent = await InviteStudent.findByIdAndDelete(id);
+const deleteInviteStudent = async (id: string, userId:string) => {
 
-  if (!inviteStudent) {
+  const inviteStudentData = await InviteStudent.findById(id);
+  if (!inviteStudentData) {
     throw new AppError(404, 'Student not found');
   }
+  const isOwner = inviteStudentData.createBy?.toString() === userId;
+  const isAdmin = (await User.findById(userId))?.role === userRole.admin;
 
-  return inviteStudent;
+  if (!isOwner && !isAdmin) {
+    throw new AppError(403, 'You are not authorized to update this student data');
+  }
+
+  await InviteStudent.findByIdAndDelete(id);
+
+  return inviteStudentData;
 };
 
 export const studentInviteService = {

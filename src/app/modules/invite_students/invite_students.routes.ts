@@ -15,22 +15,22 @@ router.post(
 
 router.get(
   '/',
-  auth(userRole.admin),
+  auth(userRole.admin, userRole.school),
   inviteStudentController.getAllInviteStudents,
 );
 router.put(
-  '/:contactId',
-  auth(userRole.admin),
+  '/:id',
+  auth(userRole.admin, userRole.school),
   inviteStudentController.updateInviteStudent,
 );
 router.get(
-  '/:contactId',
-  auth(userRole.admin),
+  '/:id',
+  auth(userRole.admin, userRole.school),
   inviteStudentController.getInviteStudentById,
 );
 router.delete(
-  '/:contactId',
-  auth(userRole.admin),
+  '/:id',
+  auth(userRole.admin, userRole.school),
   inviteStudentController.deleteInviteStudent,
 );
 
