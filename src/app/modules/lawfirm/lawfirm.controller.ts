@@ -76,10 +76,22 @@ const deleteLawfirm = catchAsync(async (req, res) => {
   });
 });
 
+const approvedLawfirm = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await lawfirmService.approvedLawfirm(id!);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Lawfirm approved successfully',
+    data: result,
+  });
+});
+
 export const lawfirmController = {
   createLawfirm,
   getAllLawfirm,
   getSingleLawfirm,
   uploadLawfirm,
   deleteLawfirm,
+  approvedLawfirm,
 };
