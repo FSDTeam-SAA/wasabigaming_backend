@@ -7,7 +7,8 @@ import { fileUploader } from '../../helper/fileUploder';
 
 const router = Router();
 
-router.post( '/',auth(userRole.school), fileUploader.upload.single('url'), inviteStudentController. sendInvite);
+router.post('/', auth(userRole.school), fileUploader.upload.single('url'), inviteStudentController.sendInvite);
+
 router.get('/',  auth(userRole.admin), inviteStudentController.getAllInviteStudents);
 router.put('/:contactId', auth(userRole.admin), inviteStudentController.updateInviteStudent);
 router.get('/:contactId', auth(userRole.admin), inviteStudentController.getInviteStudentById,);
