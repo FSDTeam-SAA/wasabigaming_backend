@@ -37,8 +37,9 @@ export interface IUser {
   skills?: string[];
   grade?: string;
 
-  subscriptionPlan?: string;
-  subscriptionStatus?: string;
+  isSubscription?: boolean;
+  subscriptionExpiry?: Date | null;
+  subscription?:Types.ObjectId
 
   createdAt: Date;
   updatedAt: Date;

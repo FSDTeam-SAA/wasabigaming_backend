@@ -75,6 +75,19 @@ const activePremium = catchAsync(async (req, res) => {
   });
 });
 
+const paySubscription = catchAsync(async (req, res) => {
+  const result = await premiumService.paySubscription(
+    req.user?.id,
+    req.params.id!,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Subscription paid successfully',
+    data: result,
+  });
+});
+
 export const premiumController = {
   createPremium,
   getAllPremium,
@@ -82,4 +95,5 @@ export const premiumController = {
   updatePremium,
   deletePremium,
   activePremium,
+  paySubscription,
 };

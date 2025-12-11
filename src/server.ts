@@ -1,9 +1,13 @@
 import mongoose from 'mongoose';
 import app from './app';
 import config from './app/config';
+
+import './app/helper/cronjobHandler';
+
 import socketIo from'socket.io';
 import http from 'http';
 import { initializeSocket } from './app/socket';
+
 
 
 const PORT = config.port;

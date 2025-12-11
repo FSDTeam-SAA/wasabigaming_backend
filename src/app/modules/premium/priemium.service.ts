@@ -1,7 +1,13 @@
+import Stripe from 'stripe';
+import config from '../../config';
 import AppError from '../../error/appError';
 import pagination, { IOption } from '../../helper/pagenation';
 import { IPremium } from './premium.interface';
 import Premium from './premium.model';
+import User from '../user/user.model';
+import Payment from '../payment/payment.model';
+
+const stripe = new Stripe(config.stripe.secretKey!);
 
 const createPremium = async (payload: IPremium) => {
   const premium = await Premium.findOne({ name: payload.name });
@@ -103,6 +109,51 @@ const activePremium = async (id: string) => {
   return result;
 };
 
+const paySubscription = async (userId: string, subscriptionId: string) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(404, 'User not found');
+  const premium = await Premium.findById(subscriptionId);
+  if (!premium) throw new AppError(404, 'Premium not found');
+
+  const session = await stripe.checkout.sessions.create({
+    mode: 'payment',
+    payment_method_types: ['card'],
+    line_items: [
+      {
+        price_data: {
+          currency: 'usd',
+          unit_amount: premium.price * 100,
+          product_data: {
+            name: premium.name,
+            description: premium.type,
+          },
+        },
+        quantity: 1,
+      },
+    ],
+    customer_email: user.email,
+    success_url: `${config.frontendUrl}/success`,
+    cancel_url: `${config.frontendUrl}/cancel`,
+    metadata: {
+      userId: user._id.toString(),
+      subscriptionId: premium._id.toString(),
+      type: premium.type,
+      price: premium.price.toString(),
+    },
+  } as Stripe.Checkout.SessionCreateParams);
+
+  await Payment.create({
+    user: user._id,
+    subscription: premium._id,
+    stripeSessionId: session.id,
+    amount: premium.price,
+    currency: 'usd',
+    status: 'pending',
+  });
+
+  return { url: session.url, sessionId: session.id };
+};
+
 export const premiumService = {
   createPremium,
   getAllPremium,
@@ -110,4 +161,5 @@ export const premiumService = {
   updatePremium,
   deletePremium,
   activePremium,
+  paySubscription,
 };

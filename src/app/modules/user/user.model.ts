@@ -54,8 +54,9 @@ const userSchema = new Schema<IUser>(
     skills: [{ type: String }],
     grade: { type: String },
 
-    subscriptionPlan: { type: String },
-    subscriptionStatus: { type: String },
+    isSubscription: { type: Boolean, default: false },
+    subscriptionExpiry: { type: Date },
+    subscription: { type: Schema.Types.ObjectId, ref: 'Premium' },
   },
   { timestamps: true },
 );
