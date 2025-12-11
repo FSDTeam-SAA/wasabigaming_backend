@@ -13,6 +13,7 @@ import { inviteStudentRouter } from '../modules/invite_students/invite_students.
 import { applicationTrackerRouter } from '../modules/applicationTracker/applicationTracker.routes';
 import { websiteRouter } from '../modules/website/website.routes';
 import { premiumRouter } from '../modules/premium/premium.routes';
+import { jobRouter } from '../modules/job/job.routes';
 
 const router = Router();
 
@@ -64,6 +65,10 @@ const moduleRoutes = [
   {
     path: '/premium',
     route: premiumRouter,
+  },
+  {
+    path: '/job',
+    route: jobRouter,
   },
 ];
 
