@@ -4,8 +4,12 @@ import cookieParser from 'cookie-parser';
 import notFoundError from './app/error/notFoundError';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import router from './app/routes/routes';
+
 import webHookHandlers from './app/helper/webHookHandler';
+
 const app = express();
+
+
 
 // Middlewares
 app.use(cors({ origin: '*', credentials: true }));
