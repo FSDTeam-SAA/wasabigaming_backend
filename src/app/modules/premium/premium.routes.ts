@@ -14,4 +14,9 @@ router.put(
 router.get('/:id', premiumController.getSinglePremium);
 router.put('/:id', auth(userRole.admin), premiumController.updatePremium);
 router.delete('/:id', auth(userRole.admin), premiumController.deletePremium);
+router.post(
+  '/pay/:id',
+  auth(userRole.student, userRole.school),
+  premiumController.paySubscription,
+);
 export const premiumRouter = router;
