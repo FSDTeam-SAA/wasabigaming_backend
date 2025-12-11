@@ -19,7 +19,6 @@ const paymentSchema = new mongoose.Schema<IPayment>(
     },
     stripePaymentIntentId: {
       type: String,
-      required: true,
     },
     amount: {
       type: Number,

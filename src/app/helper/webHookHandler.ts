@@ -10,6 +10,7 @@ const stripe = new Stripe(config.stripe.secretKey!);
 const webHookHandlers = async (req: Request, res: Response) => {
   const sig = req.headers['stripe-signature'] as string;
   let event;
+
   try {
     event = stripe.webhooks.constructEvent(
       req.body,
@@ -20,13 +21,14 @@ const webHookHandlers = async (req: Request, res: Response) => {
     console.error('❌ Webhook Error:', err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
+
   console.log('Event: ', event.type);
 
   try {
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
 
-      const payment = await Payment.findOne({ sessionId: session.id });
+      const payment = await Payment.findOne({ stripeSessionId: session.id });
       if (!payment) return res.json({ received: true });
 
       payment.status = 'completed';
@@ -44,17 +46,19 @@ const webHookHandlers = async (req: Request, res: Response) => {
         await subscription.save();
       }
 
-      const mounthToYearAdd = subscription?.type === 'year' ? 12 : 1;
+      const monthAdd = subscription.type === 'year' ? 12 : 1;
 
       const expireDate = new Date();
-      expireDate.setMonth(expireDate.getMonth() + mounthToYearAdd);
+      expireDate.setMonth(expireDate.getMonth() + monthAdd);
 
       user.isSubscription = true;
       user.subscription = subscription._id;
       user.subscriptionExpiry = expireDate;
       await user.save();
+
       return res.json({ received: true });
     }
+
     if (event.type === 'payment_intent.payment_failed') {
       const intent = event.data.object as Stripe.PaymentIntent;
 
@@ -74,5 +78,6 @@ const webHookHandlers = async (req: Request, res: Response) => {
     return res.status(500).send(`Webhook Handler Error: ${err.message}`);
   }
 };
+
 
 export default webHookHandlers;
