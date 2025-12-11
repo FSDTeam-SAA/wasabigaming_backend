@@ -24,6 +24,10 @@ const premiumSchema = new mongoose.Schema<IPremium>(
       type: String,
       enum: ['active', 'inactive'],
     },
+    totalSubscripeUser: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: 'User',
+    },
   },
   {
     timestamps: true,
