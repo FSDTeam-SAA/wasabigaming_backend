@@ -16,11 +16,7 @@ router.get(
   cvbuilderController.getAllCVbuilder,
 );
 
-router.get(
-  '/:id',
-  auth(userRole.admin, userRole.student),
-  cvbuilderController.getSingleCVbuilder,
-);
+router.get('/:id', cvbuilderController.getSingleCVbuilder);
 
 router.put(
   '/:id',

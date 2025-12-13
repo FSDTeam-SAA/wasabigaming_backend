@@ -14,6 +14,7 @@ import { applicationTrackerRouter } from '../modules/applicationTracker/applicat
 import { websiteRouter } from '../modules/website/website.routes';
 import { premiumRouter } from '../modules/premium/premium.routes';
 import { jobRouter } from '../modules/job/job.routes';
+import { cvBuilderRouter } from '../modules/cvbuilder/cvbuilder.routes';
 
 const router = Router();
 
@@ -69,6 +70,10 @@ const moduleRoutes = [
   {
     path: '/job',
     route: jobRouter,
+  },
+  {
+    path: '/cvbuilder',
+    route: cvBuilderRouter,
   },
 ];
 
