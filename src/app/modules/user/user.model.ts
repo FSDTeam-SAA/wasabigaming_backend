@@ -44,6 +44,7 @@ const userSchema = new Schema<IUser>(
     verified: { type: Boolean, default: false },
     registered: { type: Boolean, default: false },
     status: { type: String, enum: ['active', 'inactive'], default: 'active' },
+    address: { type: String },
 
     stripeAccountId: { type: String },
 

@@ -30,6 +30,7 @@ export interface IUser {
   registered?: boolean;
   stripeAccountId?: string;
   status?: 'active' | 'inactive';
+  address?: string;
 
   schoolId?: Types.ObjectId; // If student belongs to a school
   education?: IEducation[];
@@ -39,7 +40,7 @@ export interface IUser {
 
   isSubscription?: boolean;
   subscriptionExpiry?: Date | null;
-  subscription?:Types.ObjectId
+  subscription?: Types.ObjectId;
 
   createdAt: Date;
   updatedAt: Date;
