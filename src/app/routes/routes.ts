@@ -15,6 +15,7 @@ import { websiteRouter } from '../modules/website/website.routes';
 import { premiumRouter } from '../modules/premium/premium.routes';
 import { jobRouter } from '../modules/job/job.routes';
 import { cvBuilderRouter } from '../modules/cvbuilder/cvbuilder.routes';
+import { psychometricRouter } from '../modules/psychometric/psychometric.routes';
 
 const router = Router();
 
@@ -74,6 +75,10 @@ const moduleRoutes = [
   {
     path: '/cvbuilder',
     route: cvBuilderRouter,
+  },
+  {
+    path: '/psychometric',
+    route: psychometricRouter,
   },
 ];
 
