@@ -9,8 +9,6 @@ import webHookHandlers from './app/helper/webHookHandler';
 
 const app = express();
 
-
-
 // Middlewares
 app.use(cors({ origin: '*', credentials: true }));
 app.use(cookieParser());
