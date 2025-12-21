@@ -7,7 +7,7 @@ const courseVideoSchema = new mongoose.Schema(
     url: { type: String, required: true },
     time: { type: String, required: true },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const courseSchema = new mongoose.Schema<ICourse>(
@@ -20,8 +20,9 @@ const courseSchema = new mongoose.Schema<ICourse>(
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     status: { type: String, enum: ['active', 'inactive'], default: 'active' },
     enrolledStudents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    coursePrice: { type: Number, default: 0 },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Course = mongoose.model<ICourse>('Course', courseSchema);
