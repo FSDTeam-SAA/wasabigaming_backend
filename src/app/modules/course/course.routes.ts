@@ -8,7 +8,7 @@ const router = express.Router();
 router.post(
   '/',
   auth(userRole.admin, userRole.school),
-  fileUploader.upload.single('courseVideo'),
+  fileUploader.upload.array('courseVideo'),
   courseController.createCourse,
 );
 
@@ -17,7 +17,7 @@ router.get('/:id', courseController.getSingleCourse);
 router.put(
   '/:id',
   auth(userRole.admin, userRole.school),
-  fileUploader.upload.single('courseVideo'),
+  fileUploader.upload.array('courseVideo'),
   courseController.uploadCourse,
 );
 router.delete(
