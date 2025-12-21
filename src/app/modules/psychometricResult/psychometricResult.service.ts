@@ -3,6 +3,7 @@ import User from '../user/user.model';
 import { IPsychometricResult } from './psychometricResult.interface';
 import PsychometricResult from './psychometricResult.model';
 import PsychometricTest from '../psychometricTest/psychometricTest.model';
+import pagination, { IOption } from '../../helper/pagenation';
 
 const generatePsychometricResult = async (userId: string) => {
   const tests = await PsychometricTest.find({ user: userId }).populate('test');
@@ -68,6 +69,100 @@ const generatePsychometricResult = async (userId: string) => {
   return result;
 };
 
+const getMyAllPsychometricResults = async (
+  userId: string,
+  params: any,
+  options: IOption,
+) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(404, 'User not found');
+
+  const { page, limit, skip, sortBy, sortOrder } = pagination(options);
+  const { searchTerm, year, ...filterData } = params;
+
+  const andCondition: any[] = [];
+
+  if (user.role !== 'admin') {
+    andCondition.push({ user: user._id });
+  }
+
+  const userSearchableFields = ['aiFeedback', 'areasToImprove', 'strengths'];
+
+  if (searchTerm) {
+    andCondition.push({
+      $or: userSearchableFields.map((field) => ({
+        [field]: { $regex: searchTerm, $options: 'i' },
+      })),
+    });
+  }
+
+  if (Object.keys(filterData).length) {
+    andCondition.push({
+      $and: Object.entries(filterData).map(([field, value]) => ({
+        [field]: value,
+      })),
+    });
+  }
+
+  // YEAR Filter → createdAt
+  if (year) {
+    const startDate = new Date(`${year}-01-01T00:00:00.000Z`);
+    const endDate = new Date(`${year}-12-31T23:59:59.999Z`);
+
+    andCondition.push({
+      createdAt: {
+        $gte: startDate,
+        $lte: endDate,
+      },
+    });
+  }
+
+  const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
+
+  const result = await PsychometricResult.find(whereCondition)
+    .skip(skip)
+    .limit(limit)
+    .sort({ [sortBy]: sortOrder } as any);
+
+  if (!result) {
+    throw new AppError(404, 'Psychometric Result not found');
+  }
+
+  const total = await PsychometricResult.countDocuments(whereCondition);
+
+  return {
+    data: result,
+    meta: {
+      total,
+      page,
+      limit,
+    },
+  };
+};
+
+const singlePsychometricResult = async (id: string) => {
+  const result = await PsychometricResult.findById(id);
+
+  if (!result) {
+    throw new AppError(404, 'Psychometric Result not found');
+  }
+
+  return result;
+};
+
+const deletePsychometricResult = async (id: string) => {
+  const result = await PsychometricResult.findByIdAndDelete(id);
+
+  if (!result) {
+    throw new AppError(404, 'Psychometric Result not found');
+  }
+
+  return result;
+};
+
 export const psychometricResultService = {
   generatePsychometricResult,
+  getMyAllPsychometricResults,
+  singlePsychometricResult,
+  deletePsychometricResult,
 };
