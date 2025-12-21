@@ -7,10 +7,11 @@ export interface ICourse {
   category?: string;
   courseVideo?: {
     title: string;
-    url:string;
+    url: string;
     time: string;
   }[];
   createdBy?: Types.ObjectId;
   status?: 'active' | 'inactive';
   enrolledStudents?: Types.ObjectId[];
+  coursePrice?: number;
 }
