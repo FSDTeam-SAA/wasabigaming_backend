@@ -31,6 +31,14 @@ export interface IUser {
   stripeAccountId?: string;
   status?: 'active' | 'inactive';
   address?: string;
+  
+  jobTitle?: string;
+  company?: string;
+  bio?: string;
+  socileLinks?: {
+    name: string;
+    link: string;
+  }[];
 
   schoolId?: Types.ObjectId; // If student belongs to a school
   education?: IEducation[];
