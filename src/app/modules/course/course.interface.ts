@@ -14,4 +14,5 @@ export interface ICourse {
   status?: 'active' | 'inactive';
   enrolledStudents?: Types.ObjectId[];
   coursePrice?: number;
+  // isCourseFree?: boolean;
 }

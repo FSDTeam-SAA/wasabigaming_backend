@@ -4,12 +4,13 @@ import { Request, Response } from 'express';
 import Payment from '../modules/payment/payment.model';
 import User from '../modules/user/user.model';
 import Premium from '../modules/premium/premium.model';
+import Course from '../modules/course/course.model';
 
 const stripe = new Stripe(config.stripe.secretKey!);
 
 const webHookHandlers = async (req: Request, res: Response) => {
   const sig = req.headers['stripe-signature'] as string;
-  let event;
+  let event: Stripe.Event;
 
   try {
     event = stripe.webhooks.constructEvent(
@@ -22,9 +23,10 @@ const webHookHandlers = async (req: Request, res: Response) => {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  console.log('Event: ', event.type);
-
   try {
+    // ===============================
+    // CHECKOUT COMPLETED
+    // ===============================
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
 
@@ -38,27 +40,61 @@ const webHookHandlers = async (req: Request, res: Response) => {
       const user = await User.findById(payment.user);
       if (!user) return res.json({ received: true });
 
-      const subscription = await Premium.findById(payment.subscription);
-      if (!subscription) return res.json({ received: true });
+      const paymentType = session.metadata?.paymentType;
 
-      if (!subscription.totalSubscripeUser?.includes(user._id)) {
-        subscription?.totalSubscripeUser?.push(user._id);
-        await subscription.save();
+      // ===============================
+      // SUBSCRIPTION PAYMENT
+      // ===============================
+      if (paymentType === 'subscription') {
+        const subscription = await Premium.findById(payment.subscription);
+        if (!subscription) return res.json({ received: true });
+
+        if (!subscription.totalSubscripeUser?.includes(user._id)) {
+          subscription?.totalSubscripeUser?.push(user._id);
+          await subscription.save();
+        }
+
+        const monthAdd = subscription.type === 'year' ? 12 : 1;
+
+        const expireDate = new Date();
+        expireDate.setMonth(expireDate.getMonth() + monthAdd);
+
+        user.isSubscription = true;
+        user.subscription = subscription._id;
+        user.subscriptionExpiry = expireDate;
+        await user.save();
+
+        return res.json({ received: true });
       }
 
-      const monthAdd = subscription.type === 'year' ? 12 : 1;
+      // ===============================
+      // COURSE PAYMENT
+      // ===============================
+      if (paymentType === 'course') {
+        const course = await Course.findById(payment.course);
+        if (!course) return res.json({ received: true });
 
-      const expireDate = new Date();
-      expireDate.setMonth(expireDate.getMonth() + monthAdd);
+        // Initialize enrolledStudents if it's undefined
+        if (!course.enrolledStudents) {
+          course.enrolledStudents = [];
+        }
 
-      user.isSubscription = true;
-      user.subscription = subscription._id;
-      user.subscriptionExpiry = expireDate;
-      await user.save();
+        const alreadyEnrolled = course.enrolledStudents.some(
+          (id) => id.toString() === user._id.toString(),
+        );
+
+        if (!alreadyEnrolled) {
+          course.enrolledStudents.push(user._id);
+          await course.save();
+        }
+      }
 
       return res.json({ received: true });
     }
 
+    // ===============================
+    // PAYMENT FAILED
+    // ===============================
     if (event.type === 'payment_intent.payment_failed') {
       const intent = event.data.object as Stripe.PaymentIntent;
 
@@ -70,6 +106,8 @@ const webHookHandlers = async (req: Request, res: Response) => {
         payment.status = 'failed';
         await payment.save();
       }
+
+      return res.json({ received: true });
     }
 
     return res.json({ received: true });
@@ -78,6 +116,5 @@ const webHookHandlers = async (req: Request, res: Response) => {
     return res.status(500).send(`Webhook Handler Error: ${err.message}`);
   }
 };
-
 
 export default webHookHandlers;

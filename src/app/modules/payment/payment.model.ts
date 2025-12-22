@@ -11,7 +11,10 @@ const paymentSchema = new mongoose.Schema<IPayment>(
     subscription: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Subscription',
-      required: true,
+    },
+    course: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Course',
     },
     stripeSessionId: {
       type: String,
