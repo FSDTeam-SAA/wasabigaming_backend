@@ -18,6 +18,7 @@ import { cvBuilderRouter } from '../modules/cvbuilder/cvbuilder.routes';
 import { psychometricRouter } from '../modules/psychometric/psychometric.routes';
 import { psychometricTestRouter } from '../modules/psychometricTest/psychometricTest.routes';
 import { psychometricResultRouter } from '../modules/psychometricResult/psychometricResult.routes';
+import { eventRouter } from '../modules/event/event.routes';
 
 const router = Router();
 
@@ -89,6 +90,10 @@ const moduleRoutes = [
   {
     path: '/psychometric-result',
     route: psychometricResultRouter,
+  },
+  {
+    path: '/event',
+    route: eventRouter,
   },
 ];
 
