@@ -58,6 +58,18 @@ const userSchema = new Schema<IUser>(
     isSubscription: { type: Boolean, default: false },
     subscriptionExpiry: { type: Date },
     subscription: { type: Schema.Types.ObjectId, ref: 'Premium' },
+    jobTitle: { type: String },
+    company: { type: String },
+    bio: { type: String },
+    socileLinks: {
+      type: [
+        {
+          name: { type: String },
+          link: { type: String },
+        },
+      ],
+      default: [],
+    },
   },
   { timestamps: true },
 );
