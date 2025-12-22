@@ -137,6 +137,7 @@ const paySubscription = async (userId: string, subscriptionId: string) => {
     metadata: {
       userId: user._id.toString(),
       subscriptionId: premium._id.toString(),
+      paymentType: 'subscription',
       type: premium.type,
       price: premium.price.toString(),
     },

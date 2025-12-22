@@ -1,9 +1,14 @@
+import Stripe from 'stripe';
 import AppError from '../../error/appError';
 import { fileUploader } from '../../helper/fileUploder';
 import pagination, { IOption } from '../../helper/pagenation';
 import User from '../user/user.model';
 import { ICourse } from './course.interface';
 import Course from './course.model';
+import config from '../../config';
+import Payment from '../payment/payment.model';
+
+const stripe = new Stripe(config.stripe.secretKey!);
 
 const createCourse = async (
   userId: string,
@@ -151,10 +156,79 @@ const deleteCourse = async (userId: string, id: string) => {
   return result;
 };
 
+const payCourse = async (userId: string, courseId: string) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(400, 'User not found');
+
+  const course = await Course.findById(courseId);
+  if (!course) throw new AppError(400, 'Course not found');
+
+  if (!user.isSubscription)
+    throw new AppError(400, 'You are not subscribed to this course');
+
+  if (user.role !== 'student')
+    throw new AppError(400, 'You are not authorized to pay for this course');
+  if (course.coursePrice !== 0) {
+    const session = await stripe.checkout.sessions.create({
+      mode: 'payment',
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'usd',
+            unit_amount: Number(course.coursePrice) * 100,
+            product_data: {
+              name: course.name,
+              description: course.description || 'No description',
+            },
+          },
+          quantity: 1,
+        },
+      ],
+      customer_email: user.email,
+      success_url: `${config.frontendUrl}/success`,
+      cancel_url: `${config.frontendUrl}/cancel`,
+      metadata: {
+        userId: user._id.toString(),
+        paymentType: 'course',
+        courseId: course._id.toString(),
+        courseName: course.name,
+        coursePrice: course.coursePrice!.toString(),
+      },
+    } as Stripe.Checkout.SessionCreateParams);
+
+    await Payment.create({
+      user: user._id,
+      course: course._id,
+      amount: course.coursePrice,
+      stripeSessionId: session.id,
+      currency: 'usd',
+      status: 'pending',
+    });
+
+    return { url: session.url, sessionId: session.id };
+  }
+  if (!course.enrolledStudents) {
+    course.enrolledStudents = [];
+  }
+
+  const alreadyEnrolled = course.enrolledStudents.some(
+    (id) => id.toString() === user._id.toString(),
+  );
+
+  if (!alreadyEnrolled) {
+    course.enrolledStudents.push(user._id);
+    await course.save();
+  }
+  await course.save();
+  return { url: null, sessionId: null };
+};
+
 export const courseService = {
   createCourse,
   uploadCourse,
   getAllCourse,
   getSingleCourse,
   deleteCourse,
+  payCourse,
 };

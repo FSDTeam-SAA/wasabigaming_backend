@@ -13,6 +13,7 @@ router.post(
 );
 
 router.get('/', courseController.getAllCourse);
+router.post('/enroll/:id', auth(userRole.student,userRole.school), courseController.payCourse);
 router.get('/:id', courseController.getSingleCourse);
 router.put(
   '/:id',

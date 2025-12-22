@@ -7,11 +7,16 @@ const createCourse = catchAsync(async (req, res) => {
   const userId = req.user?.id;
   const files = req.files as Express.Multer.File[]; // multiple files
   const fromData = req.body.data ? JSON.parse(req.body.data) : req.body;
-  
+
   // optional titles array for videos
   const titles = req.body.titles ? JSON.parse(req.body.titles) : undefined;
 
-  const result = await courseService.createCourse(userId, fromData, files, titles);
+  const result = await courseService.createCourse(
+    userId,
+    fromData,
+    files,
+    titles,
+  );
 
   sendResponse(res, {
     statusCode: 200,
@@ -61,7 +66,13 @@ const uploadCourse = catchAsync(async (req, res) => {
   const fromData = req.body.data ? JSON.parse(req.body.data) : req.body;
   const titles = req.body.titles ? JSON.parse(req.body.titles) : undefined;
 
-  const result = await courseService.uploadCourse(userId, id!, fromData, files, titles);
+  const result = await courseService.uploadCourse(
+    userId,
+    id!,
+    fromData,
+    files,
+    titles,
+  );
 
   sendResponse(res, {
     statusCode: 200,
@@ -84,10 +95,24 @@ const deleteCourse = catchAsync(async (req, res) => {
   });
 });
 
+const payCourse = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user?.id;
+  const result = await courseService.payCourse(userId, id!);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Course paid successfully',
+    data: result,
+  });
+});
+
 export const courseController = {
   createCourse,
   getAllCourse,
   getSingleCourse,
   uploadCourse,
   deleteCourse,
+  payCourse,
 };
