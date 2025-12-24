@@ -6,6 +6,113 @@ import { IPsychometricTest } from './psychometricTest.interface';
 import { psychometricResultService } from '../psychometricResult/psychometricResult.service';
 import pagination, { IOption } from '../../helper/pagenation';
 
+// const createPsychometricTest = async (
+//   userId: string,
+//   payload: IPsychometricTest,
+// ) => {
+//   const user = await User.findById(userId);
+//   if (!user) throw new AppError(404, 'User not found');
+
+//   const psychometric = await Psychometric.findById(payload.test);
+//   if (!psychometric) throw new AppError(404, 'Psychometric test not found');
+
+//   const questions = psychometric.questions;
+//   let score = 0;
+
+//   const checkedAnswers = payload.answers.map((ans: any) => {
+//     const originalQuestion = questions.find(
+//       (q: any) => q._id.toString() === ans.questionId,
+//     );
+//     if (!originalQuestion) throw new AppError(400, 'Invalid questionId');
+
+//     const isCorrect = originalQuestion.correctAnswer === ans.userAnswer;
+//     if (isCorrect) score++;
+
+//     return {
+//       questionId: ans.questionId,
+//       userAnswer: ans.userAnswer,
+//       isCorrect,
+//       timeTakenSec: ans.timeTakenSec || 0,
+//     };
+//   });
+
+//   const total = questions.length;
+//   const accuracyPct = Math.round((score / total) * 100);
+
+//   const testResult = await PsychometricTest.create({
+//     user: user._id,
+//     test: payload.test,
+//     answers: checkedAnswers,
+//     score,
+//     total,
+//     accuracyPct,
+//   });
+
+//   //  AUTO RESULT CREATE / UPDATE
+//   await psychometricResultService.generatePsychometricResult(
+//     user._id.toString(),
+//   );
+
+//   return testResult;
+// };
+
+// const createPsychometricTest = async (
+//   userId: string,
+//   payload: IPsychometricTest,
+// ) => {
+//   const user = await User.findById(userId);
+//   if (!user) throw new AppError(404, 'User not found');
+
+//   const psychometric = await Psychometric.findById(payload.test);
+//   if (!psychometric) throw new AppError(404, 'Psychometric test not found');
+
+//   if (!payload.answers?.length) {
+//     throw new AppError(400, 'Answers are required');
+//   }
+
+//   let score = 0;
+
+//   const checkedAnswers = payload.answers.map((ans: any) => {
+//     const originalQuestion = psychometric.questions.find(
+//       (q: any) => q._id.toString() === ans.questionId.toString(),
+//     );
+
+//     if (!originalQuestion) {
+//       throw new AppError(400, `Invalid questionId: ${ans.questionId}`);
+//     }
+
+//     const isCorrect =
+//       originalQuestion.correctAnswer === ans.userAnswer;
+
+//     if (isCorrect) score++;
+
+//     return {
+//       questionId: ans.questionId,
+//       userAnswer: ans.userAnswer,
+//       isCorrect,
+//       timeTakenSec: ans.timeTakenSec ?? 0,
+//     };
+//   });
+
+//   const total = psychometric.questions.length;
+//   const accuracyPct = Number(((score / total) * 100).toFixed(2));
+
+//   const testResult = await PsychometricTest.create({
+//     user: user._id,
+//     test: psychometric._id,
+//     answers: checkedAnswers,
+//     score,
+//     total,
+//     accuracyPct,
+//   });
+
+//   await psychometricResultService.generatePsychometricResult(
+//     user._id.toString(),
+//   );
+
+//   return testResult;
+// };
+
 const createPsychometricTest = async (
   userId: string,
   payload: IPsychometricTest,
@@ -13,20 +120,64 @@ const createPsychometricTest = async (
   const user = await User.findById(userId);
   if (!user) throw new AppError(404, 'User not found');
 
-  const psychometric = await Psychometric.findById(payload.test);
+  const psychometric: any = await Psychometric.findById(payload.test);
   if (!psychometric) throw new AppError(404, 'Psychometric test not found');
 
-  const questions = psychometric.questions;
+  if (!payload.answers?.length) {
+    throw new AppError(400, 'Answers are required');
+  }
+
   let score = 0;
+  let totalTime = 0;
+  let timePressureErrors = 0;
+
+  const difficultyBreakdown = {
+    easyQuestions: 0,
+    mediumQuestions: 0,
+    hardQuestions: 0,
+  };
+
+  const correctedAnswers = {
+    totalCorrectedAnswers: 0,
+    easyCorrectedAnswers: 0,
+    mediumCorrectedAnswers: 0,
+    hardCorrectedAnswers: 0,
+  };
 
   const checkedAnswers = payload.answers.map((ans: any) => {
-    const originalQuestion = questions.find(
-      (q: any) => q._id.toString() === ans.questionId,
+    const question = psychometric.questions.find(
+      (q: any) => q._id.toString() === ans.questionId.toString(),
     );
-    if (!originalQuestion) throw new AppError(400, 'Invalid questionId');
 
-    const isCorrect = originalQuestion.correctAnswer === ans.userAnswer;
-    if (isCorrect) score++;
+    if (!question) {
+      throw new AppError(400, 'Invalid questionId');
+    }
+
+    const isCorrect = question.correctAnswer === ans.userAnswer;
+
+    // ✅ difficulty count (total questions)
+    if (question.difficulty === 'easy') difficultyBreakdown.easyQuestions++;
+    if (question.difficulty === 'medium') difficultyBreakdown.mediumQuestions++;
+    if (question.difficulty === 'hard') difficultyBreakdown.hardQuestions++;
+
+    if (isCorrect) {
+      score++;
+      correctedAnswers.totalCorrectedAnswers++;
+
+      if (question.difficulty === 'easy')
+        correctedAnswers.easyCorrectedAnswers++;
+      if (question.difficulty === 'medium')
+        correctedAnswers.mediumCorrectedAnswers++;
+      if (question.difficulty === 'hard')
+        correctedAnswers.hardCorrectedAnswers++;
+    }
+
+    totalTime += ans.timeTakenSec || 0;
+
+    // ⏱ time pressure logic
+    if (!isCorrect && (ans.timeTakenSec || 0) < 10) {
+      timePressureErrors++;
+    }
 
     return {
       questionId: ans.questionId,
@@ -36,24 +187,56 @@ const createPsychometricTest = async (
     };
   });
 
-  const total = questions.length;
-  const accuracyPct = Math.round((score / total) * 100);
+  const totalQuestions = psychometric.questions.length;
+  const accuracyPct = Number(((score / totalQuestions) * 100).toFixed(2));
+  const avgTimeSec = Number((totalTime / payload.answers.length).toFixed(2));
+
+  // const testResult = await PsychometricTest.create({
+  //   user: user._id,
+  //   test: psychometric._id,
+  //   answers: checkedAnswers,
+
+  //   testScore: score,
+  //   totalQuestions,
+  //   accuracyPct,
+
+  //   timeAnalysis: {
+  //     avgTimeSec,
+  //     timePressureErrors,
+  //   },
+
+  //   difficultyBreakdown,
+  //   correctedAnswers,
+  // });
 
   const testResult = await PsychometricTest.create({
     user: user._id,
-    test: payload.test,
+    test: psychometric._id,
     answers: checkedAnswers,
-    score,
-    total,
+    testScore: score,
+    totalQuestions,
     accuracyPct,
+    timeAnalysis: {
+      avgTimeSec,
+      timePressureErrors,
+    },
+    difficultyBreakdown,
+    correctedAnswers,
   });
 
-  //  AUTO RESULT CREATE / UPDATE
+  // 🔁 auto update overall result
   await psychometricResultService.generatePsychometricResult(
     user._id.toString(),
   );
 
-  return testResult;
+  // 🔥 populate test title
+  const populatedResult = await PsychometricTest.findById(testResult._id)
+    .populate('test', 'title')
+    .lean();
+
+  return populatedResult;
+
+  // return testResult;
 };
 
 const getMyAllPsychometricTests = async (

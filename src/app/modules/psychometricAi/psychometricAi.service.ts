@@ -47,22 +47,18 @@ export const ingestAiPsychometricResult = async (payload: IAiPayload) => {
     score: performance.overall.score,
     total: performance.overall.total,
     accuracyPct: performance.overall.accuracy_pct,
-
-    timeAnalysis: performance.time_analysis
-      ? {
-          avgTimeSec: performance.time_analysis.avg_time_sec,
-          timePressureErrors:
-            performance.time_analysis.time_pressure_errors,
-        }
-      : undefined,
-
+    timeAnalysis: performance.time_analysis && {
+      avgTimeSec: performance.time_analysis.avg_time_sec,
+      timePressureErrors:
+        performance.time_analysis.time_pressure_errors,
+    },
     difficultyBreakdown: performance.difficulty_breakdown,
   });
 
-  // 🔥 AUTO RESULT GENERATE
   await psychometricResultService.generatePsychometricResult(
     user._id.toString(),
   );
 
   return psychometricTest;
 };
+

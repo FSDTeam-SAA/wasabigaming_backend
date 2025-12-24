@@ -16,7 +16,6 @@
 //   accuracyPct: number;
 // }
 
-
 import { Types } from 'mongoose';
 
 export interface IPsychometricTest {
@@ -30,8 +29,8 @@ export interface IPsychometricTest {
     timeTakenSec: number;
   }[];
 
-  score: number;
-  total: number;
+  testScore: number;
+  totalQuestions: number;
   accuracyPct: number;
 
   timeAnalysis?: {
@@ -40,9 +39,14 @@ export interface IPsychometricTest {
   };
 
   difficultyBreakdown?: {
-    easy?: number;
-    medium?: number;
-    hard?: number;
+    easyQuestions: Number;
+    mediumQuestions: Number;
+    hardQuestions: Number;
+  };
+  correctedAnswers?: {
+    easyCorrectedAnswers?: number;
+    mediumCorrectedAnswers?: number;
+    hardCorrectedAnswers?: number;
   };
 
   createdAt?: Date;
