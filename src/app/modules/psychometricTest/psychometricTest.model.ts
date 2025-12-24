@@ -1,6 +1,9 @@
 // import { Schema, model } from 'mongoose';
 // import { IPsychometricTest } from './psychometricTest.interface';
 
+import mongoose from 'mongoose';
+import { IPsychometricTest } from './psychometricTest.interface';
+
 // const psychometricTestSchema = new Schema<IPsychometricTest>(
 //   {
 //     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
@@ -30,33 +33,31 @@
 
 // export default psychometricTest;
 
-
-
 // ----------------- ai data ------------------
-import { Schema, model } from 'mongoose';
-import { IPsychometricTest } from './psychometricTest.interface';
-
-const psychometricTestSchema = new Schema<IPsychometricTest>(
+const psychometricTestSchema = new mongoose.Schema<IPsychometricTest>(
   {
-    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     test: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Psychometric',
       required: true,
     },
 
     answers: [
       {
-        questionId: Schema.Types.ObjectId,
-        userAnswer: String,
-        isCorrect: Boolean,
-        timeTakenSec: Number,
+        questionId: {
+          type: mongoose.Schema.Types.ObjectId,
+          required: true,
+        },
+        userAnswer: { type: String },
+        isCorrect: { type: Boolean },
+        timeTakenSec: { type: Number, default: 0 },
       },
     ],
 
-    score: Number,
-    total: Number,
-    accuracyPct: Number,
+    testScore: { type: Number, default: 0 },
+    totalQuestions: { type: Number, default: 0 },
+    accuracyPct: { type: Number, default: 0 },
 
     timeAnalysis: {
       avgTimeSec: Number,
@@ -64,17 +65,24 @@ const psychometricTestSchema = new Schema<IPsychometricTest>(
     },
 
     difficultyBreakdown: {
-      easy: Number,
-      medium: Number,
-      hard: Number,
+      easyQuestions: { type: Number, default: 0 },
+      mediumQuestions: { type: Number, default: 0 },
+      hardQuestions: { type: Number, default: 0 },
+    },
+
+    correctedAnswers: {
+      totalCorrectedAnswers: { type: Number, default: 0 },
+      easyCorrectedAnswers: { type: Number, default: 0 },
+      mediumCorrectedAnswers: { type: Number, default: 0 },
+      hardCorrectedAnswers: { type: Number, default: 0 },
     },
   },
   { timestamps: true },
 );
 
-const PsychometricTest = model(
-  'PsychometricTest',
+const psychometricTest = mongoose.model<IPsychometricTest>(
+  'psychometricTest',
   psychometricTestSchema,
 );
 
-export default PsychometricTest;
+export default psychometricTest;
