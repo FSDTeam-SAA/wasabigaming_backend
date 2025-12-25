@@ -274,7 +274,9 @@ const getMyAllPsychometricTests = async (
   const result = await PsychometricTest.find(whereCondition)
     .skip(skip)
     .limit(limit)
-    .sort({ [sortBy]: sortOrder } as any);
+    .sort({ [sortBy]: sortOrder } as any)
+    .populate('test')
+    .populate('user', 'name email profileImage');
 
   if (!result) {
     throw new AppError(404, 'PsychometricTest not found');
@@ -293,7 +295,9 @@ const getMyAllPsychometricTests = async (
 };
 
 const singlePsychometricTest = async (id: string) => {
-  const result = await PsychometricTest.findById(id);
+  const result = await PsychometricTest.findById(id)
+    .populate('test', 'title')
+    .populate('user', 'name email profileImage');
   if (!result) {
     throw new AppError(404, 'PsychometricTest not found');
   }
