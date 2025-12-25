@@ -18,7 +18,7 @@ router.get(
 
 router.get(
   '/:id',
-  auth(userRole.admin, userRole.student, userRole.school),
+  // auth(userRole.admin, userRole.student, userRole.school),
   psychometricTestController.singlePsychometricTest,
 );
 
