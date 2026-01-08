@@ -59,6 +59,7 @@ const userSchema = new Schema<IUser>(
     subscriptionExpiry: { type: Date },
     subscription: { type: Schema.Types.ObjectId, ref: 'Premium' },
     jobTitle: { type: String },
+    course:[{type:Schema.Types.ObjectId, ref:"Course"}],
     company: { type: String },
     bio: { type: String },
     socileLinks: {

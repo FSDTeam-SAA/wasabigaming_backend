@@ -92,6 +92,8 @@ const getAllUser = async (params: any, options: IOption) => {
   const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
 
   const result = await User.find(whereCondition)
+    .populate('subscription')
+    .populate('course')
     .skip(skip)
     .limit(limit)
     .sort({ [sortBy]: sortOrder } as any);

@@ -87,6 +87,9 @@ const webHookHandlers = async (req: Request, res: Response) => {
           course.enrolledStudents.push(user._id);
           await course.save();
         }
+
+        user.course?.push(course._id)
+        await user.save();
       }
 
       return res.json({ received: true });
