@@ -157,6 +157,7 @@ const deleteCourse = async (userId: string, id: string) => {
 };
 
 const payCourse = async (userId: string, courseId: string) => {
+
   const user = await User.findById(userId);
   if (!user) throw new AppError(400, 'User not found');
 

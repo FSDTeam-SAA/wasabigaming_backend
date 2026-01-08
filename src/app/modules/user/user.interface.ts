@@ -31,6 +31,7 @@ export interface IUser {
   stripeAccountId?: string;
   status?: 'active' | 'inactive';
   address?: string;
+  course?:Types.ObjectId[]
   
   jobTitle?: string;
   company?: string;
