@@ -12,21 +12,21 @@ const EventSchema = new mongoose.Schema<IEvent>(
       type: String,
     },
     content: {
-      type: String,
-      required: true,
+      type: String
     },
     description: {
       type: String,
-      required: true,
     },
     date: {
-      type: Date,
-      required: true,
+      type: Date
     },
     time: {
       type: String,
     },
-    thamble: {
+    thumbnail: {
+      type: String,
+    },
+    eventType:{
       type: String,
     },
     createdBy: {

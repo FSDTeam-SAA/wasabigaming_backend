@@ -15,7 +15,7 @@ const createEvent = async (
 
   if (file) {
     const eventImage = await fileUploader.uploadToCloudinary(file);
-    payload.thamble = eventImage.url;
+    payload.thumbnail = eventImage.url;
   }
 
   const event = await Event.create({ ...payload, createdBy: user._id });
@@ -94,7 +94,7 @@ const updateEvent = async (
 ) => {
   if (file) {
     const eventImage = await fileUploader.uploadToCloudinary(file);
-    payload.thamble = eventImage.url;
+    payload.thumbnail = eventImage.url;
   }
   const result = await Event.findByIdAndUpdate(id, payload, { new: true });
   if (!result) {

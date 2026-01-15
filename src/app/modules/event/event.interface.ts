@@ -5,7 +5,8 @@ export interface IEvent {
   subTitle?: string;
   content?: string;
   description?: string;
-  thamble?: string;
+  thumbnail?: string;
+  eventType?: string;
   date?: Date;
   time?: string;
   status?: 'active' | 'inactive';
