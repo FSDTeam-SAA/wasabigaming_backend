@@ -1,23 +1,92 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema, Model, Types } from 'mongoose';
 import { ILawfirm } from './lawfirm.interface';
 
-const lawFirmSchema = new mongoose.Schema<ILawfirm>(
+const SectionUrlSchema = new Schema(
   {
-    aboutFirm: { type: String, required: true },
-    exertise: { type: String },
-    internshipTraining: { type: String },
-    description: { type: String, required: true },
-    logo: { type: String },
-    createBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    status: {
-      type: String,
-      enum: ['approved', 'pending', 'rejected'],
-      default: 'pending',
-    },
-    applyNumber: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    location: { type: String, required: true },
+    keyHighlights: { type: String, default: '' },
+    practiceAreas: { type: String, default: '' },
+    technologyInitiatives: { type: String, default: '' },
+    recentWorks: { type: String, default: '' },
+    deAndIUrl: { type: String, default: '' },
+    csrUrl: { type: String, default: '' },
+    awardsUrl: { type: String, default: '' },
   },
-  { timestamps: true },
+  { _id: false }
 );
-const LawFirm = mongoose.model<ILawfirm>('LawFirm', lawFirmSchema);
-export default LawFirm;
+
+const OverviewSchema = new Schema(
+  {
+    firmOverview: { type: String, default: '' },
+    establishmentDetails: { type: String, default: '' },
+    keyHighlights: { type: String, default: '' },
+  },
+  { _id: false }
+);
+
+const PracticeAndWorkSchema = new Schema(
+  {
+    practiceAreas: { type: [String], default: [] },
+    practiceAreaDescription: { type: String, default: '' },
+    recentWorks: { type: String, default: '' },
+  },
+  { _id: false }
+);
+
+const InitiativesSchema = new Schema(
+  {
+    technologyInitiatives: { type: String, default: '' },
+    awardsAndRecognition: { type: String, default: '' },
+  },
+  { _id: false }
+);
+
+const CsrAndDeAndISchema = new Schema(
+  {
+    diversityEquityAndInclusion: { type: String, default: '' },
+    csrAndProBono: { type: String, default: '' },
+  },
+  { _id: false }
+);
+
+const LawfirmSchema = new Schema<ILawfirm>(
+  {
+    logo: { type: String, default: '' },
+    coverImage: { type: String, default: '' },
+
+    firmName: { type: String, required: true },
+    tagline: { type: String, default: '' },
+    headquarters: { type: String, required: true },
+
+    numberOfAttorneys: { type: Number, default: 0 },
+    foundationYear: { type: Number, default: null },
+    numberOfPartners: { type: Number, default: 0 },
+
+    website: { type: String, default: '' },
+    email: { type: String, default: '' },
+    phoneNumber: { type: String, default: '' },
+    annualRevenue: { type: String, default: '' },
+
+    sectionUrl: { type: SectionUrlSchema, default: () => ({}) },
+    overview: { type: OverviewSchema, default: () => ({}) },
+    practiceAndWork: { type: PracticeAndWorkSchema, default: () => ({}) },
+    initiatives: { type: InitiativesSchema, default: () => ({}) },
+    csrAndDeAndI: { type: CsrAndDeAndISchema, default: () => ({}) },
+
+    awardsAndRecognition: { type: String, default: '' },
+    aboutFirm: { type: String, required: true },
+
+    expertise: { type: String, default: '' },
+    internshipTraining: { type: String, default: '' },
+    description: { type: String, required: true },
+    location: { type: String, required: true },
+
+    createdBy: { type: Types.ObjectId, ref: 'User', default: null },
+    status: { type: String, enum: ['approved', 'pending', 'rejected'], default: 'pending' },
+    applyNumber: { type: [Types.ObjectId], ref: 'User', default: [] },
+  },
+  { timestamps: true }
+);
+
+const Lawfirm: Model<ILawfirm> = mongoose.models.Lawfirm || mongoose.model<ILawfirm>('Lawfirm', LawfirmSchema);
+
+export default Lawfirm;

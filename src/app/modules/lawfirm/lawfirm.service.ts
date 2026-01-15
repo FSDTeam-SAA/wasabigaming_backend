@@ -8,17 +8,18 @@ import LawFirm from './lawfirm.model';
 const createLawfirm = async (
   userId: string,
   payload: ILawfirm,
-  file?: Express.Multer.File,
+  files?: { [fieldname: string]: Express.Multer.File[] },
 ) => {
   const user = await User.findById(userId);
   if (!user) {
     throw new AppError(404, 'User not found');
   }
-  if (file) {
-    const lawfirmImage = await fileUploader.uploadToCloudinary(file);
-    payload.logo = lawfirmImage.url;
-  }
-  const result = await LawFirm.create({ ...payload, createBy: user._id });
+ const logoFile = files?.logo?.[0];
+ const coverFile = files?.coverImage?.[0];
+
+  if (logoFile) payload.logo = (await fileUploader.uploadToCloudinary(logoFile)).url;
+  if (coverFile) payload.coverImage = (await fileUploader.uploadToCloudinary(coverFile)).url;
+  const result = await LawFirm.create({ ...payload, createdBy: user._id });
   return result;
 };
 
@@ -109,7 +110,7 @@ const uploadLawfirm = async (
   }
 
   if (user.role !== 'admin') {
-    if (course?.createBy?.toString() !== user._id.toString()) {
+    if (course?.createdBy?.toString() !== user._id.toString()) {
       throw new AppError(400, 'You are not authorized to update this course');
     }
   }
@@ -137,7 +138,7 @@ const deleteLawfirm = async (userId: string, id: string) => {
   }
 
   if (user.role !== 'admin') {
-    if (course?.createBy?.toString() !== user._id.toString()) {
+    if (course?.createdBy?.toString() !== user._id.toString()) {
       throw new AppError(400, 'You are not authorized to delete this course');
     }
   }
