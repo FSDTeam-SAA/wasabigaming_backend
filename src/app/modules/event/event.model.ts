@@ -8,6 +8,13 @@ const EventSchema = new mongoose.Schema<IEvent>(
       required: true,
       unique: true,
     },
+    subTitle: {
+      type: String,
+    },
+    content: {
+      type: String,
+      required: true,
+    },
     description: {
       type: String,
       required: true,
@@ -15,6 +22,9 @@ const EventSchema = new mongoose.Schema<IEvent>(
     date: {
       type: Date,
       required: true,
+    },
+    time: {
+      type: String,
     },
     thamble: {
       type: String,
