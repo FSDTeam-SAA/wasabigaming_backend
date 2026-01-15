@@ -17,7 +17,7 @@ router.get('/:id', eventController.getEventById);
 router.put(
   '/:id',
   auth(userRole.admin),
-  fileUploader.upload.single('thamble'),
+  fileUploader.upload.single('thumbnail'),
   eventController.updateEvent,
 );
 router.delete('/:id', auth(userRole.admin), eventController.deleteEvent);
