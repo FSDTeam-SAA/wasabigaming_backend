@@ -95,6 +95,40 @@ const deleteCourse = catchAsync(async (req, res) => {
   });
 });
 
+const addVideo = catchAsync(async (req, res) => {
+  const userId = req.user?.id;
+  const { id } = req.params;
+  const files = req.files as Express.Multer.File[];
+  const titles = req.body.titles ? JSON.parse(req.body.titles) : undefined;
+
+  const result = await courseService.addCourseVideo(userId, id!, files, titles);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Video added successfully',
+    data: result,
+  });
+});
+
+const removeVideo = catchAsync(async (req, res) => {
+  const userId = req.user?.id;
+  const { courseId, videoId } = req.params;
+
+  const result = await courseService.removeCourseVideo(
+    userId,
+    courseId!,
+    videoId!,
+  );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Video removed successfully',
+    data: result,
+  });
+});
+
 const payCourse = catchAsync(async (req, res) => {
   const { id } = req.params;
   const userId = req.user?.id;
@@ -114,5 +148,7 @@ export const courseController = {
   getSingleCourse,
   uploadCourse,
   deleteCourse,
+  addVideo,
+  removeVideo,
   payCourse,
 };

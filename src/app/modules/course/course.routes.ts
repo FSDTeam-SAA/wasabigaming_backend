@@ -13,8 +13,26 @@ router.post(
 );
 
 router.get('/', courseController.getAllCourse);
-router.post('/enroll/:id', auth(userRole.student,userRole.school), courseController.payCourse);
+router.post(
+  '/enroll/:id',
+  auth(userRole.student, userRole.school),
+  courseController.payCourse,
+);
 router.get('/:id', courseController.getSingleCourse);
+
+router.post(
+  '/:id/video',
+  auth(userRole.admin, userRole.school),
+  fileUploader.upload.array('courseVideo'),
+  courseController.addVideo,
+);
+
+router.delete(
+  '/:courseId/video/:videoId',
+  auth(userRole.admin, userRole.school),
+  courseController.removeVideo,
+);
+
 router.put(
   '/:id',
   auth(userRole.admin, userRole.school),
