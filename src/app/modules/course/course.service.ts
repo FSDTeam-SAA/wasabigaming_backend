@@ -156,8 +156,76 @@ const deleteCourse = async (userId: string, id: string) => {
   return result;
 };
 
-const payCourse = async (userId: string, courseId: string) => {
+const addCourseVideo = async (
+  userId: string,
+  courseId: string,
+  files: Express.Multer.File[],
+  titles?: string[],
+) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(400, 'User not found');
 
+  const course = await Course.findById(courseId);
+  if (!course) throw new AppError(404, 'Course not found');
+
+  if (
+    user.role !== 'admin' &&
+    course.createdBy?.toString() !== user._id.toString()
+  ) {
+    throw new AppError(403, 'Unauthorized');
+  }
+
+  const uploadedVideos = await Promise.all(
+    files.map(async (file, index) => {
+      const uploaded = await fileUploader.uploadToCloudinary(file);
+      return {
+        title: titles?.[index] || file.originalname,
+        url: uploaded.url,
+        time: '00:00',
+      };
+    }),
+  );
+
+  if (!course.courseVideo) {
+    course.courseVideo = [];
+  }
+  course.courseVideo.push(...uploadedVideos);
+  await course.save();
+
+  return course;
+};
+
+const removeCourseVideo = async (
+  userId: string,
+  courseId: string,
+  videoId: string,
+) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(400, 'User not found');
+
+  const course = await Course.findById(courseId);
+  if (!course) throw new AppError(404, 'Course not found');
+
+  if (
+    user.role !== 'admin' &&
+    course.createdBy?.toString() !== user._id.toString()
+  ) {
+    throw new AppError(403, 'Unauthorized');
+  }
+
+  if (!course.courseVideo) {
+    throw new AppError(400, 'No videos found in this course');
+  }
+
+  course.courseVideo = course.courseVideo.filter(
+    (video: any) => video._id.toString() !== videoId,
+  );
+
+  await course.save();
+  return course;
+};
+
+const payCourse = async (userId: string, courseId: string) => {
   const user = await User.findById(userId);
   if (!user) throw new AppError(400, 'User not found');
 
@@ -231,5 +299,7 @@ export const courseService = {
   getAllCourse,
   getSingleCourse,
   deleteCourse,
+  addCourseVideo,
+  removeCourseVideo,
   payCourse,
 };
