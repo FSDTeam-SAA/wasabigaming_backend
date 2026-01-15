@@ -5,9 +5,9 @@ import { lawfirmService } from './lawfirm.service';
 
 const createLawfirm = catchAsync(async (req, res) => {
   const userId = req.user.id;
-  const file = req.file as Express.Multer.File;
+  const files = req.files as { [fieldname: string]: Express.Multer.File[] };
   const fromData = req.body.data ? JSON.parse(req.body.data) : req.body;
-  const result = await lawfirmService.createLawfirm(userId, fromData, file);
+  const result = await lawfirmService.createLawfirm(userId, fromData, files);
   sendResponse(res, {
     statusCode: 201,
     success: true,
