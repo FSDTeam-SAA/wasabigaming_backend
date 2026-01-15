@@ -58,7 +58,16 @@ const getAllUser = async (params: any, options: IOption) => {
   const { searchTerm, year, ...filterData } = params;
 
   const andCondition: any[] = [];
-  const userSearchableFields = ['firstName','lastName', 'email', 'role','schoolName','schoolType','schoolStatus','aboutSchool'];
+  const userSearchableFields = [
+    'firstName',
+    'lastName',
+    'email',
+    'role',
+    'schoolName',
+    'schoolType',
+    'schoolStatus',
+    'aboutSchool',
+  ];
 
   if (searchTerm) {
     andCondition.push({
@@ -161,6 +170,39 @@ const profile = async (id: string) => {
   return result;
 };
 
+const schoolOverview = async () => {
+  console.log('first');
+  const totalSchool = await User.countDocuments({ role: 'school' });
+  
+  const premiumSchool = await User.countDocuments({
+    role: 'school',
+    isSubscription: true,
+  });
+
+  const apprivedSchool = await User.countDocuments({
+    role: 'school',
+    schoolStatus: 'approved',
+  });
+
+  const pendingSchool = await User.countDocuments({
+    role: 'school',
+    schoolStatus: 'pending',
+  });
+
+  const rejectedSchool = await User.countDocuments({
+    role: 'school',
+    schoolStatus: 'rejected',
+  });
+
+  return {
+    totalSchool,
+    premiumSchool,
+    apprivedSchool,
+    pendingSchool,
+    rejectedSchool,
+  };
+};
+
 export const userService = {
   createUser,
   getAllUser,
@@ -168,4 +210,5 @@ export const userService = {
   updateUserById,
   deleteUserById,
   profile,
+  schoolOverview,
 };

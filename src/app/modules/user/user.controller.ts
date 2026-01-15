@@ -94,6 +94,17 @@ const profile = catchAsync(async (req, res) => {
   });
 });
 
+const schoolOverview = catchAsync(async (req, res) => {
+  console.log('first');
+  const result = await userService.schoolOverview();
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'User profile fetched successfully',
+    data: result,
+  });
+});
+
 export const userController = {
   createUser,
   getAllUser,
@@ -101,4 +112,5 @@ export const userController = {
   updateUserById,
   deleteUserById,
   profile,
+  schoolOverview,
 };
