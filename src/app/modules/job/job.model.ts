@@ -18,6 +18,7 @@ const jobSchema = new Schema<IJob>(
     responsibilities: { type: [String], default: [] },
     additionalInfo: { type: String },
     status: { type: String, enum: ['active', 'inactive'], default: 'inactive' },
+    requiredSkills: { type: [String], default: [] },
     createBy: { type: Types.ObjectId, ref: 'User' },
   },
   { timestamps: true },

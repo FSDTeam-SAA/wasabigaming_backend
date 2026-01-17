@@ -5,10 +5,15 @@ import { lawfirmController } from './lawfirm.controller';
 import { fileUploader } from '../../helper/fileUploder';
 const router = express.Router();
 
+const fileFields = fileUploader.upload.fields([
+  { name: 'logo', maxCount: 1 },
+  { name: 'coverImage', maxCount: 1 }
+]);
+
 router.post(
   '/',
   auth(userRole.admin),
-  fileUploader.upload.single('logo'),
+  fileFields,
   lawfirmController.createLawfirm,
 );
 router.get('/', lawfirmController.getAllLawfirm);

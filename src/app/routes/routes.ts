@@ -19,6 +19,8 @@ import { psychometricRouter } from '../modules/psychometric/psychometric.routes'
 import { psychometricTestRouter } from '../modules/psychometricTest/psychometricTest.routes';
 import { psychometricResultRouter } from '../modules/psychometricResult/psychometricResult.routes';
 import { eventRouter } from '../modules/event/event.routes';
+import path from 'path';
+import { schoolManagementRouter } from '../modules/school_management/school_management.routes';
 
 const router = Router();
 
@@ -95,6 +97,10 @@ const moduleRoutes = [
     path: '/event',
     route: eventRouter,
   },
+  {
+    path: '/school-management',
+    route:schoolManagementRouter
+  }
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

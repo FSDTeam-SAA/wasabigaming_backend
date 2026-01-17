@@ -33,5 +33,10 @@ router.delete(
   auth(userRole.admin, userRole.school),
   inviteStudentController.deleteInviteStudent,
 );
+router.put(
+  '/status/:id',
+  auth(userRole.admin, userRole.school),
+  inviteStudentController.updateInviteStudentStatus,
+);
 
 export const inviteStudentRouter = router;

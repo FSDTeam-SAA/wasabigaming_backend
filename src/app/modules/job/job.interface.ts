@@ -1,4 +1,5 @@
 import { Types } from 'mongoose';
+import { required } from 'zod/v4/core/util.cjs';
 
 export interface IJob {
   title: string;
@@ -17,4 +18,5 @@ export interface IJob {
   additionalInfo?: string;
   status: 'active' | 'inactive';
   createBy?: Types.ObjectId;
+  requiredSkills: string[];
 }
