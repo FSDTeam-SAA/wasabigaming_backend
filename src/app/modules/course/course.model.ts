@@ -6,7 +6,7 @@ const courseVideoSchema = new mongoose.Schema(
     title: { type: String, required: true },
     url: { type: String, required: true },
     time: { type: String, required: true },
-    quiz: { type: mongoose.Schema.Types.ObjectId, ref: 'Quiz' },
+    quiz: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Quiz' }],
   },
   { _id: true },
 );

@@ -31,7 +31,7 @@ const quizzesSchema = new mongoose.Schema<IQuizzes>(
     score: { type: Number, default: 0 },
     isCorrect: { type: Boolean, default: false },
     userId: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    status: { type: String, enum: ['active', 'draft'], default: 'draft' },
+    status: { type: String, enum: ['active', 'draft'], default: 'active' },
   },
   { timestamps: true },
 );
