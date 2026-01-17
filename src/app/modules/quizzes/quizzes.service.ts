@@ -23,21 +23,51 @@ import Quizzes from './quizzes.model';
 //   return quizzes;
 // };
 
-const createQuizzes = async (payload: IQuizzes) => {
-  const course = await Course.findById(payload.courseId);
+const createQuizzes = async (payload: {
+  courseId: string;
+  videoId: string;
+  quizzes: any[];
+  status?: string;
+}) => {
+  const { courseId, videoId, quizzes, status } = payload;
+
+  const course = await Course.findById(courseId);
   if (!course) throw new AppError(404, 'Course not found');
 
   const video = course?.courseVideo?.find(
-    (v) => v?._id?.toString() === payload.videoId?.toString(),
+    (v) => v?._id?.toString() === videoId?.toString(),
   );
-  if (!video) throw new AppError(400, 'Video not found in this course');
 
-  const quiz = await Quizzes.create(payload);
+  if (!video) {
+    throw new AppError(400, 'Video not found in this course');
+  }
 
-  video.quiz = quiz._id;
+  //  Prepare quizzes
+  const quizDocs = quizzes.map((quiz) => ({
+    ...quiz,
+    courseId,
+    videoId,
+    status: status || 'active',
+  }));
+
+  //  Insert many quizzes
+  const createdQuizzes = await Quizzes.insertMany(quizDocs);
+
+  //  Push all quiz IDs into video
+  if (!video?.quiz) video.quiz = [];
+
+  createdQuizzes.forEach((q) => {
+    if (Array.isArray(video.quiz)) {
+      video.quiz.push(q._id);
+    } else {
+      // Handle case where quiz is a single ObjectId or null
+      video.quiz = [q._id];
+    }
+  });
+
   await course.save();
 
-  return quiz;
+  return createdQuizzes;
 };
 
 const getAllquizzes = async (params: any, options: IOption) => {
