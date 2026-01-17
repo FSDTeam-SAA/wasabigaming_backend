@@ -39,8 +39,12 @@ const registerUser = async (payload: Partial<IUser>) => {
   payload.profileImage = `https://avatar.iran.liara.run/public/${idx}.png`;
 
   if (payload.role === userRole.school) {
+    console.log('payload.schoolName', payload.schoolName, "mahabur", user?.schoolName);
     if (!payload.schoolName) {
       throw new AppError(400, 'School name is required');
+    }
+    if (payload.schoolName === user?.schoolName) {
+      throw new AppError(400, 'This school name is already exist');
     }
     payload.schoolStatus = 'pending';
 

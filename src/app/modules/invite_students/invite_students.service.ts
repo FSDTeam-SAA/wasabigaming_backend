@@ -52,14 +52,12 @@ import sendMailer from '../../helper/sendMailer';
   if (user.role !== userRole.school) {
     throw new AppError(403, 'Only school users can send invites');
   }
-
-  if (!file) {
-    throw new AppError(400, 'No file uploaded');
+  let fileUrl = null;
+  if(file){
+    const uploadedFile = await fileUploader.uploadToCloudinary(file);
+    fileUrl = uploadedFile.url;
   }
-
-  // Upload file once for all students
-  const uploadedFile = await fileUploader.uploadToCloudinary(file);
-  const fileUrl = uploadedFile.url;
+  // const fileUrl = uploadedFile.url;
 
   const students = Array.isArray(payload) ? payload : [payload];
   const formattedStudents = students.map((student) => ({
@@ -204,10 +202,22 @@ const deleteInviteStudent = async (id: string, userId:string) => {
   return inviteStudentData;
 };
 
+const updateInviteStudentStatus = async (id: string, status: 'pending' | 'accepted' | 'declined') => {
+  const inviteStudent = await InviteStudent.findById(id);
+
+  if (!inviteStudent) {
+    throw new AppError(404, 'Student not found');
+  }
+  inviteStudent.status = status;
+  await inviteStudent.save();
+  return inviteStudent;
+}
+
 export const studentInviteService = {
   sendInvite,
   getAllInviteStudents,
   getInviteStudentById,
   deleteInviteStudent,
   updatedInviteStudent,
+  updateInviteStudentStatus,
 };
