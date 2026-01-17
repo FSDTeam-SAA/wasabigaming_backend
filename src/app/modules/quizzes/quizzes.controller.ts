@@ -3,15 +3,25 @@ import catchAsync from '../../utils/catchAsycn';
 import sendResponse from '../../utils/sendResponse';
 import { quizzesService } from './quizzes.service';
 
-const createQuizzes = catchAsync(async (req, res) => {
-  const file = req.file as Express.Multer.File;
-  const fromData = req.body.data ? JSON.parse(req.body.data) : req.body;
-  const result = await quizzesService.createQuizzes(
-    req.user?.id,
-    fromData,
-    file,
-  );
+// const createQuizzes = catchAsync(async (req, res) => {
+//   const file = req.file as Express.Multer.File;
+//   const fromData = req.body.data ? JSON.parse(req.body.data) : req.body;
+//   const result = await quizzesService.createQuizzes(
+//     req.user?.id,
+//     fromData,
+//     file,
+//   );
 
+//   sendResponse(res, {
+//     statusCode: 201,
+//     success: true,
+//     message: 'Quizzes created successfully',
+//     data: result,
+//   });
+// });
+
+const createQuizzes = catchAsync(async (req, res) => {
+  const result = await quizzesService.createQuizzes(req.body);
   sendResponse(res, {
     statusCode: 201,
     success: true,
@@ -44,27 +54,38 @@ const getSingleQuizzes = catchAsync(async (req, res) => {
   });
 });
 
-const uploadQuizzes = catchAsync(async (req, res) => {
+// const uploadQuizzes = catchAsync(async (req, res) => {
+//   const { id } = req.params;
+//   const file = req.file as Express.Multer.File;
+//   const fromData = req.body.data ? JSON.parse(req.body.data) : req.body;
+//   const result = await quizzesService.uploadQuizzes(
+//     req.user?.id,
+//     id!,
+//     fromData,
+//     file,
+//   );
+//   sendResponse(res, {
+//     statusCode: 200,
+//     success: true,
+//     message: 'Quizzes uploaded successfully',
+//     data: result,
+//   });
+// });
+
+const updateQuizzes = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const file = req.file as Express.Multer.File;
-  const fromData = req.body.data ? JSON.parse(req.body.data) : req.body;
-  const result = await quizzesService.uploadQuizzes(
-    req.user?.id,
-    id!,
-    fromData,
-    file,
-  );
+  const result = await quizzesService.updateQuizzes(id!, req.body);
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: 'Quizzes uploaded successfully',
+    message: 'Quizzes updated successfully',
     data: result,
   });
 });
 
 const deleteQuizzes = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await quizzesService.deleteQuizzes(req.user?.id, id!);
+  const result = await quizzesService.deleteQuizzes(id!);
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -77,6 +98,6 @@ export const quizzesController = {
   createQuizzes,
   getAllquizzes,
   getSingleQuizzes,
-  uploadQuizzes,
+  updateQuizzes,
   deleteQuizzes,
 };
