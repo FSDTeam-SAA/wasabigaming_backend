@@ -7,7 +7,7 @@ const courseVideoSchema = new mongoose.Schema(
     url: { type: String, required: true },
     time: { type: String, required: true },
   },
-  { _id: false },
+  { _id: true },
 );
 
 const courseSchema = new mongoose.Schema<ICourse>(

@@ -20,7 +20,7 @@ router.post(
 );
 router.get('/:id', courseController.getSingleCourse);
 
-router.post(
+router.put(
   '/:id/video',
   auth(userRole.admin, userRole.school),
   fileUploader.upload.array('courseVideo'),
