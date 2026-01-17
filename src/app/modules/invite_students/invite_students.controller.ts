@@ -81,10 +81,26 @@ const deleteInviteStudent = catchAsync(async (req, res) => {
   });
 });
 
+const updateInviteStudentStatus = catchAsync(async (req, res) => {
+  
+  const studentId  = req.params.id;
+  const { status } = req.body;
+
+  const result = await studentInviteService.updateInviteStudentStatus(studentId!, status);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Updated invite student status successfully',
+    data: result,
+  });
+});
+
 export const inviteStudentController = {
   sendInvite,
   getAllInviteStudents,
   getInviteStudentById,
   deleteInviteStudent,
   updateInviteStudent,
+  updateInviteStudentStatus,
 };

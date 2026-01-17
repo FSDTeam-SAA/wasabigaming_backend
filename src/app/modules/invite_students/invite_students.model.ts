@@ -8,6 +8,7 @@ const inviteStudentSchema = new mongoose.Schema<IInviteStudent>(
     message: { type: String, required:true },
     url: { type: String },
     createBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    status: { type: String, enum: ['pending', 'accepted', 'declined'], default: 'pending' },
   },
   { timestamps: true },
 );

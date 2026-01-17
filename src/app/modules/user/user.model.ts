@@ -48,7 +48,7 @@ const userSchema = new Schema<IUser>(
 
     stripeAccountId: { type: String },
 
-    schoolId: { type: Schema.Types.ObjectId, ref: 'School' },
+    schoolId: { type: Schema.Types.ObjectId, ref: 'User' },
 
     education: [educationSchema],
     experience: [experienceSchema],
