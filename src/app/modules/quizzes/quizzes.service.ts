@@ -1,8 +1,6 @@
 import AppError from '../../error/appError';
-import { fileUploader } from '../../helper/fileUploder';
 import pagination, { IOption } from '../../helper/pagenation';
 import Course from '../course/course.model';
-import User from '../user/user.model';
 import { IQuizzes } from './quizzes.interface';
 import Quizzes from './quizzes.model';
 

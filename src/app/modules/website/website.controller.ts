@@ -4,8 +4,9 @@ import sendResponse from '../../utils/sendResponse';
 import { websiteService } from './website.service';
 
 const createWebsite = catchAsync(async (req, res) => {
-  const userId = req.user?.id;
-  const result = await websiteService.createWebsite(userId, req.body);
+  const files = req.files as Express.Multer.File[];
+  const formData = req.body.data ? JSON.parse(req.body.data) : req.body;
+  const result = await websiteService.createWebsite(formData, files);
   sendResponse(res, {
     statusCode: 201,
     success: true,
@@ -15,9 +16,13 @@ const createWebsite = catchAsync(async (req, res) => {
 });
 
 const updateWebsite = catchAsync(async (req, res) => {
-  const userId = req.user?.id;
   const { id } = req.params;
-  const result = await websiteService.updateWebsite(userId, id!, req.body);
+  const formData = req.body.data ? JSON.parse(req.body.data) : req.body;
+  const result = await websiteService.updateWebsite(
+    id!,
+    formData,
+    req.files as Express.Multer.File[],
+  );
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -27,7 +32,13 @@ const updateWebsite = catchAsync(async (req, res) => {
 });
 
 const getAllWebsite = catchAsync(async (req, res) => {
-  const filters = pick(req.query, ['searchTerm', 'key', 'type', 'title']);
+  const filters = pick(req.query, [
+    'searchTerm',
+    'subtitle',
+    'type',
+    'title',
+    'description',
+  ]);
   const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
   const result = await websiteService.getAllWebsite(filters, options);
   sendResponse(res, {
@@ -50,20 +61,9 @@ const getWebsiteById = catchAsync(async (req, res) => {
   });
 });
 
-const getWebsiteByKey = catchAsync(async (req, res) => {
-  const { key } = req.params;
-  const result = await websiteService.getWebsiteByKey(key!);
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: 'Website retrieved successfully',
-    data: result,
-  });
-});
-
-const removeWebsite = catchAsync(async (req, res) => {
+const deleteWebsite = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await websiteService.removeWebsite(id!);
+  const result = await websiteService.deleteWebsite(id!);
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -72,11 +72,34 @@ const removeWebsite = catchAsync(async (req, res) => {
   });
 });
 
+// const getWebsiteByKey = catchAsync(async (req, res) => {
+//   const { key } = req.params;
+//   const result = await websiteService.getWebsiteByKey(key!);
+//   sendResponse(res, {
+//     statusCode: 200,
+//     success: true,
+//     message: 'Website retrieved successfully',
+//     data: result,
+//   });
+// });
+
+// const removeWebsite = catchAsync(async (req, res) => {
+//   const { id } = req.params;
+//   const result = await websiteService.removeWebsite(id!);
+//   sendResponse(res, {
+//     statusCode: 200,
+//     success: true,
+//     message: 'Website deleted successfully',
+//     data: result,
+//   });
+// });
+
 export const websiteController = {
   createWebsite,
   updateWebsite,
   getAllWebsite,
   getWebsiteById,
-  getWebsiteByKey,
-  removeWebsite,
+  deleteWebsite,
+  // getWebsiteByKey,
+  // removeWebsite,
 };
