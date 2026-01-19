@@ -124,7 +124,11 @@ const getAllCourse = async (params: any, options: IOption) => {
   const result = await Course.find(whereCondition)
     .skip(skip)
     .limit(limit)
-    .sort({ [sortBy]: sortOrder } as any);
+    .sort({ [sortBy]: sortOrder } as any)
+    .populate({
+      path: 'courseVideo.quiz',
+      model: 'Quizzes',
+    });
 
   const total = await Course.countDocuments(whereCondition);
 
@@ -132,7 +136,10 @@ const getAllCourse = async (params: any, options: IOption) => {
 };
 
 const getSingleCourse = async (id: string) => {
-  const result = await Course.findById(id);
+  const result = await Course.findById(id).populate({
+    path: 'courseVideo.quiz',
+    model: 'Quizzes',
+  });
   if (!result) throw new AppError(404, 'Course not found');
   return result;
 };
