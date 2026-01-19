@@ -23,7 +23,7 @@ import { IQuizzes } from './quizzes.interface';
 const quizzesSchema = new mongoose.Schema<IQuizzes>(
   {
     courseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' },
-    videoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Video' },
+    videoId: { type: mongoose.Schema.Types.ObjectId },
     title: { type: String, required: true },
     options: [{ type: String, default: [] }],
     answer: { type: String, default: '' },
