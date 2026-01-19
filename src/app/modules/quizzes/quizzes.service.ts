@@ -126,9 +126,12 @@ const getAllquizzes = async (params: any, options: IOption) => {
     return {
       _id: quiz._id,
       title: quiz.title,
-      status: quiz.status,
+      options: quiz.options,
+      answer: quiz.answer,
+      userAnswer: quiz.userAnswer,
       score: quiz.score,
       isCorrect: quiz.isCorrect,
+      status: quiz.status,
 
       course: {
         _id: course?._id,
@@ -185,8 +188,10 @@ const getSingleQuizzes = async (id: string) => {
     title: quiz.title,
     options: quiz.options,
     answer: quiz.answer,
+    userAnswer: quiz.userAnswer,
     score: quiz.score,
     isCorrect: quiz.isCorrect,
+    status: quiz.status,
 
     course: {
       _id: course?._id,
