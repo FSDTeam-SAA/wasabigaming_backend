@@ -75,6 +75,7 @@ const getAllquizzes = async (params: any, options: IOption) => {
   const andCondition: any[] = [];
   const userSearchableFields = ['title', 'status'];
 
+  // 🔍 Search
   if (searchTerm) {
     andCondition.push({
       $or: userSearchableFields.map((field) => ({
@@ -83,6 +84,7 @@ const getAllquizzes = async (params: any, options: IOption) => {
     });
   }
 
+  // 🎯 Filter
   if (Object.keys(filterData).length) {
     andCondition.push({
       $and: Object.entries(filterData).map(([field, value]) => ({
@@ -91,34 +93,66 @@ const getAllquizzes = async (params: any, options: IOption) => {
     });
   }
 
-  // YEAR Filter → createdAt
+  // 📅 Year filter
   if (year) {
     const startDate = new Date(`${year}-01-01T00:00:00.000Z`);
     const endDate = new Date(`${year}-12-31T23:59:59.999Z`);
 
     andCondition.push({
-      createdAt: {
-        $gte: startDate,
-        $lte: endDate,
-      },
+      createdAt: { $gte: startDate, $lte: endDate },
     });
   }
 
-  const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
+  const whereCondition = andCondition.length ? { $and: andCondition } : {};
 
-  const result = await Quizzes.find(whereCondition)
+  const quizzes = await Quizzes.find(whereCondition)
     .skip(skip)
     .limit(limit)
-    .sort({ [sortBy]: sortOrder } as any);
+    .sort({ [sortBy]: sortOrder } as any)
+    .populate({
+      path: 'courseId',
+      select: 'name courseVideo',
+    })
+    .populate('userId', 'name email')
+    .lean();
 
-  if (!result) {
-    throw new AppError(404, 'Quizzes not found');
-  }
+  const formatted = quizzes.map((quiz: any) => {
+    const course = quiz.courseId;
+
+    const video = course?.courseVideo?.find(
+      (v: any) => v._id.toString() === quiz.videoId.toString(),
+    );
+
+    return {
+      _id: quiz._id,
+      title: quiz.title,
+      status: quiz.status,
+      score: quiz.score,
+      isCorrect: quiz.isCorrect,
+
+      course: {
+        _id: course?._id,
+        name: course?.name,
+      },
+
+      video: video
+        ? {
+            _id: video._id,
+            title: video.title,
+            url: video.url,
+            time: video.time,
+          }
+        : null,
+
+      users: quiz.userId,
+      createdAt: quiz.createdAt,
+    };
+  });
 
   const total = await Quizzes.countDocuments(whereCondition);
 
   return {
-    data: result,
+    data: formatted,
     meta: {
       total,
       page,
@@ -128,11 +162,50 @@ const getAllquizzes = async (params: any, options: IOption) => {
 };
 
 const getSingleQuizzes = async (id: string) => {
-  const result = await Quizzes.findById(id);
-  if (!result) {
-    throw new AppError(404, 'Quizzes not found');
+  const quiz: any = await Quizzes.findById(id)
+    .populate({
+      path: 'courseId',
+      select: 'name courseVideo',
+    })
+    .populate('userId', 'name email')
+    .lean();
+
+  if (!quiz) {
+    throw new AppError(404, 'Quiz not found');
   }
-  return result;
+
+  const course = quiz.courseId;
+
+  const video = course?.courseVideo?.find(
+    (v: any) => v._id.toString() === quiz.videoId.toString(),
+  );
+
+  const formatted = {
+    _id: quiz._id,
+    title: quiz.title,
+    options: quiz.options,
+    answer: quiz.answer,
+    score: quiz.score,
+    isCorrect: quiz.isCorrect,
+
+    course: {
+      _id: course?._id,
+      name: course?.name,
+    },
+
+    video: video
+      ? {
+          _id: video._id,
+          title: video.title,
+          url: video.url,
+          time: video.time,
+        }
+      : null,
+
+    user: quiz.userId, // populated user
+  };
+
+  return formatted;
 };
 
 // const uploadQuizzes = async (
