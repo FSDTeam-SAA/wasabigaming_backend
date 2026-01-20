@@ -1,14 +1,59 @@
 import AppError from '../../error/appError';
+import { aiIntregation } from '../../helper/aiEndpoint';
 import pagination, { IOption } from '../../helper/pagenation';
 import { userRole } from '../user/user.constant';
 import User from '../user/user.model';
 import { IJob } from './job.interface';
 import Job from './job.model';
 
-const createJob = async (userId: string, payload: IJob) => {
+export interface ILawFirmJob {
+  vacancy_id: string;
+  title: string;
+  url: string;
+  employer: string;
+  location: string;
+  distance: string;
+  start_date: string;
+  training_course: string;
+  wage: string;
+  closing_text: string;
+  posted_date: string;
+  disability_confident: boolean;
+  companyType: string;
+}
+
+const createJob = async (
+  userId: string,
+  job_title: string,
+  location: string,
+) => {
   const user = await User.findById(userId);
   if (!user) throw new AppError(404, 'user is not found');
-  const result = await Job.create({ ...payload, createBy: user._id });
+
+  const dataResponse = await aiIntregation.lawFirmAi(job_title, location);
+
+  const result = await Promise.all(
+    dataResponse.map(async (data: ILawFirmJob) => {
+      return await Job.create({
+        title: data.title,
+        url: data.url,
+        location: data.location,
+        companyName: data.employer,
+        companyType: data?.companyType || null,
+        postedBy: data.employer,
+        description: data.training_course || null,
+        level: data.training_course || null,
+        salaryRange: data.wage || 0,
+        startDate: data.start_date,
+        applicationDeadline: data.closing_text,
+        jobId: data.vacancy_id,
+        jobStatus: 'Open',
+        status: 'inactive',
+        createBy: userId,
+      });
+    }),
+  );
+
   return result;
 };
 
