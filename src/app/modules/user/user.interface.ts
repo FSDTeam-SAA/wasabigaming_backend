@@ -40,6 +40,7 @@ export interface IUser {
     name: string;
     link: string;
   }[];
+  schoolCategory:string;
 
   schoolId?: Types.ObjectId; // If student belongs to a school
   education?: IEducation[];
