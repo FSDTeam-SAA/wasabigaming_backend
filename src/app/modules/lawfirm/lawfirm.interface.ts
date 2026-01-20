@@ -61,5 +61,6 @@ export interface ILawfirm {
   createdBy?: Types.ObjectId;
   status?: 'approved' | 'pending' | 'rejected';
 
+  jobs?: Types.ObjectId[];
   applyNumber?: Types.ObjectId[];
 }

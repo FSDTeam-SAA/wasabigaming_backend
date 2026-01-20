@@ -11,6 +11,7 @@ router.post(
   fileUploader.upload.none(),
   jobController.createJob,
 );
+router.post('/', auth(userRole.admin), jobController.createManualJob);
 router.get('/', jobController.getAllJobs);
 router.put('/approved/:id', auth(userRole.admin), jobController.approvedJob);
 router.get('/:id', jobController.singleJob);

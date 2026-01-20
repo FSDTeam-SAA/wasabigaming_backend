@@ -1,6 +1,7 @@
 import AppError from '../../error/appError';
 import { aiIntregation } from '../../helper/aiEndpoint';
 import pagination, { IOption } from '../../helper/pagenation';
+import Lawfirm from '../lawfirm/lawfirm.model';
 import { userRole } from '../user/user.constant';
 import User from '../user/user.model';
 import { IJob } from './job.interface';
@@ -22,6 +23,14 @@ export interface ILawFirmJob {
   companyType: string;
 }
 
+const createManualJob = async (userId: string, payload: IJob) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(404, 'user is not found');
+
+  const result = await Job.create({ ...payload, createBy: userId });
+  return result;
+};
+
 const createJob = async (
   userId: string,
   job_title: string,
@@ -30,11 +39,19 @@ const createJob = async (
   const user = await User.findById(userId);
   if (!user) throw new AppError(404, 'user is not found');
 
-  const dataResponse = await aiIntregation.lawFirmAi(job_title, location);
+  const dataResponse: ILawFirmJob[] = await aiIntregation.lawFirmAi(
+    job_title,
+    location,
+  );
 
   const result = await Promise.all(
-    dataResponse.map(async (data: ILawFirmJob) => {
-      return await Job.create({
+    dataResponse.map(async (data) => {
+      const lawfirm = await Lawfirm.findOne({ firmName: data.employer });
+      const jobID = await Job.findOne({ jobId: data.vacancy_id });
+      if (jobID) {
+        return null;
+      }
+      const job = await Job.create({
         title: data.title,
         url: data.url,
         location: data.location,
@@ -43,18 +60,29 @@ const createJob = async (
         postedBy: data.employer,
         description: data.training_course || null,
         level: data.training_course || null,
-        salaryRange: data.wage || 0,
+        salaryRange: data.wage || '0',
         startDate: data.start_date,
         applicationDeadline: data.closing_text,
         jobId: data.vacancy_id,
         jobStatus: 'Open',
         status: 'inactive',
         createBy: userId,
+        companyId: lawfirm?._id || null,
       });
+
+      if (lawfirm) {
+        lawfirm?.jobs?.push(job._id);
+        await lawfirm.save();
+      }
+
+      return job;
     }),
   );
 
-  return result;
+  // Filter out null values (existing jobs)
+  const filteredResult = result.filter((job) => job !== null);
+
+  return filteredResult;
 };
 
 const getAllJobs = async (params: any, options: IOption) => {
@@ -188,4 +216,5 @@ export const jobService = {
   updateJob,
   deleteJob,
   approvedJob,
+  createManualJob,
 };
