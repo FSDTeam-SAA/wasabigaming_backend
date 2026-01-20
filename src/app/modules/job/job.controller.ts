@@ -5,7 +5,8 @@ import { jobService } from './job.service';
 
 const createJob = catchAsync(async (req, res) => {
   const userId = req.user.id;
-  const result = await jobService.createJob(userId, req.body);
+  const { job_title, location } = req.body;
+  const result = await jobService.createJob(userId, job_title, location);
   sendResponse(res, {
     statusCode: 201,
     success: true,
