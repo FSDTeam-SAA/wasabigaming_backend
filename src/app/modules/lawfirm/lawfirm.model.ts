@@ -11,7 +11,7 @@ const SectionUrlSchema = new Schema(
     csrUrl: { type: String, default: '' },
     awardsUrl: { type: String, default: '' },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const OverviewSchema = new Schema(
@@ -20,7 +20,7 @@ const OverviewSchema = new Schema(
     establishmentDetails: { type: String, default: '' },
     keyHighlights: { type: String, default: '' },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const PracticeAndWorkSchema = new Schema(
@@ -29,7 +29,7 @@ const PracticeAndWorkSchema = new Schema(
     practiceAreaDescription: { type: String, default: '' },
     recentWorks: { type: String, default: '' },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const InitiativesSchema = new Schema(
@@ -37,7 +37,7 @@ const InitiativesSchema = new Schema(
     technologyInitiatives: { type: String, default: '' },
     awardsAndRecognition: { type: String, default: '' },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const CsrAndDeAndISchema = new Schema(
@@ -45,7 +45,7 @@ const CsrAndDeAndISchema = new Schema(
     diversityEquityAndInclusion: { type: String, default: '' },
     csrAndProBono: { type: String, default: '' },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const LawfirmSchema = new Schema<ILawfirm>(
@@ -81,12 +81,18 @@ const LawfirmSchema = new Schema<ILawfirm>(
     location: { type: String, required: true },
 
     createdBy: { type: Types.ObjectId, ref: 'User', default: null },
-    status: { type: String, enum: ['approved', 'pending', 'rejected'], default: 'pending' },
+    status: {
+      type: String,
+      enum: ['approved', 'pending', 'rejected'],
+      default: 'pending',
+    },
+    jobs: { type: [Types.ObjectId], ref: 'Job', default: [] },
     applyNumber: { type: [Types.ObjectId], ref: 'User', default: [] },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-const Lawfirm: Model<ILawfirm> = mongoose.models.Lawfirm || mongoose.model<ILawfirm>('Lawfirm', LawfirmSchema);
+const Lawfirm: Model<ILawfirm> =
+  mongoose.models.Lawfirm || mongoose.model<ILawfirm>('Lawfirm', LawfirmSchema);
 
 export default Lawfirm;

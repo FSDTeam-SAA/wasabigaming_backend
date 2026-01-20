@@ -20,4 +20,6 @@ export interface IJob {
   createBy?: Types.ObjectId;
   requiredSkills: string[];
   url: string;
+  companyId?: Types.ObjectId;
+  applicants?: Types.ObjectId[];
 }

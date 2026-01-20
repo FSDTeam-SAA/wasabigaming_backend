@@ -3,6 +3,17 @@ import catchAsync from '../../utils/catchAsycn';
 import sendResponse from '../../utils/sendResponse';
 import { jobService } from './job.service';
 
+const createManualJob = catchAsync(async (req, res) => {
+  const userId = req.user.id;
+  const result = await jobService.createManualJob(userId, req.body);
+  sendResponse(res, {
+    statusCode: 201,
+    success: true,
+    message: 'Job created successfully',
+    data: result,
+  });
+});
+
 const createJob = catchAsync(async (req, res) => {
   const userId = req.user.id;
   const { job_title, location } = req.body;
@@ -95,4 +106,5 @@ export const jobController = {
   updateJob,
   deleteJob,
   approvedJob,
+  createManualJob,
 };
