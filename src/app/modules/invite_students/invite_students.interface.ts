@@ -6,5 +6,5 @@ export interface IInviteStudent {
   message: string;
   url?: string;
   createBy?: Types.ObjectId;
-  status?: 'pending' | 'accepted' | 'declined';
+  status?: 'pending' | 'accepted' | 'rejected';
 }

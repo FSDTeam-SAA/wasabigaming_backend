@@ -5,7 +5,8 @@ export interface ILawfirm {
   coverImage?: string;
 
   firmName: string;
-  tagline?: string;
+  firmType:string;
+  tags?: string[];
   headquarters: string;
 
   numberOfAttorneys?: number;
@@ -17,15 +18,8 @@ export interface ILawfirm {
   phoneNumber?: string;
   annualRevenue?: string;
 
-  sectionUrl?: {
-    keyHighlights?: string;
-    practiceAreas?: string;
-    technologyInitiatives?: string;
-    recentWorks?: string;
-    deAndIUrl?: string;
-    csrUrl?: string;
-    awardsUrl?: string;
-  };
+  
+  keyHighlights?: string;
 
   overview?: {
     firmOverview?: string;
@@ -53,7 +47,7 @@ export interface ILawfirm {
   aboutFirm: string;
 
   expertise?: string;
-  internshipTraining?: string;
+  internshipOpportunities?: string[];
 
   description: string;
   location: string;
