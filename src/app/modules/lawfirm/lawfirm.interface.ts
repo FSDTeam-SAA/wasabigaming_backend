@@ -51,6 +51,7 @@ export interface ILawfirm {
 
   description: string;
   location: string;
+  practiceAreas:string;
 
   createdBy?: Types.ObjectId;
   status?: 'approved' | 'pending' | 'rejected';
