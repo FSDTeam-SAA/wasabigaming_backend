@@ -311,10 +311,23 @@ const myOverallResult = async (userId: string) => {
     overallScore,
   };
 };
+const getSinglePsychometricAttempt = async (attemptId: string) => {
+  const attempt = await PsychometricAttempt.findById(attemptId)
+    .populate('user', 'firstName lastName email profileImage')
+    .populate('test');
+
+  if (!attempt) {
+    throw new AppError(404, 'Attempt not found');
+  }
+  
+
+  return attempt;
+};
 
 export const psychometricAttemptService = {
   submitPsychometricTest,
   tryAgainPsychometricAttempt,
   getMyPsychometricAnswers,
   myOverallResult,
+  getSinglePsychometricAttempt,
 };

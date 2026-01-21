@@ -8,6 +8,7 @@ import pick from '../../helper/pick';
 import catchAsync from '../../utils/catchAsycn';
 import sendResponse from '../../utils/sendResponse';
 import { psychometricAttemptService } from './psychometricAttempt.service';
+// import { psychometricAttemptService } from './psychometricAttempt.service';
 
 // const createPsychometric = catchAsync(async (req, res) => {
 //   const userId = req.user?.id;
@@ -152,9 +153,23 @@ const myOverallScore = catchAsync(async (req, res) => {
   });
 });
 
+const getSinglePsychometricAttempt = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await psychometricAttemptService.getSinglePsychometricAttempt(
+    id!,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Test answers retrieved successfully',
+    data: result,
+  });
+});
+
 export const psychometricAttemptController = {
   submitPsychometricTest,
   tryAgainPsychometricAttempt,
   getMyPsychometricAnswers,
   myOverallScore,
+  getSinglePsychometricAttempt,
 };
