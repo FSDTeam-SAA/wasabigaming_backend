@@ -6,6 +6,7 @@ import { fileUploader } from '../../helper/fileUploder';
 import User from '../user/user.model';
 import { userRole } from '../user/user.constant';
 import sendMailer from '../../helper/sendMailer';
+import { sendInvitation }  from '../../utils/createOtpTemplate';
 
 
 // const sendInvite = async (
@@ -49,6 +50,9 @@ import sendMailer from '../../helper/sendMailer';
     throw new AppError(400, 'User not found');
   }
 
+  const schoolName = user.schoolName;
+  const schoolCategory = user.schoolCategory;
+
   if (user.role !== userRole.school) {
     throw new AppError(403, 'Only school users can send invites');
   }
@@ -57,7 +61,6 @@ import sendMailer from '../../helper/sendMailer';
     const uploadedFile = await fileUploader.uploadToCloudinary(file);
     fileUrl = uploadedFile.url;
   }
-  // const fileUrl = uploadedFile.url;
 
   const students = Array.isArray(payload) ? payload : [payload];
   const formattedStudents = students.map((student) => ({
@@ -68,20 +71,21 @@ import sendMailer from '../../helper/sendMailer';
 
   const result = await InviteStudent.insertMany(formattedStudents);
 
-  // Send emails concurrently
-  await Promise.all(
-    formattedStudents.map(student => {
-      const emailHtml = `
-        <h2>Hello ${student.name},</h2>
-        <p>You have been invited as a student.</p>
-        <p>Please click the link below to get started:</p>
-        <a href="${student.url}">Download file</a>
-        <br/><br/>
-        <p>Regards,<br/>Best regards</p>
-      `;
-      return sendMailer(student.email, "Student Invitation", emailHtml);
-    })
-  );
+await Promise.all(
+  formattedStudents.map(student =>
+    sendMailer(
+      student.email,
+      "Student Invitation",
+       sendInvitation(
+        student.name,
+        student?.url || '',
+        schoolName || '',
+        schoolCategory 
+      )
+    )
+  )
+);
+
 
   return result;
 };
@@ -202,7 +206,7 @@ const deleteInviteStudent = async (id: string, userId:string) => {
   return inviteStudentData;
 };
 
-const updateInviteStudentStatus = async (id: string, status: 'pending' | 'accepted' | 'declined') => {
+const updateInviteStudentStatus = async (id: string, status: 'pending' | 'accepted' | 'rejected') => {
   const inviteStudent = await InviteStudent.findById(id);
 
   if (!inviteStudent) {

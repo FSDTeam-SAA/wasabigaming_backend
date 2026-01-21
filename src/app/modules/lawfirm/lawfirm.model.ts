@@ -14,15 +14,6 @@ const SectionUrlSchema = new Schema(
   { _id: false },
 );
 
-const OverviewSchema = new Schema(
-  {
-    firmOverview: { type: String, default: '' },
-    establishmentDetails: { type: String, default: '' },
-    keyHighlights: { type: String, default: '' },
-  },
-  { _id: false },
-);
-
 const PracticeAndWorkSchema = new Schema(
   {
     practiceAreas: { type: [String], default: [] },
@@ -53,9 +44,10 @@ const LawfirmSchema = new Schema<ILawfirm>(
     logo: { type: String, default: '' },
     coverImage: { type: String, default: '' },
 
-    firmName: { type: String, required: true },
-    tagline: { type: String, default: '' },
-    headquarters: { type: String, required: true },
+    firmName: { type: String },
+    firmType:{type:String},
+    tags: [{type:String}],
+    headquarters: { type: String },
 
     numberOfAttorneys: { type: Number, default: 0 },
     foundationYear: { type: Number, default: null },
@@ -66,19 +58,18 @@ const LawfirmSchema = new Schema<ILawfirm>(
     phoneNumber: { type: String, default: '' },
     annualRevenue: { type: String, default: '' },
 
-    sectionUrl: { type: SectionUrlSchema, default: () => ({}) },
-    overview: { type: OverviewSchema, default: () => ({}) },
+     keyHighlights: { type: String, default: '' },
     practiceAndWork: { type: PracticeAndWorkSchema, default: () => ({}) },
     initiatives: { type: InitiativesSchema, default: () => ({}) },
     csrAndDeAndI: { type: CsrAndDeAndISchema, default: () => ({}) },
 
     awardsAndRecognition: { type: String, default: '' },
-    aboutFirm: { type: String, required: true },
+    aboutFirm: { type: String },
 
     expertise: { type: String, default: '' },
-    internshipTraining: { type: String, default: '' },
-    description: { type: String, required: true },
-    location: { type: String, required: true },
+    internshipOpportunities: [{ type: String, default: '' }],
+    description: { type: String },
+    location: { type: String },
 
     createdBy: { type: Types.ObjectId, ref: 'User', default: null },
     status: {
