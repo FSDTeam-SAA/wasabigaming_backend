@@ -18,6 +18,11 @@ router.post(
   auth(userRole.student, userRole.school),
   courseController.payCourse,
 );
+router.get(
+  '/enroll/:id',
+  auth(userRole.student, userRole.school),
+  courseController.couseEnroleuser,
+);
 router.get('/:id', courseController.getSingleCourse);
 
 router.post(
