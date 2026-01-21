@@ -39,9 +39,9 @@ const createCourse = async (
 
   const result = await Course.create({ ...payload, createdBy: user._id });
   return result;
-};                 
-                                                                         
-const uploadCourse = async ( 
+};
+
+const uploadCourse = async (
   userId: string,
   id: string,
   payload: Partial<ICourse>,
@@ -84,7 +84,7 @@ const uploadCourse = async (
   );
   return result;
 };
-                                                                          
+
 const getAllCourse = async (params: any, options: IOption) => {
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
   const { searchTerm, year, ...filterData } = params;
