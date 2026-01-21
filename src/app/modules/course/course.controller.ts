@@ -142,6 +142,17 @@ const payCourse = catchAsync(async (req, res) => {
   });
 });
 
+const couseEnroleuser = catchAsync(async (req, res) => {
+  const userId = req.user?.id;
+  const result = await courseService.couseEnroleuser(userId, req.params.id!);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Course Enrolled successfully',
+    data: result,
+  });
+});
+
 export const courseController = {
   createCourse,
   getAllCourse,
@@ -151,4 +162,5 @@ export const courseController = {
   addVideo,
   removeVideo,
   payCourse,
+  couseEnroleuser,
 };

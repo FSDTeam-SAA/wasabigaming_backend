@@ -50,4 +50,5 @@ export interface ICVbuilder {
   summary: string;
 
   createBy?: Types.ObjectId;
+  cvformet?:string;
 }

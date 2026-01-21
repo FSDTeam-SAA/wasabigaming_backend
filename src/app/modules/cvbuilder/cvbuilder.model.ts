@@ -74,6 +74,7 @@ const CVBuilderSchema = new Schema<ICVbuilder>(
     summary: { type: String },
 
     createBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    cvformet: { type: String },
   },
   {
     timestamps: true,

@@ -3,23 +3,25 @@ import { IJob } from './job.interface';
 
 const jobSchema = new Schema<IJob>(
   {
-    title: { type: String, required: true },
-    location: { type: String, required: true },
-    companyName: { type: String, required: true },
-    companyType: { type: String, required: true },
-    postedBy: { type: String, required: true },
+    title: { type: String },
+    location: { type: String },
+    companyName: { type: String },
+    companyType: { type: String },
+    postedBy: { type: String },
     level: { type: String },
-    salaryRange: { type: String, required: true },
-    startDate: { type: Date, required: true },
-    applicationDeadline: { type: Date, required: true },
-    jobId: { type: Schema.Types.Mixed, required: true, unique: true }, // string | number
-    jobStatus: { type: String, enum: ['Open', 'Closed'], required: true },
-    description: { type: String, required: true },
-    responsibilities: { type: [String], default: [] },
+    salaryRange: { type: String },
+    startDate: { type: String },
+    applicationDeadline: { type: String },
+    jobId: { type: Schema.Types.Mixed, unique: true }, // string | number
+    jobStatus: { type: String, enum: ['Open', 'Closed'] },
+    description: { type: String },
     additionalInfo: { type: String },
     status: { type: String, enum: ['active', 'inactive'], default: 'inactive' },
     requiredSkills: { type: [String], default: [] },
     createBy: { type: Types.ObjectId, ref: 'User' },
+    url: { type: String },
+    companyId: { type: Types.ObjectId, ref: 'Company' },
+    applicants: [{ type: Types.ObjectId, ref: 'User' }],
   },
   { timestamps: true },
 );

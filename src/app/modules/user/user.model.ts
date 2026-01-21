@@ -35,6 +35,9 @@ const userSchema = new Schema<IUser>(
       enum: ['student', 'school', 'admin'],
       required: true,
     },
+    schoolCategory:{
+      type:String
+    },
 
     profileImage: { type: String },
     phone: { type: String },

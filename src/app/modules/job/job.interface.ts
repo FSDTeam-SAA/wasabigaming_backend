@@ -9,8 +9,8 @@ export interface IJob {
   postedBy: string; // e.g., "BPP University Limited"
   level?: string;
   salaryRange: string; // e.g., "£27,000.00 - £30,704.00 Yearly"
-  startDate: Date;
-  applicationDeadline: Date;
+  startDate: string;
+  applicationDeadline: string;
   jobId: string | number;
   jobStatus: 'Open' | 'Closed';
   description: string;
@@ -19,4 +19,7 @@ export interface IJob {
   status: 'active' | 'inactive';
   createBy?: Types.ObjectId;
   requiredSkills: string[];
+  url: string;
+  companyId?: Types.ObjectId;
+  applicants?: Types.ObjectId[];
 }

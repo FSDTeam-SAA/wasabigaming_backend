@@ -22,7 +22,7 @@ const courseSchema = new mongoose.Schema<ICourse>(
     status: { type: String, enum: ['active', 'inactive'], default: 'active' },
     enrolledStudents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     coursePrice: { type: Number, default: 0 },
-    // isCourseFree: { type: Boolean, default: false },
+    isCourseFree: { type: Boolean, default: false },
   },
   { timestamps: true },
 );
