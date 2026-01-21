@@ -15,12 +15,13 @@ import { websiteRouter } from '../modules/website/website.routes';
 import { premiumRouter } from '../modules/premium/premium.routes';
 import { jobRouter } from '../modules/job/job.routes';
 import { cvBuilderRouter } from '../modules/cvbuilder/cvbuilder.routes';
-import { psychometricRouter } from '../modules/psychometric/psychometric.routes';
+// import { psychometricRouter } from '../modules/psychometricAttempt/psychometricAttempt.routes';
 import { psychometricTestRouter } from '../modules/psychometricTest/psychometricTest.routes';
-import { psychometricResultRouter } from '../modules/psychometricResult/psychometricResult.routes';
+// import { psychometricResultRouter } from '../modules/psychometricResult/psychometricResult.routes';
 import { eventRouter } from '../modules/event/event.routes';
 import path from 'path';
 import { schoolManagementRouter } from '../modules/school_management/school_management.routes';
+import { psychometricAttemptRouter } from '../modules/psychometricAttempt/psychometricAttempt.routes';
 
 const router = Router();
 
@@ -82,25 +83,25 @@ const moduleRoutes = [
     route: cvBuilderRouter,
   },
   {
-    path: '/psychometric',
-    route: psychometricRouter,
+    path: '/psychometric-attempt',
+    route: psychometricAttemptRouter,
   },
   {
     path: '/psychometric-test',
     route: psychometricTestRouter,
   },
-  {
-    path: '/psychometric-result',
-    route: psychometricResultRouter,
-  },
+  // {
+  //   path: '/psychometric-result',
+  //   route: psychometricResultRouter,
+  // },
   {
     path: '/event',
     route: eventRouter,
   },
   {
     path: '/school-management',
-    route:schoolManagementRouter
-  }
+    route: schoolManagementRouter,
+  },
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

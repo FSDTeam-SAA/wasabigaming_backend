@@ -1,6 +1,6 @@
 import AppError from '../../error/appError';
 import User from '../user/user.model';
-import Psychometric from '../psychometric/psychometric.model';
+import Psychometric from '../psychometricAttempt/psychometricAttempt.model';
 import PsychometricTest from '../psychometricTest/psychometricTest.model';
 import { psychometricResultService } from '../psychometricResult/psychometricResult.service';
 
@@ -49,8 +49,7 @@ export const ingestAiPsychometricResult = async (payload: IAiPayload) => {
     accuracyPct: performance.overall.accuracy_pct,
     timeAnalysis: performance.time_analysis && {
       avgTimeSec: performance.time_analysis.avg_time_sec,
-      timePressureErrors:
-        performance.time_analysis.time_pressure_errors,
+      timePressureErrors: performance.time_analysis.time_pressure_errors,
     },
     difficultyBreakdown: performance.difficulty_breakdown,
   });
@@ -61,4 +60,3 @@ export const ingestAiPsychometricResult = async (payload: IAiPayload) => {
 
   return psychometricTest;
 };
-
