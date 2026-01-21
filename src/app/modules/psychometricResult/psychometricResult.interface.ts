@@ -1,13 +1,13 @@
-import { Types } from 'mongoose';
+// import { Types } from 'mongoose';
 
-export interface IPsychometricResult {
-  user: Types.ObjectId;
+// export interface IPsychometricResult {
+//   user: Types.ObjectId;
 
-  completedTests: number;
-  averageScore: number;
+//   completedTests: number;
+//   averageScore: number;
 
-  strengths: string[];
-  areasToImprove: string[];
+//   strengths: string[];
+//   areasToImprove: string[];
 
-  aiFeedback: string;
-}
+//   aiFeedback: string;
+// }

@@ -49,4 +49,10 @@ router.get(
   psychometricAttemptController.myOverallScore,
 );
 
+router.get(
+  '/:id',
+  // auth(userRole.student),
+  psychometricAttemptController.getSinglePsychometricAttempt,
+);
+
 export const psychometricAttemptRouter = router;
