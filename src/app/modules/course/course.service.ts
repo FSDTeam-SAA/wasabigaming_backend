@@ -239,8 +239,8 @@ const payCourse = async (userId: string, courseId: string) => {
   const course = await Course.findById(courseId);
   if (!course) throw new AppError(400, 'Course not found');
 
-  if (!user.isSubscription)
-    throw new AppError(400, 'You are not subscribed to this course');
+  // if (!user.isSubscription)
+  //   throw new AppError(400, 'You are not subscribed to this course');
 
   if (user.role !== 'student')
     throw new AppError(400, 'You are not authorized to pay for this course');
@@ -300,6 +300,33 @@ const payCourse = async (userId: string, courseId: string) => {
   return { url: null, sessionId: null };
 };
 
+const couseEnroleuser = async (userId: string, courseId: string) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(400, 'User not found');
+
+  const course = await Course.findById(courseId);
+  if (!course) throw new AppError(400, 'Course not found');
+
+  if ((course?.coursePrice ?? 0) > 0) {
+    if (
+      !course.enrolledStudents?.some(
+        (studentId) => studentId.toString() === user._id.toString(),
+      )
+    ) {
+      throw new AppError(400, 'You are not enrolled to this course');
+    }
+  }
+
+  const result = await Course.findById(courseId)
+    .populate('enrolledStudents')
+    .populate({
+      path: 'courseVideo.quiz',
+      model: 'Quizzes',
+    });
+
+  return result;
+};
+
 export const courseService = {
   createCourse,
   uploadCourse,
@@ -309,4 +336,5 @@ export const courseService = {
   addCourseVideo,
   removeCourseVideo,
   payCourse,
+  couseEnroleuser,
 };
