@@ -1,0 +1,52 @@
+import express from 'express';
+import auth from '../../middlewares/auth';
+import { userRole } from '../user/user.constant';
+import { psychometricAttemptController } from './psychometricAttempt.controller';
+// import { psychometricController } from './psychometricAttempt.controller';
+const router = express.Router();
+
+// router.post(
+//   '/',
+//   auth(userRole.admin),
+//   psychometricController.createPsychometric,
+// );
+
+// router.get('/', psychometricController.getAllPsychometric);
+// router.get('/:id', psychometricController.getPsychometricById);
+// router.put(
+//   '/:id',
+//   auth(userRole.admin),
+//   psychometricController.updatePsychometric,
+// );
+// router.delete(
+//   '/:id',
+//   auth(userRole.admin),
+//   psychometricController.deletePsychometric,
+// );
+
+//============================= update =================================
+router.post(
+  '/:id/submit',
+  auth(userRole.student),
+  psychometricAttemptController.submitPsychometricTest,
+);
+
+router.post(
+  '/:id/try-again',
+  auth(userRole.student),
+  psychometricAttemptController.tryAgainPsychometricAttempt,
+);
+
+router.get(
+  '/my-answers',
+  auth(userRole.student),
+  psychometricAttemptController.getMyPsychometricAnswers,
+);
+
+router.get(
+  '/my-score',
+  auth(userRole.student),
+  psychometricAttemptController.myOverallScore,
+);
+
+export const psychometricAttemptRouter = router;
