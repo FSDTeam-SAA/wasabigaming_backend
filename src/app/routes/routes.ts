@@ -23,6 +23,9 @@ import path from 'path';
 import { schoolManagementRouter } from '../modules/school_management/school_management.routes';
 import { psychometricAttemptRouter } from '../modules/psychometricAttempt/psychometricAttempt.routes';
 import { courseQuizAttemptRouter } from '../modules/courseQuizAttempt/courseQuizAttempt.routes';
+import { teamRoutes } from '../modules/team/team.route';
+import { cardRouter } from '../modules/card/card.routes';
+
 
 const router = Router();
 
@@ -104,8 +107,16 @@ const moduleRoutes = [
     route: eventRouter,
   },
   {
+    path: '/team',
+    route: teamRoutes,
+  },
+  {
     path: '/school-management',
     route: schoolManagementRouter,
+  },
+  {
+    path: '/card',
+    route: cardRouter,
   },
 ];
 

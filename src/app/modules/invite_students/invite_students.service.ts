@@ -7,6 +7,7 @@ import User from '../user/user.model';
 import { userRole } from '../user/user.constant';
 import sendMailer from '../../helper/sendMailer';
 import { sendInvitation }  from '../../utils/createOtpTemplate';
+import { Types } from "mongoose";
 
 
 // const sendInvite = async (
@@ -158,33 +159,41 @@ const getInviteStudentById = async (id: string) => {
 };
 
 const updatedInviteStudent = async (updateData: IInviteStudent, id: string, userId: string) => {
+  console.log("mahabur");
+  
   const updatedStudentData = await InviteStudent.findById(id);
 
   if (!updatedStudentData) {
     throw new AppError(404, 'Student data not found');
   }
 
-  if (updateData.email !== undefined) {
-    const emailExists = await InviteStudent.findOne({
-      email: updateData.email,
-      _id: { $ne: id },
-    });
+  // if (updateData.email !== undefined) {
+  //   const emailExists = await InviteStudent.findOne({
+  //     email: updateData.email,
+  //     _id: { $ne: id },
+  //   });
 
-    if (emailExists) {
-      throw new AppError(409, 'Email already exists');
-    }
-  }
-  const isOwner = updatedStudentData.createBy?.toString() === userId;
-  const isAdmin = (await User.findById(userId))?.role === userRole.admin;
+  //   if (emailExists) {
+  //     throw new AppError(409, 'Email already exists');
+  //   }
+  // }
+  // const isOwner = updatedStudentData.createBy?.toString() === userId;
+  // const isAdmin = (await User.findById(userId))?.role === userRole.admin;
 
-  if (!isOwner && !isAdmin) {
-    throw new AppError(403, 'You are not authorized to update this student data');
-  }
+  // if (!isOwner && !isAdmin) {
+  //   throw new AppError(403, 'You are not authorized to update this student data');
+  // }
 
   const updated = await InviteStudent.findByIdAndUpdate(id, updateData, {
     new: true,
     runValidators: true,
   });
+
+  const updateStudentData = await User.findOne({ email: updatedStudentData.email })
+  if (updateStudentData) {
+    updateStudentData.schoolId = new Types.ObjectId(userId); 
+    await updateStudentData.save();
+  }
   return updated;
 };
 

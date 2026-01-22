@@ -65,6 +65,7 @@ const submitCourseQuiz = async (
     return {
       quiz: quiz._id,
       userAnswer: ans.userAnswer,
+      correctAnswer:quiz.answer,
       isCorrect,
     };
   });

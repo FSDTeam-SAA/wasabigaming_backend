@@ -1,3 +1,4 @@
+
 const createOtpTemplate = (
   code: string,
   email?: string,
@@ -255,7 +256,7 @@ export const sendInvitation = (
           button.textContent = status === 'accepted' ? 'Accepting...' : 'Rejecting...';
           
           // Make API call
-          fetch('http://localhost:5000/api?status=' + status, {
+          fetch('http://localhost:5000/api/v1/invite-students/6971e787f9ae442e08875f0f?status=' + status, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json'

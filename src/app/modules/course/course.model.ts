@@ -23,6 +23,7 @@ const courseSchema = new mongoose.Schema<ICourse>(
     enrolledStudents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     coursePrice: { type: Number, default: 0 },
     isCourseFree: { type: Boolean, default: false },
+    thumbnail:{ type: String }
   },
   { timestamps: true },
 );
