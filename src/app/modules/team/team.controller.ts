@@ -61,8 +61,6 @@ const updateTeam = catchAsync(async (req, res) => {
 });
 
 
-
-
 export const teamController = {
     createTeam,
     getAllteams,
