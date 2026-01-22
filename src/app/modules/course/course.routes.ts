@@ -50,7 +50,10 @@ router.delete(
 router.put(
   '/:id',
   auth(userRole.admin, userRole.school),
-  fileUploader.upload.array('courseVideo'),
+  fileUploader.upload.fields([
+    { name: 'courseVideo', maxCount: 20 }, 
+    { name: 'thumbnail', maxCount: 1 },   
+  ]),
   courseController.uploadCourse,
 );
 
