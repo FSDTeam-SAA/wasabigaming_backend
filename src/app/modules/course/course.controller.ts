@@ -85,17 +85,44 @@ const getSingleCourse = catchAsync(async (req, res) => {
   });
 });
 
+// const uploadCourse = catchAsync(async (req, res) => {
+//   const { id } = req.params;
+//   const userId = req.user?.id;
+//   const files = req.files as Express.Multer.File[]; // multiple files
+//   const fromData = req.body.data ? JSON.parse(req.body.data) : req.body;
+//   const titles = req.body.titles ? JSON.parse(req.body.titles) : undefined;
+
+//   const result = await courseService.uploadCourse(
+//     userId,
+//     id!,
+//     fromData,
+//     files,
+//     titles,
+//   );
+
+//   sendResponse(res, {
+//     statusCode: 200,
+//     success: true,
+//     message: 'Course updated successfully',
+//     data: result,
+//   });
+// });
 const uploadCourse = catchAsync(async (req, res) => {
-  const { id } = req.params;
   const userId = req.user?.id;
-  const files = req.files as Express.Multer.File[]; // multiple files
-  const fromData = req.body.data ? JSON.parse(req.body.data) : req.body;
+  const courseId = req.params.id;
+
+  const files = req.files as {
+    courseVideo?: Express.Multer.File[];
+    thumbnail?: Express.Multer.File[];
+  };
+
+  const formData = req.body.data ? JSON.parse(req.body.data) : req.body;
   const titles = req.body.titles ? JSON.parse(req.body.titles) : undefined;
 
   const result = await courseService.uploadCourse(
     userId,
-    id!,
-    fromData,
+    courseId!,
+    formData,
     files,
     titles,
   );
