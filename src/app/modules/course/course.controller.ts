@@ -3,12 +3,37 @@ import catchAsync from '../../utils/catchAsycn';
 import sendResponse from '../../utils/sendResponse';
 import { courseService } from './course.service';
 
+// const createCourse = catchAsync(async (req, res) => {
+//   const userId = req.user?.id;
+//   const files = req.files as Express.Multer.File[]; // multiple files
+//   const fromData = req.body.data ? JSON.parse(req.body.data) : req.body;
+
+//   // optional titles array for videos
+//   const titles = req.body.titles ? JSON.parse(req.body.titles) : undefined;
+
+//   const result = await courseService.createCourse(
+//     userId,
+//     fromData,
+//     files,
+//     titles,
+//   );
+
+//   sendResponse(res, {
+//     statusCode: 200,
+//     success: true,
+//     message: 'Course created successfully',
+//     data: result,
+//   });
+// });
 const createCourse = catchAsync(async (req, res) => {
   const userId = req.user?.id;
-  const files = req.files as Express.Multer.File[]; // multiple files
-  const fromData = req.body.data ? JSON.parse(req.body.data) : req.body;
 
-  // optional titles array for videos
+  const files = req.files as {
+    courseVideo?: Express.Multer.File[];
+    thumbnail?: Express.Multer.File[];
+  };
+
+  const fromData = req.body.data ? JSON.parse(req.body.data) : req.body;
   const titles = req.body.titles ? JSON.parse(req.body.titles) : undefined;
 
   const result = await courseService.createCourse(
@@ -25,6 +50,7 @@ const createCourse = catchAsync(async (req, res) => {
     data: result,
   });
 });
+
 
 const getAllCourse = catchAsync(async (req, res) => {
   const filters = pick(req.query, [
