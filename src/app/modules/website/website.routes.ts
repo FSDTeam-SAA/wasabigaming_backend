@@ -11,7 +11,7 @@ router.post(
   fileUploader.upload.array('thumbnail'),
   websiteController.createWebsite,
 );
-router.get('/', auth(userRole.admin), websiteController.getAllWebsite);
+router.get('/', websiteController.getAllWebsite);
 router.get(
   '/:id',
   //   auth(userRole.admin, userRole.school, userRole.student),
