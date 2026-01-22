@@ -87,30 +87,70 @@ const createCourse = async (
 };
 
 
+// const uploadCourse = async (
+//   userId: string,
+//   id: string,
+//   payload: Partial<ICourse>,
+//   files?: Express.Multer.File[],
+//   titles?: string[],
+// ) => {
+//   const user = await User.findById(userId);
+//   if (!user) throw new AppError(400, 'User not found');
+
+//   const course = await Course.findById(id);
+//   if (!course) throw new AppError(400, 'Course not found');
+
+//   if (
+//     user.role !== 'admin' &&
+//     course.createdBy &&
+//     course.createdBy.toString() !== user._id.toString()
+//   ) {
+//     throw new AppError(400, 'You are not authorized to update this course');
+//   }
+
+//   if (files && files.length > 0) {
+//     const uploadedVideos = await Promise.all(
+//       files.map(async (file, index) => {
+//         const uploaded = await fileUploader.uploadToCloudinary(file);
+//         return {
+//           title: titles?.[index] || file.originalname,
+//           url: uploaded.url,
+//           time: '00:00',
+//         };
+//       }),
+//     );
+
+//     payload.courseVideo = uploadedVideos;
+//   }
+
+//   const result = await Course.findByIdAndUpdate(
+//     id,
+//     { ...payload, createdBy: user._id },
+//     { new: true },
+//   );
+//   return result;
+// };
+
 const uploadCourse = async (
   userId: string,
-  id: string,
+  courseId: string,
   payload: Partial<ICourse>,
-  files?: Express.Multer.File[],
+  files?: {
+    courseVideo?: Express.Multer.File[];
+    thumbnail?: Express.Multer.File[];
+  },
   titles?: string[],
 ) => {
   const user = await User.findById(userId);
   if (!user) throw new AppError(400, 'User not found');
 
-  const course = await Course.findById(id);
-  if (!course) throw new AppError(400, 'Course not found');
+  const course = await Course.findById(courseId);
+  if (!course) throw new AppError(404, 'Course not found');
 
-  if (
-    user.role !== 'admin' &&
-    course.createdBy &&
-    course.createdBy.toString() !== user._id.toString()
-  ) {
-    throw new AppError(400, 'You are not authorized to update this course');
-  }
-
-  if (files && files.length > 0) {
+  // ✅ Upload new videos (append)
+  if (files?.courseVideo?.length) {
     const uploadedVideos = await Promise.all(
-      files.map(async (file, index) => {
+      files.courseVideo.map(async (file, index) => {
         const uploaded = await fileUploader.uploadToCloudinary(file);
         return {
           title: titles?.[index] || file.originalname,
@@ -120,16 +160,27 @@ const uploadCourse = async (
       }),
     );
 
-    payload.courseVideo = uploadedVideos;
+    course.courseVideo = [
+      ...(course.courseVideo || []),
+      ...uploadedVideos,
+    ];
   }
 
-  const result = await Course.findByIdAndUpdate(
-    id,
-    { ...payload, createdBy: user._id },
-    { new: true },
-  );
-  return result;
+  // ✅ Replace thumbnail if provided
+  if (files?.thumbnail?.[0]) {
+    const uploadedThumbnail = await fileUploader.uploadToCloudinary(
+      files.thumbnail[0],
+    );
+    course.thumbnail = uploadedThumbnail.url;
+  }
+
+  // ✅ Update other fields
+  Object.assign(course, payload);
+
+  await course.save();
+  return course;
 };
+
 
 const getAllCourse = async (params: any, options: IOption) => {
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
