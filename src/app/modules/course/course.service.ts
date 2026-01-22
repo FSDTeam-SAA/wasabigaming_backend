@@ -10,11 +10,45 @@ import Payment from '../payment/payment.model';
 
 const stripe = new Stripe(config.stripe.secretKey!);
 
+// const createCourse = async (
+//   userId: string,
+//   payload: ICourse,
+//   files?: Express.Multer.File[],
+//   titles?: string[], // optional custom titles
+// ) => {
+//   const user = await User.findById(userId);
+//   if (!user) throw new AppError(400, 'User not found');
+
+//   const courseExist = await Course.findOne({ name: payload.name });
+//   if (courseExist) throw new AppError(400, 'Course already exists');
+
+//   if (files && files.length > 0) {
+//     const uploadedVideos = await Promise.all(
+//       files.map(async (file, index) => {
+//         const uploaded = await fileUploader.uploadToCloudinary(file);
+//         return {
+//           title: titles?.[index] || file.originalname, // use custom title or fallback
+//           url: uploaded.url,
+//           time: '00:00',
+//         };
+//       }),
+//     );
+
+//     payload.courseVideo = uploadedVideos;
+//   }
+
+//   const result = await Course.create({ ...payload, createdBy: user._id });
+//   return result;
+// };
+
 const createCourse = async (
   userId: string,
   payload: ICourse,
-  files?: Express.Multer.File[],
-  titles?: string[], // optional custom titles
+  files?: {
+    courseVideo?: Express.Multer.File[];
+    thumbnail?: Express.Multer.File[];
+  },
+  titles?: string[],
 ) => {
   const user = await User.findById(userId);
   if (!user) throw new AppError(400, 'User not found');
@@ -22,24 +56,36 @@ const createCourse = async (
   const courseExist = await Course.findOne({ name: payload.name });
   if (courseExist) throw new AppError(400, 'Course already exists');
 
-  if (files && files.length > 0) {
-    const uploadedVideos = await Promise.all(
-      files.map(async (file, index) => {
+  // ✅ Upload videos
+  if (files?.courseVideo?.length) {
+    payload.courseVideo = await Promise.all(
+      files.courseVideo.map(async (file, index) => {
         const uploaded = await fileUploader.uploadToCloudinary(file);
         return {
-          title: titles?.[index] || file.originalname, // use custom title or fallback
+          title: titles?.[index] || file.originalname,
           url: uploaded.url,
           time: '00:00',
         };
       }),
     );
-
-    payload.courseVideo = uploadedVideos;
   }
 
-  const result = await Course.create({ ...payload, createdBy: user._id });
+  // ✅ Upload thumbnail (single file)
+  if (files?.thumbnail?.[0]) {
+    const uploadedThumbnail = await fileUploader.uploadToCloudinary(
+      files.thumbnail[0],
+    );
+    payload.thumbnail = uploadedThumbnail.url;
+  }
+
+  const result = await Course.create({
+    ...payload,
+    createdBy: user._id,
+  });
+
   return result;
 };
+
 
 const uploadCourse = async (
   userId: string,
