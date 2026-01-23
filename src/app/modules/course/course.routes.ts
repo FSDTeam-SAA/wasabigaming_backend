@@ -15,8 +15,8 @@ router.post(
   '/',
   auth(userRole.admin, userRole.school),
   fileUploader.upload.fields([
-    { name: 'courseVideo', maxCount: 20 }, 
-    { name: 'thumbnail', maxCount: 1 },   
+    { name: 'courseVideo', maxCount: 20 },
+    { name: 'thumbnail', maxCount: 1 },
   ]),
   courseController.createCourse,
 );
@@ -33,6 +33,11 @@ router.get(
   courseController.couseEnroleuser,
 );
 router.get('/:id', courseController.getSingleCourse);
+router.get(
+  '/:id/student',
+  auth(userRole.student),
+  courseController.getUserSingleCourse,
+);
 
 router.post(
   '/:id/video',
@@ -51,8 +56,8 @@ router.put(
   '/:id',
   auth(userRole.admin, userRole.school),
   fileUploader.upload.fields([
-    { name: 'courseVideo', maxCount: 20 }, 
-    { name: 'thumbnail', maxCount: 1 },   
+    { name: 'courseVideo', maxCount: 20 },
+    { name: 'thumbnail', maxCount: 1 },
   ]),
   courseController.uploadCourse,
 );
