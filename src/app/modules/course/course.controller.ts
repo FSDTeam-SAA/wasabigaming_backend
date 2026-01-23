@@ -51,7 +51,6 @@ const createCourse = catchAsync(async (req, res) => {
   });
 });
 
-
 const getAllCourse = catchAsync(async (req, res) => {
   const filters = pick(req.query, [
     'searchTerm',
@@ -73,8 +72,21 @@ const getAllCourse = catchAsync(async (req, res) => {
   });
 });
 
+const getUserSingleCourse = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user?.id;
+  const result = await courseService.getUserSingleCourse(userId, id!);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Course fetched successfully',
+    data: result,
+  });
+});
 const getSingleCourse = catchAsync(async (req, res) => {
   const { id } = req.params;
+
   const result = await courseService.getSingleCourse(id!);
 
   sendResponse(res, {
@@ -216,4 +228,5 @@ export const courseController = {
   removeVideo,
   payCourse,
   couseEnroleuser,
+  getUserSingleCourse,
 };
