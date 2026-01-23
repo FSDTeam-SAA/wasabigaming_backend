@@ -7,6 +7,7 @@ import { ICourse } from './course.interface';
 import Course from './course.model';
 import config from '../../config';
 import Payment from '../payment/payment.model';
+import { CourseQuizAttempt } from '../courseQuizAttempt/courseQuizAttempt.model';
 
 const stripe = new Stripe(config.stripe.secretKey!);
 
@@ -86,7 +87,6 @@ const createCourse = async (
   return result;
 };
 
-
 // const uploadCourse = async (
 //   userId: string,
 //   id: string,
@@ -160,10 +160,7 @@ const uploadCourse = async (
       }),
     );
 
-    course.courseVideo = [
-      ...(course.courseVideo || []),
-      ...uploadedVideos,
-    ];
+    course.courseVideo = [...(course.courseVideo || []), ...uploadedVideos];
   }
 
   // ✅ Replace thumbnail if provided
@@ -180,7 +177,6 @@ const uploadCourse = async (
   await course.save();
   return course;
 };
-
 
 const getAllCourse = async (params: any, options: IOption) => {
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
@@ -232,6 +228,38 @@ const getAllCourse = async (params: any, options: IOption) => {
   return { data: result, meta: { total, page, limit } };
 };
 
+const getUserSingleCourse = async (userId: string, courseId: string) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(400, 'User not found');
+
+  // validate course
+  const course = await Course.findById(courseId).populate({
+    path: 'courseVideo.quiz',
+    model: 'Quizzes',
+  });
+  if (!course) throw new AppError(400, 'Course not found');
+
+  // fetch all attempts of this user for this course
+  const attempts = await CourseQuizAttempt.find({
+    user: userId,
+    course: courseId,
+  }).select('video');
+
+  // attempted video ids
+  const attemptedVideoIds = attempts.map((a) => a.video.toString());
+
+  const courseObj = course.toObject();
+
+  // add attempted flag per video
+  if (courseObj.courseVideo) {
+    courseObj.courseVideo = courseObj.courseVideo.map((video) => ({
+      ...video,
+      attempted: attemptedVideoIds.includes(video._id?.toString() || ''),
+    }));
+  }
+
+  return courseObj;
+};
 const getSingleCourse = async (id: string) => {
   const result = await Course.findById(id).populate({
     path: 'courseVideo.quiz',
@@ -434,4 +462,5 @@ export const courseService = {
   removeCourseVideo,
   payCourse,
   couseEnroleuser,
+  getUserSingleCourse,
 };
