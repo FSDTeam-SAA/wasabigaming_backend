@@ -10,12 +10,30 @@ export interface IEducation {
 }
 
 export interface ILeadership {
-  findType: string;
+  role: string;
   organization: string;
   dateYear: string;
   description: string;
 }
+export interface ILegalWorkExperience
+  {
+    jobTitle: string,
+    organization:string,
+    keyResponsibilities: string,
+    startYear:string,
+    endYear: string,
+    education: string
+  };
 
+export interface INonLegalWorkExperienceSchema
+    {
+      jobTitle: string,
+      organization: string
+      keyResponsibilities: string,
+      startYear: string,
+      endYear: string,
+      education: string
+    };
 export interface IAchievements {
   skills: string[];
   recommendedSkills: string[];
@@ -29,19 +47,8 @@ export interface ICVbuilder {
   phone: string;
   location: string;
 
-  ligleJobTitle: string;
-  ligleOrganization: string;
-  ligleKeyResponsibilities: string;
-  ligleStartYear: string;
-  ligleEndYear?: string;
-  ligleEducation?: string;
-
-  notLigleJobTitle: string;
-  notLigleOrganization: string;
-  notLigleKeyResponsibilities: string;
-  notLigleStartYear: string;
-  notLigleEndYear?: string;
-  notLigleEducation?: string;
+  legalWorkExperience:ILegalWorkExperience[];
+  nonLegalWorkExperience: INonLegalWorkExperienceSchema[];
 
   educationLevel: IEducation[];
   leadership: ILeadership[];
