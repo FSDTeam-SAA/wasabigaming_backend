@@ -48,7 +48,7 @@ export interface ICVbuilder {
   location: string;
 
   legalWorkExperience:ILegalWorkExperience[];
-  nonLegalWorkExperienceSchema: INonLegalWorkExperienceSchema[];
+  nonLegalWorkExperience: INonLegalWorkExperienceSchema[];
 
   educationLevel: IEducation[];
   leadership: ILeadership[];

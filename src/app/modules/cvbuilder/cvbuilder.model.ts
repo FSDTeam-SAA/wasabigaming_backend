@@ -66,7 +66,7 @@ const CVBuilderSchema = new Schema<ICVbuilder>(
       type: [LegalWorkExperience],
       default: []
     },
-    nonLegalWorkExperienceSchema: {
+    nonLegalWorkExperience: {
       type: [NonLegalWorkExperienceSchema],
       default: [],
     },
