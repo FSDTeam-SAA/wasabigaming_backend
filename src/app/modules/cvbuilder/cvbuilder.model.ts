@@ -12,10 +12,32 @@ const EducationSchema = new Schema(
   },
   { _id: false },
 );
+const LegalWorkExperience = new Schema(
+  {
+    jobTitle: {type: String},
+    organization:{type: String},
+    keyResponsibilities: {type: String},
+    startYear: {type: String},
+    endYear: {type: String},
+    education:{type:String}
+  },
+  { _id: false },
+);
+const NonLegalWorkExperienceSchema = new Schema(
+  {
+    jobTitle: {type: String},
+    organization: {type: String},
+    keyResponsibilities: {type: String},
+    startYear: {type: String},
+    endYear: {type: String },
+    education: {type: String}
+  },
+  {_id: false },
+);
 
 const LeadershipSchema = new Schema(
   {
-    findType: { type: String, required: true },
+    role: { type: String, required: true },
     organization: { type: String, required: true },
     dateYear: { type: String, required: true },
     description: { type: String },
@@ -40,21 +62,14 @@ const CVBuilderSchema = new Schema<ICVbuilder>(
     phone: { type: String },
     location: { type: String },
 
-    // Legal Experience
-    ligleJobTitle: { type: String },
-    ligleOrganization: { type: String },
-    ligleKeyResponsibilities: { type: String },
-    ligleStartYear: { type: String },
-    ligleEndYear: { type: String },
-    ligleEducation: { type: String },
-
-    // Non-Legal Experience
-    notLigleJobTitle: { type: String },
-    notLigleOrganization: { type: String },
-    notLigleKeyResponsibilities: { type: String },
-    notLigleStartYear: { type: String },
-    notLigleEndYear: { type: String },
-    notLigleEducation: { type: String },
+    legalWorkExperience: {
+      type: [LegalWorkExperience],
+      default: []
+    },
+    nonLegalWorkExperienceSchema: {
+      type: [NonLegalWorkExperienceSchema],
+      default: [],
+    },
 
     educationLevel: {
       type: [EducationSchema],
