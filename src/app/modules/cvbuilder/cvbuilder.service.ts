@@ -6,9 +6,29 @@ import { ICVbuilder } from './cvbuilder.interface';
 import CVbuilder from './cvbuilder.model';
 
 const createCVbuilder = async (userId: string, payload: ICVbuilder) => {
+
   const user = await User.findById(userId);
   if (!user) throw new AppError(400, 'User not found');
+  
   const result = await CVbuilder.create({ ...payload, createBy: user._id });
+  
+  //description api call for ai
+
+  if (Array.isArray(payload.leadership) && payload.leadership.length > 0) {
+     let job_information: any = [];
+     let job_summary: string;
+    job_information = payload.leadership.map(item => ({
+      role: item.role,
+      organization: item.organization,
+      dateYear: item.dateYear,
+    }));
+
+    job_summary = payload.leadership
+      .map(item => item.description)
+      .filter(Boolean);
+
+    
+  }
 
   if (!result) throw new AppError(400, 'CVbuilder not created');
   return result;

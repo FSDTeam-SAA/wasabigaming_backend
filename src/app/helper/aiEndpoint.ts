@@ -29,6 +29,8 @@ const lawFirmAi = async (jobTitle: string, location: string) => {
   }
 };
 
+// const cvBuilderDescription = async(job_summary:)
+
 export const aiIntregation = {
   lawFirmAi,
 };
