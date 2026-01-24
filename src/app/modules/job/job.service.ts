@@ -209,6 +209,65 @@ const approvedJob = async (id: string) => {
   return result;
 };
 
+const appliedJob = async (userId: string, params: any, options: IOption) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(404, 'User not found');
+
+  const { page, limit, skip, sortBy, sortOrder } = pagination(options);
+  const { searchTerm, ...filterData } = params;
+
+  const andCondition: any[] = [];
+
+  const searchableFields = [
+    'title',
+    'location',
+    'companyName',
+    'companyType',
+    'postedBy',
+    'level',
+  ];
+
+  // search
+  if (searchTerm) {
+    andCondition.push({
+      $or: searchableFields.map((field) => ({
+        [field]: { $regex: searchTerm, $options: 'i' },
+      })),
+    });
+  }
+
+  // filters
+  if (Object.keys(filterData).length) {
+    andCondition.push({
+      $and: Object.entries(filterData).map(([field, value]) => ({
+        [field]: value,
+      })),
+    });
+  }
+
+  // applied job condition
+  andCondition.push({ applicants: userId });
+
+  const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
+
+  const result = await Job.find(whereCondition)
+    .populate('applicants', 'name email')
+    .skip(skip)
+    .limit(limit)
+    .sort({ [sortBy]: sortOrder } as any);
+
+  const total = await Job.countDocuments(whereCondition);
+
+  return {
+    data: result,
+    meta: {
+      total,
+      page,
+      limit,
+    },
+  };
+};
+
 export const jobService = {
   createJob,
   getAllJobs,
@@ -217,4 +276,5 @@ export const jobService = {
   deleteJob,
   approvedJob,
   createManualJob,
+  appliedJob,
 };

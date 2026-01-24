@@ -99,6 +99,32 @@ const approvedJob = catchAsync(async (req, res) => {
   });
 });
 
+const appliedJob = catchAsync(async (req, res) => {
+  const userId = req.user?.id;
+
+  const filters = pick(req.query, [
+    'searchTerm',
+    'title',
+    'location',
+    'companyName',
+    'companyType',
+    'postedBy',
+    'level',
+  ]);
+
+  const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+
+  const result = await jobService.appliedJob(userId, filters, options);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Applied jobs retrieved successfully',
+    meta: result.meta,
+    data: result.data,
+  });
+});
+
 export const jobController = {
   createJob,
   getAllJobs,
@@ -107,4 +133,5 @@ export const jobController = {
   deleteJob,
   approvedJob,
   createManualJob,
+  appliedJob,
 };
