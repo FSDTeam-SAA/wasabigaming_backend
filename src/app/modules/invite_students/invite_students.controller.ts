@@ -2,7 +2,6 @@ import { studentInviteService } from './invite_students.service';
 import catchAsync from '../../utils/catchAsycn';
 import sendResponse from '../../utils/sendResponse';
 import pick from '../../helper/pick';
-import AppError from '../../error/appError';
 
 const sendInvite = catchAsync(async (req, res) => {
   const userId = req.user?.id;
@@ -83,10 +82,8 @@ const deleteInviteStudent = catchAsync(async (req, res) => {
 
 const updateInviteStudentStatus = catchAsync(async (req, res) => {
   
-  const studentId  = req.params.id;
-  const { status } = req.body;
 
-  const result = await studentInviteService.updateInviteStudentStatus(studentId!, status);
+  const result = await studentInviteService.updateInviteStudentStatus(req.body);
 
   sendResponse(res, {
     statusCode: 200,

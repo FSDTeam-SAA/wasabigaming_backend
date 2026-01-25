@@ -19,6 +19,11 @@ router.get(
   inviteStudentController.getAllInviteStudents,
 );
 router.put(
+  '/status',
+  // auth(userRole.admin, userRole.school),
+  inviteStudentController.updateInviteStudentStatus,
+);
+router.put(
   '/:id',
   auth(userRole.admin, userRole.school),
   inviteStudentController.updateInviteStudent,
@@ -32,11 +37,6 @@ router.delete(
   '/:id',
   auth(userRole.admin, userRole.school),
   inviteStudentController.deleteInviteStudent,
-);
-router.put(
-  '/status/:id',
-  auth(userRole.admin, userRole.school),
-  inviteStudentController.updateInviteStudentStatus,
 );
 
 export const inviteStudentRouter = router;

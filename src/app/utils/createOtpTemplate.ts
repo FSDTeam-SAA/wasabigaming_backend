@@ -41,251 +41,153 @@ const createOtpTemplate = (
 
 export const sendInvitation = (
   studentName: string,
-  studentUrl: string,
   schoolName: string,
-  schoolCategory: string
+  schoolCategory: string,
+  studentEmail: string,
+  schoolId?: string,
 ): string => {
   return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <style>
-        body {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-          line-height: 1.6;
-          color: #333333;
-          margin: 0;
-          padding: 0;
-          background-color: #f5f5f5;
-        }
-        .email-container {
-          max-width: 600px;
-          margin: 20px auto;
-          background-color: #ffffff;
-          border-radius: 8px;
-          overflow: hidden;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-        .header {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          padding: 30px 40px;
-          text-align: center;
-          color: #ffffff;
-        }
-        .header h1 {
-          margin: 0;
-          font-size: 24px;
-          font-weight: 600;
-        }
-        .content {
-          padding: 40px;
-        }
-        .greeting {
-          font-size: 18px;
-          color: #333333;
-          margin-bottom: 20px;
-        }
-        .info-box {
-          background-color: #f8f9fa;
-          border-left: 4px solid #667eea;
-          padding: 20px;
-          margin: 25px 0;
-          border-radius: 4px;
-        }
-        .info-box p {
-          margin: 8px 0;
-          font-size: 15px;
-        }
-        .info-box strong {
-          color: #555555;
-          display: inline-block;
-          min-width: 140px;
-        }
-        .download-section {
-          margin: 30px 0;
-          text-align: center;
-        }
-        .download-btn {
-          display: inline-block;
-          padding: 12px 30px;
-          background-color: #667eea;
-          color: #ffffff !important;
-          text-decoration: none;
-          border-radius: 6px;
-          font-weight: 500;
-          transition: background-color 0.3s ease;
-        }
-        .download-btn:hover {
-          background-color: #5568d3;
-        }
-        .action-section {
-          margin: 35px 0;
-          padding: 25px;
-          background-color: #fafafa;
-          border-radius: 6px;
-          text-align: center;
-        }
-        .action-section h3 {
-          margin: 0 0 20px 0;
-          font-size: 16px;
-          color: #555555;
-          font-weight: 600;
-        }
-        .button-group {
-          display: flex;
-          gap: 15px;
-          justify-content: center;
-          flex-wrap: wrap;
-        }
-        .action-btn {
-          display: inline-block;
-          padding: 12px 35px;
-          border-radius: 6px;
-          text-decoration: none;
-          font-weight: 500;
-          font-size: 15px;
-          cursor: pointer;
-          border: none;
-          transition: all 0.3s ease;
-          min-width: 120px;
-        }
-        .accept-btn {
-          background-color: #28a745;
-          color: #ffffff !important;
-        }
-        .accept-btn:hover {
-          background-color: #218838;
-        }
-        .accept-btn.clicked {
-          background-color: #1e7e34;
-          cursor: not-allowed;
-        }
-        .reject-btn {
-          background-color: #dc3545;
-          color: #ffffff !important;
-        }
-        .reject-btn:hover {
-          background-color: #c82333;
-        }
-        .reject-btn.clicked {
-          background-color: #bd2130;
-          cursor: not-allowed;
-        }
-        .footer {
-          padding: 30px 40px;
-          background-color: #f8f9fa;
-          border-top: 1px solid #e9ecef;
-        }
-        .footer p {
-          margin: 5px 0;
-          color: #666666;
-          font-size: 14px;
-        }
-        .footer strong {
-          color: #333333;
-        }
-        @media only screen and (max-width: 600px) {
-          .content {
-            padding: 25px 20px;
-          }
-          .header {
-            padding: 25px 20px;
-          }
-          .button-group {
-            flex-direction: column;
-            padding:5px;
-          }
-          .action-btn {
-            width: 100%;
-          }
-        }
-      </style>
-    </head>
-    <body>
-      <div class="email-container">
-        <div class="header">
-          <h1>School Invitation</h1>
-        </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>School Invitation</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7fa;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f7fa; padding: 40px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); overflow: hidden;">
+          
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600;">School Invitation</h1>
+            </td>
+          </tr>
+          
+          <!-- Content -->
+          <tr>
+            <td style="padding: 40px 30px;">
+              <p style="margin: 0 0 20px; font-size: 16px; color: #333333; line-height: 1.6;">
+                Hello <strong style="color: #667eea;">${studentName}</strong>,
+              </p>
+              
+              <p style="margin: 0 0 30px; font-size: 16px; color: #555555; line-height: 1.6;">
+                You have been invited to join the following school:
+              </p>
+              
+              <!-- School Info Box -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8f9fc; border-left: 4px solid #667eea; border-radius: 8px; margin-bottom: 30px;">
+                <tr>
+                  <td style="padding: 25px;">
+                    <p style="margin: 0 0 12px; font-size: 15px; color: #333333;">
+                      <strong style="color: #667eea;">School Name:</strong> 
+                      <span style="color: #555555;">${schoolName}</span>
+                    </p>
+                    <p style="margin: 0; font-size: 15px; color: #333333;">
+                      <strong style="color: #667eea;">Category:</strong> 
+                      <span style="color: #555555;">${schoolCategory}</span>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+              
+              <p style="margin: 0 0 25px; font-size: 16px; color: #555555; line-height: 1.6;">
+                Please choose one of the options below to respond:
+              </p>
+              
+              <!-- Buttons -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px;">
+                <tr>
+                  <td align="center" style="padding: 0 10px 15px 0;">
+                    <a href="http://localhost:3000?status=accepted&email=${studentEmail}andschoolId=${schoolId}" 
+                       style="display: inline-block; padding: 14px 40px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); transition: transform 0.2s;">
+                      ✓ Accept Invitation
+                    </a>
+                  </td>
+                  <td align="center" style="padding: 0 0 15px 10px;">
+                    <a href="http://localhost:3000?status=rejected&email=${studentEmail}andschoolId=${schoolId}" 
+                       style="display: inline-block; padding: 14px 40px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3); transition: transform 0.2s;">
+                      ✗ Reject Invitation
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              
+              <p style="margin: 0; font-size: 14px; color: #888888; line-height: 1.6; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+                If you did not expect this invitation, you can safely ignore this email.
+              </p>
+            </td>
+          </tr>
+          
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f8f9fc; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+              <p style="margin: 0 0 8px; font-size: 15px; color: #555555;">Best regards,</p>
+              <p style="margin: 0; font-size: 17px; color: #667eea; font-weight: 600;">${schoolName}</p>
+              <p style="margin: 15px 0 0; font-size: 13px; color: #888888;">
+                © ${new Date().getFullYear()} ${schoolName}. All rights reserved.
+              </p>
+            </td>
+          </tr>
+          
+        </table>
         
-        <div class="content">
-          <p class="greeting">Hello <strong>${studentName}</strong>,</p>
-          
-          <p>You have been invited as a student to join the following institution:</p>
-          
-          <div class="info-box">
-            <p><strong>School Name:</strong> ${schoolName}</p>
-            <p><strong>Category:</strong> ${schoolCategory}</p>
-          </div>
-          
-          <div class="download-section">
-            <p style="margin-bottom: 15px;">Get started by downloading your onboarding materials:</p>
-            <a href="${studentUrl}" class="download-btn" target="_blank">Download Materials</a>
-          </div>
-          
-          <div class="action-section">
-            <h3>Please respond to this invitation:</h3>
-            <div class="button-group ">
-              <a href="#" class="action-btn accept-btn" onclick="handleInvitation(event, 'accepted', this)">Accept Invitation</a>
-              <a href="#" class="action-btn reject-btn" onclick="handleInvitation(event, 'rejected', this)">Reject Invitation</a>
-            </div>
-          </div>
-        </div>
+        <!-- Bottom Spacing -->
+        <table width="600" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="padding: 20px; text-align: center;">
+              <p style="margin: 0; font-size: 12px; color: #888888;">
+                This is an automated message. Please do not reply to this email.
+              </p>
+            </td>
+          </tr>
+        </table>
         
-        <div class="footer">
-          <p>Best regards,</p>
-          <p><strong>${schoolName}</strong></p>
-        </div>
-      </div>
-      
-      <script>
-        function handleInvitation(event, status, button) {
-          event.preventDefault();
-          
-          // Prevent multiple clicks
-          if (button.classList.contains('clicked')) {
-            return;
-          }
-          
-          // Add clicked class to change color
-          button.classList.add('clicked');
-          
-          // Update button text
-          const originalText = button.textContent;
-          button.textContent = status === 'accepted' ? 'Accepting...' : 'Rejecting...';
-          
-          // Make API call
-          fetch('http://localhost:5000/api/v1/invite-students/6971e787f9ae442e08875f0f?status=' + status, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          })
-          .then(response => response.json())
-          .then(data => {
-            console.log('Success:', data);
-            button.textContent = status === 'accepted' ? '✓ Accepted' : '✓ Rejected';
-            
-            // Disable both buttons after selection
-            document.querySelectorAll('.action-btn').forEach(btn => {
-              btn.style.pointerEvents = 'none';
-              btn.style.opacity = '0.6';
-            });
-            
-            // Keep the selected button visible
-            button.style.opacity = '1';
-          })
-          .catch(error => {
-            console.error('Error:', error);
-            button.textContent = 'Error - Try Again';
-            button.classList.remove('clicked');
-          });
-        }
-      </script>
-    </body>
-    </html>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
   `;
 };
 
+
+export const sendPasswordAndEmail = (
+  password: string,
+  email?: string,
+  companyName: string = 'Wasabigaming',
+): string => `
+  <div style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 20px auto; background-color: #f9fafb; padding: 24px;">
+    <div style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.08);">
+      
+      <!-- Header -->
+      <header style="background: linear-gradient(90deg, #4f46e5, #6366f1); padding: 28px; text-align: center; color: #ffffff;">
+        <h2 style="margin: 0; font-size: 22px; font-weight: 600;">Verify your Email</h2>
+        <p style="margin: 6px 0 0; font-size: 14px; opacity: 0.9;">Secure your ${companyName} account</p>
+      </header>
+      
+      <!-- Body -->
+      <main style="padding: 32px 24px; text-align: center; color: #374151;">
+        <p style="font-size: 16px; margin: 0 0 16px;">Hi ${email || 'there'},</p>
+        <p style="font-size: 15px; line-height: 1.6; margin: 0 0 24px;">
+          We received a request to verify your account. Please use the password and login your account:
+        </p>
+        
+        <!-- OTP Box -->
+        <div style="display: inline-block; background-color: #eef2ff; padding: 18px 36px; border-radius: 12px; font-size: 32px; font-weight: 700; color: #4f46e5; letter-spacing: 6px; margin: 20px 0;">
+          ${password}
+        </div>
+      
+      </main>
+      
+      <!-- Footer -->
+      <footer style="background-color: #f3f4f6; text-align: center; padding: 16px; font-size: 12px; color: #9ca3af;">
+        &copy; ${new Date().getFullYear()} ${companyName}. All rights reserved.
+      </footer>
+    </div>
+  </div>
+`;
 export default createOtpTemplate;
