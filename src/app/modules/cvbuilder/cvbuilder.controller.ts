@@ -80,10 +80,23 @@ const deleteCVbuilder = catchAsync(async (req, res) => {
     data: result,
   });
 });
+
+const leaderShip = catchAsync(async(req , res) => {
+
+  const result = await cvbuilderService.leaderShip(req.body);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Leadership description data updated successfully',
+    data: result,
+  });
+})
 export const cvbuilderController = {
   createCVbuilder,
   getAllCVbuilder,
   getSingleCVbuilder,
   updateCVbuilder,
   deleteCVbuilder,
+  leaderShip
 };
