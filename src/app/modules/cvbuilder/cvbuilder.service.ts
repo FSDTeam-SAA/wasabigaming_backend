@@ -5,7 +5,7 @@ import { userRole } from '../user/user.constant';
 import User from '../user/user.model';
 import { ICVbuilder } from './cvbuilder.interface';
 import CVbuilder from './cvbuilder.model';
-import { cvBuilderDescription, cvBuilderSummary } from '../../helper/aiEndpoint';
+import  { cvBuilderDescription, cvBuilderSummary }  from '../../helper/aiEndpoint';
 
 const createCVbuilder = async (userId: string, payload: ICVbuilder) => {
   const user = await User.findById(userId);
