@@ -25,6 +25,7 @@ import { psychometricAttemptRouter } from '../modules/psychometricAttempt/psycho
 import { courseQuizAttemptRouter } from '../modules/courseQuizAttempt/courseQuizAttempt.routes';
 import { teamRoutes } from '../modules/team/team.route';
 import { cardRouter } from '../modules/card/card.routes';
+import { coverLetterRouter } from '../modules/coverLetter/coverLetter.route';
 
 
 const router = Router();
@@ -118,6 +119,10 @@ const moduleRoutes = [
     path: '/card',
     route: cardRouter,
   },
+  {
+    path: '/cover-letter',
+    route: coverLetterRouter 
+  }
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

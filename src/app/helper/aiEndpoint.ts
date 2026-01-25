@@ -101,9 +101,96 @@ export const cvBuilderSummary = async (
   }
 };
 
+// export const updatedCoverLetter = async(jobDescription: string, uploadCv: Express.Multer.File): Promise<string | null> => {
+//   try {
+//     const formData = new FormData();
+//     formData.append('job_desc', jobDescription);
+//     formData.append('file', uploadCv);
+
+//     const response = await axios.post(
+//       'https://ai-api-wasabigamning.onrender.com/api/gen-cover-letter/',
+//       formData,
+//       {
+//         timeout: 15000,
+//       }
+//     );
+//     console.log(response);
+//     const data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
+//     return data?.status && data?.coverletter ? data.coverletter : null;
+//   } catch (error: any) {
+//     console.error('CoverLetter AI ERROR:', error.response?.data);
+//     return null;
+//   }
+// }
+
+interface CoverLetterResponse {
+  status: boolean;
+  statuscode: number;
+  applicant: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    location: string;
+  };
+  coverLetter: {
+    subject: string;
+    paragraphs: string[];
+  };
+}
+
+// export const updatedCoverLetter = async(
+//   jobDescription: string, 
+//   uploadCv: Express.Multer.File
+// ): Promise<CoverLetterResponse | null> => {
+//   try {
+//     const formData = new FormData();
+//     formData.append('job_desc', jobDescription);
+//     formData.append('file', uploadCv.buffer, {
+//       filename: uploadCv.originalname,
+//       contentType: uploadCv.mimetype,
+//     });
+
+//     const response = await axios.post(
+//       'https://ai-api-wasabigamning.onrender.com/api/gen-cover-letter/',
+//       formData,
+//       {
+//         headers: formData.getHeaders(),
+//         timeout: 15000,
+//       }
+//     );
+
+//     const data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
+//     return data?.status ? data : null;
+//   } catch (error: any) {
+//     console.error('CoverLetter AI ERROR:', error.response?.data);
+//     return null;
+//   }
+// }
+
+export const updatedCoverLetter = async (jobDescription: string, file: Express.Multer.File) => {
+  
+  const formData = new FormData();
+
+  formData.append('job_desc', jobDescription);
+  formData.append('file', file.buffer, {
+    filename: file.originalname,
+    contentType: file.mimetype,
+  });
+
+  const response = await axios.post(
+    'https://ai-api-wasabigamning.onrender.com/api/gen-cover-letter/',
+    formData,
+    {
+      headers: formData.getHeaders(),
+      maxBodyLength: Infinity,
+      timeout: 120000,
+    },
+  );
+
+  return response.data;
+};
 
 export const aiIntregation = {
-  lawFirmAi,
-  cvBuilderDescription,
-  cvBuilderSummary
+  lawFirmAi
 };
