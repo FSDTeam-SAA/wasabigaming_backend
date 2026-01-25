@@ -51,7 +51,7 @@ export const cvBuilderDescription = async (
         timeout: 15000,
       }
     );
-    // console.log(response, "1");
+    console.log(response, "1");
     const data =
       typeof response.data === 'string'
         ? JSON.parse(response.data)
