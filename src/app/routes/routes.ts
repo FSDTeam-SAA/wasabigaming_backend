@@ -27,6 +27,7 @@ import { teamRoutes } from '../modules/team/team.route';
 import { cardRouter } from '../modules/card/card.routes';
 import { coverLetterRouter } from '../modules/coverLetter/coverLetter.route';
 import { appliedJobRoutes } from '../modules/appliedJob/appliedJob.routes';
+import { mockInterviewRouter } from '../modules/mockInterview/mockInterview.route';
 
 const router = Router();
 
@@ -126,6 +127,10 @@ const moduleRoutes = [
   {
     path: '/applied-job',
     route: appliedJobRoutes,
+  },
+  {
+    path:'/mock-interview',
+    route:mockInterviewRouter
   },
 ];
 
