@@ -28,6 +28,7 @@ import { cardRouter } from '../modules/card/card.routes';
 import { coverLetterRouter } from '../modules/coverLetter/coverLetter.route';
 import { appliedJobRoutes } from '../modules/appliedJob/appliedJob.routes';
 import { mockInterviewRouter } from '../modules/mockInterview/mockInterview.route';
+import { mockInterviewSessionRouter } from '../modules/mockInterviewSession/mockInterviewSession.route';
 
 const router = Router();
 
@@ -131,6 +132,10 @@ const moduleRoutes = [
   {
     path:'/mock-interview',
     route:mockInterviewRouter
+  },
+  {
+    path:'/mock-interview-session',
+    route:mockInterviewSessionRouter
   },
 ];
 

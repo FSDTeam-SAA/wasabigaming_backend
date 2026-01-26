@@ -1,5 +1,6 @@
 import axios from 'axios';
 import FormData from 'form-data';
+import fs from 'fs';
 
 const lawFirmAi = async (jobTitle: string, location: string) => {
   try {
@@ -101,28 +102,6 @@ export const cvBuilderSummary = async (
   }
 };
 
-// export const updatedCoverLetter = async(jobDescription: string, uploadCv: Express.Multer.File): Promise<string | null> => {
-//   try {
-//     const formData = new FormData();
-//     formData.append('job_desc', jobDescription);
-//     formData.append('file', uploadCv);
-
-//     const response = await axios.post(
-//       'https://ai-api-wasabigamning.onrender.com/api/gen-cover-letter/',
-//       formData,
-//       {
-//         timeout: 15000,
-//       }
-//     );
-//     console.log(response);
-//     const data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
-//     return data?.status && data?.coverletter ? data.coverletter : null;
-//   } catch (error: any) {
-//     console.error('CoverLetter AI ERROR:', error.response?.data);
-//     return null;
-//   }
-// }
-
 interface CoverLetterResponse {
   status: boolean;
   statuscode: number;
@@ -138,35 +117,6 @@ interface CoverLetterResponse {
     paragraphs: string[];
   };
 }
-
-// export const updatedCoverLetter = async(
-//   jobDescription: string, 
-//   uploadCv: Express.Multer.File
-// ): Promise<CoverLetterResponse | null> => {
-//   try {
-//     const formData = new FormData();
-//     formData.append('job_desc', jobDescription);
-//     formData.append('file', uploadCv.buffer, {
-//       filename: uploadCv.originalname,
-//       contentType: uploadCv.mimetype,
-//     });
-
-//     const response = await axios.post(
-//       'https://ai-api-wasabigamning.onrender.com/api/gen-cover-letter/',
-//       formData,
-//       {
-//         headers: formData.getHeaders(),
-//         timeout: 15000,
-//       }
-//     );
-
-//     const data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
-//     return data?.status ? data : null;
-//   } catch (error: any) {
-//     console.error('CoverLetter AI ERROR:', error.response?.data);
-//     return null;
-//   }
-// }
 
 export const updatedCoverLetter = async (jobDescription: string, file: Express.Multer.File) => {
   
@@ -190,6 +140,75 @@ export const updatedCoverLetter = async (jobDescription: string, file: Express.M
 
   return response.data;
 };
+
+export const mockInterviewQuestionGenerate = async (
+  category: any,
+  questionNumber?: Number
+): Promise<string | null> => {
+  try {
+    const payload: any = { segment:category };
+    if (questionNumber !== undefined) {
+      payload.n_question = questionNumber;
+    }
+
+    const response = await axios.post(
+      'https://ai-api-wasabigamning.onrender.com/api/mock-question/',
+      payload, 
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded', 
+        },
+        timeout: 120000,
+      }
+    );
+
+   
+    let data: any;
+    try {
+      data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
+    } catch (err) {
+      console.error('JSON parse error:', err);
+      return null;
+    }
+
+    return data?.status && data?.text ? data.text : null;
+  } catch (error: any) {
+    console.error('SUMMARY AI ERROR:', error.response?.data || error.message);
+    return null;
+  }
+};
+
+export const mockInterviewAnswerCheck = async (
+  question: string,
+  segment: string,
+  videoPath: string
+): Promise<any | null> => {
+  try {
+    const formData = new FormData();
+
+    formData.append('question', question);
+    formData.append('segment', segment);
+    formData.append('video', fs.createReadStream(videoPath));
+
+    const response = await axios.post(
+      'https://ai-api-wasabigamning.onrender.com/api/mock-interview/',
+      formData,
+      {
+        headers: formData.getHeaders(),
+        timeout: 120000,
+      }
+    );
+
+    return response.data;
+  } catch (error: any) {
+    console.error(
+      'AI CHECK ERROR:',
+      error.response?.data || error.message
+    );
+    return null;
+  }
+};
+
 
 export const aiIntregation = {
   lawFirmAi
