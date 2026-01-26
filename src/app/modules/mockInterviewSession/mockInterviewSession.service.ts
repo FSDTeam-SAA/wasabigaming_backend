@@ -1,7 +1,7 @@
 import { IMockInterviewSession } from './mockInterviewSession.interface';
 import AppError from '../../error/appError';
 import pagination, { IOption } from '../../helper/pagenation';
-import MockInterviewSession from './mockinterviewSession.model';
+import MockInterviewSession from './mockInterviewSession.model';
 import { mockInterviewAnswerCheck, mockInterviewQuestionGenerate } from '../../helper/aiEndpoint';
 
 const createMockInterviewSession = async (
