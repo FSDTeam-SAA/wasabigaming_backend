@@ -1,0 +1,70 @@
+import mongoose, { Schema } from 'mongoose';
+import { IMockInterviewSession } from './mockInterviewSession.interface';
+
+const mockInterviewSessionSchema = new Schema<IMockInterviewSession>({
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    index: true
+  },
+
+  mockInterviewId: {
+    type: Schema.Types.ObjectId,
+    ref: 'MockInterview',
+    index: true
+  },
+
+  attemptNumber: {
+    type: Number
+  },
+   questions: [
+    {
+      _id:false,
+      questionText: String,
+      order: Number
+    }
+  ],
+  category:{type:String},
+  questionNumber:{type:String},
+  status: {
+    type: String,
+    // enum: ['IN_PROGRESS', 'COMPLETED', 'EXPIRED'],
+    // default: 'IN_PROGRESS'
+  },
+
+    answers: {
+    type: [
+        {
+        questionIndex: Number,
+        videoUrl: String,
+        startTime: Date,
+        endTime: Date,
+        aiResult: {
+            score: Number,
+            communication_and_clarity: Number,
+            problem_solving: Number,
+            professionalism_and_presence: Number,
+            Commercial_awareness: Number,
+            feedback: [String],
+        },
+        },
+    ],
+    default: [], // ✅ VERY IMPORTANT
+    },
+
+
+  finalResult: {
+    averageScore: Number,
+    strengths: [String],
+    weaknesses: [String],
+    finalFeedback: String
+  }
+}, { timestamps: true });
+
+
+const MockInterviewSession = mongoose.model<IMockInterviewSession>(
+  'MockInterviewSession',
+  mockInterviewSessionSchema,
+);
+
+export default MockInterviewSession;

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import FormData from 'form-data';
+import fs from 'fs';
 
 const lawFirmAi = async (jobTitle: string, location: string) => {
   try {
@@ -51,7 +52,7 @@ export const cvBuilderDescription = async (
         timeout: 15000,
       }
     );
-    // console.log(response, "1");
+    console.log(response, "1");
     const data =
       typeof response.data === 'string'
         ? JSON.parse(response.data)
@@ -101,9 +102,114 @@ export const cvBuilderSummary = async (
   }
 };
 
+interface CoverLetterResponse {
+  status: boolean;
+  statuscode: number;
+  applicant: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    location: string;
+  };
+  coverLetter: {
+    subject: string;
+    paragraphs: string[];
+  };
+}
+
+export const updatedCoverLetter = async (jobDescription: string, file: Express.Multer.File) => {
+  
+  const formData = new FormData();
+
+  formData.append('job_desc', jobDescription);
+  formData.append('file', file.buffer, {
+    filename: file.originalname,
+    contentType: file.mimetype,
+  });
+
+  const response = await axios.post(
+    'https://ai-api-wasabigamning.onrender.com/api/gen-cover-letter/',
+    formData,
+    {
+      headers: formData.getHeaders(),
+      maxBodyLength: Infinity,
+      timeout: 120000,
+    },
+  );
+
+  return response.data;
+};
+
+export const mockInterviewQuestionGenerate = async (
+  category: any,
+  questionNumber?: Number
+): Promise<string | null> => {
+  try {
+    const payload: any = { segment:category };
+    if (questionNumber !== undefined) {
+      payload.n_question = questionNumber;
+    }
+
+    const response = await axios.post(
+      'https://ai-api-wasabigamning.onrender.com/api/mock-question/',
+      payload, 
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded', 
+        },
+        timeout: 120000,
+      }
+    );
+
+   
+    let data: any;
+    try {
+      data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
+    } catch (err) {
+      console.error('JSON parse error:', err);
+      return null;
+    }
+
+    return data?.status && data?.text ? data.text : null;
+  } catch (error: any) {
+    console.error('SUMMARY AI ERROR:', error.response?.data || error.message);
+    return null;
+  }
+};
+
+export const mockInterviewAnswerCheck = async (
+  question: string,
+  segment: string,
+  videoPath: string
+): Promise<any | null> => {
+  try {
+    const formData = new FormData();
+
+    formData.append('question', question);
+    formData.append('segment', segment);
+    formData.append('video', fs.createReadStream(videoPath));
+
+    const response = await axios.post(
+      'https://ai-api-wasabigamning.onrender.com/api/mock-interview/',
+      formData,
+      {
+        headers: formData.getHeaders(),
+        timeout: 120000,
+      }
+    );
+
+    return response.data;
+  } catch (error: any) {
+    console.error(
+      'AI CHECK ERROR:',
+      error.response?.data || error.message
+    );
+    return null;
+  }
+};
+
 
 export const aiIntregation = {
-  lawFirmAi,
-  cvBuilderDescription,
-  cvBuilderSummary
+  lawFirmAi
 };

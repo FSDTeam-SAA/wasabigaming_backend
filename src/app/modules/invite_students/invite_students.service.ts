@@ -6,41 +6,13 @@ import { fileUploader } from '../../helper/fileUploder';
 import User from '../user/user.model';
 import { userRole } from '../user/user.constant';
 import sendMailer from '../../helper/sendMailer';
-import { sendInvitation }  from '../../utils/createOtpTemplate';
+import { sendInvitation, sendPasswordAndEmail }  from '../../utils/createOtpTemplate';
 import { Types } from "mongoose";
+// import sendPasswordAndEmail from '../../utils/createOtpTemplate';
 
-
-// const sendInvite = async (
-//   userId: string,
-//   payload: IInviteStudent | IInviteStudent[],
-//   file: Express.Multer.File, 
-// ) => {
-//   const user = await User.findById(userId);
-//   if (!user) {
-//     throw new AppError(400, 'User not found');
-//   }
-
-//   if (user.role !== userRole.school) {
-//     throw new AppError(403, 'Only school users can send invites');
-//   }
-
-//   let fileUrl = null;
-
-//   if (!file) {
-//     throw new AppError(400, 'No file uploaded');
-//   }
-//   const uploadedFile = await fileUploader.uploadToCloudinary(file);
-//   fileUrl = uploadedFile.url;
-//   const students = Array.isArray(payload) ? payload : [payload];
-//   const formattedStudents = students.map((student) => ({
-//     ...student,
-//     createBy: user._id,
-//     url: fileUrl,
-//   }));
-
-//   const result = await InviteStudent.insertMany(formattedStudents);
-
-  // Optionally send emails
+const generateSixDigitCode = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
  const sendInvite = async (
   userId: string,
   payload: IInviteStudent | IInviteStudent[],
@@ -79,9 +51,10 @@ await Promise.all(
       "Student Invitation",
        sendInvitation(
         student.name,
-        student?.url || '',
         schoolName || '',
-        schoolCategory 
+        schoolCategory,
+        student.email,
+        userId
       )
     )
   )
@@ -215,16 +188,61 @@ const deleteInviteStudent = async (id: string, userId:string) => {
   return inviteStudentData;
 };
 
-const updateInviteStudentStatus = async (id: string, status: 'pending' | 'accepted' | 'rejected') => {
-  const inviteStudent = await InviteStudent.findById(id);
+const updateInviteStudentStatus = async (payload: any) => {
+  const { email, status, schoolId } = payload;
 
-  if (!inviteStudent) {
-    throw new AppError(404, 'Student not found');
+  const school = await User.findById(schoolId);
+  if (!school) {
+    throw new AppError(404, 'School not found');
   }
-  inviteStudent.status = status;
-  await inviteStudent.save();
-  return inviteStudent;
-}
+
+  const inviteStudent = await InviteStudent.findOne({ email });
+  if (!inviteStudent) {
+    throw new AppError(404, 'Invite student not found');
+  }
+
+  if (status === 'accepted') {
+    let studentUser = await User.findOne({ email });
+    let password = null;
+    if (!studentUser) {
+      password = generateSixDigitCode();
+      studentUser = await User.create({
+        name: inviteStudent.name,
+        email: inviteStudent.email,
+        role: 'student',
+        schoolId: school._id,
+        password
+      });
+
+        await sendMailer(
+          studentUser.email,
+          studentUser.firstName + ' ' + studentUser.lastName,
+          sendPasswordAndEmail(password, studentUser.email, 'Wasabigaming'),
+      );
+    } else {
+      studentUser.schoolId = school._id;
+      await studentUser.save();
+    }
+    inviteStudent.status = 'accepted';
+    await inviteStudent.save();
+
+    return {
+      inviteStatus: inviteStudent,
+      student: studentUser,
+    };
+  }
+  if (status === 'rejected') {
+    inviteStudent.status = 'rejected';
+    await inviteStudent.save();
+
+    return {
+      inviteStatus: inviteStudent,
+    };
+  }
+
+  throw new AppError(400, 'Invalid invite status');
+};
+
 
 export const studentInviteService = {
   sendInvite,
