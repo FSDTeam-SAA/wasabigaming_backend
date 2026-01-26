@@ -22,11 +22,6 @@ const mockInterviewSchema = new Schema<IMockInterview>(
       professionalism_and_presence: { type: String },
     },
 
-    questions: {
-      type: [String],
-      default: [],
-    },
-
     score: { type: String, default: "0/0" },
     category: { type: String },
 

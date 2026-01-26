@@ -20,8 +20,6 @@ export interface IMockInterview {
     professionalism_and_presence: string;
   };
 
-  questions: string[];
-
   score: string;
   category: string;
 
