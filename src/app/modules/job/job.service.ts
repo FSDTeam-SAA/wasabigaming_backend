@@ -266,6 +266,13 @@ const appliedJob = async (userId: string, params: any, options: IOption) => {
   };
 };
 
+// const filterJobCvBased = async(
+//   file?:Express.Multer.file
+// ) => {
+
+
+// }
+
 export const jobService = {
   createJob,
   getAllJobs,
@@ -275,4 +282,5 @@ export const jobService = {
   approvedJob,
   createManualJob,
   appliedJob,
+  // filterJobCvBased
 };
