@@ -1,6 +1,7 @@
 import AppError from '../../error/appError';
 import { fileUploader } from '../../helper/fileUploder';
 import pagination, { IOption } from '../../helper/pagenation';
+import Job from '../job/job.model';
 import User from '../user/user.model';
 import { ILawfirm } from './lawfirm.interface';
 import LawFirm from './lawfirm.model';
@@ -160,6 +161,15 @@ const approvedLawfirm = async (id: string) => {
   return result;
 };
 
+const getJobLawFirmBased = async(firmName:string) => {
+
+  const job = await Job.find({companyName: firmName});
+  if(!job){
+    throw new AppError(404, "Job not found");
+  }
+  return job;
+}
+
 export const lawfirmService = {
   createLawfirm,
   getAllLawfirm,
@@ -167,4 +177,5 @@ export const lawfirmService = {
   uploadLawfirm,
   deleteLawfirm,
   approvedLawfirm,
+  getJobLawFirmBased
 };

@@ -58,4 +58,6 @@ export interface ILawfirm {
 
   jobs?: Types.ObjectId[];
   applyNumber?: Types.ObjectId[];
+  cultureAndValue:string[];
+  benefitsAndPerks:string[];
 }

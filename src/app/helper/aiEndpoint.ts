@@ -2,11 +2,10 @@ import axios from 'axios';
 import FormData from 'form-data';
 import fs from 'fs';
 
-const lawFirmAi = async (jobTitle: string, location: string) => {
+const lawFirmAi = async (jobTitle: string) => {
   try {
     const formData = new URLSearchParams();
     formData.append('job_title', jobTitle);
-    formData.append('location', location);
 
     const response = await axios.post(
       'https://ai-wasabigaming.onrender.com/api/find-jobs/',
@@ -178,37 +177,104 @@ export const mockInterviewQuestionGenerate = async (
   }
 };
 
+// export const mockInterviewAnswerCheck = async (
+//   question: string,
+//   segment: string,
+//   videoPath: string
+// ): Promise<any | null> => {
+//   try {
+//     const formData = new FormData();
+
+//     formData.append('question', question);
+//     formData.append('segment', segment);
+//     formData.append('video', fs.createReadStream(videoPath));
+
+//     const response = await axios.post(
+//       'https://ai-api-wasabigamning.onrender.com/api/mock-interview/',
+//       formData,
+//       {
+//         headers: formData.getHeaders(),
+//         timeout: 120000,
+//       }
+//     );
+
+//     return response.data;
+//   } catch (error: any) {
+//     console.error(
+//       'AI CHECK ERROR:',
+//       error.response?.data || error.message
+//     );
+//     return null;
+//   }
+// };
+
+// export const mockInterviewAnswerCheck = async (
+//   question: string,
+//   segment: string,
+//   videoPath: string
+// ): Promise<any | null> => {
+//   try {
+//     const formData = new FormData();
+
+//     formData.append('question', question);
+//     formData.append('segment', segment);
+//     formData.append('video', fs.createReadStream(videoPath), {
+//       filename: 'video.mp4',
+//       contentType: 'video/mp4'
+//     });
+
+//     const response = await axios.post(
+//       'https://ai-api-wasabigamning.onrender.com/api/mock-interview/',
+//       formData,
+//       {
+//         headers: {
+//           ...formData.getHeaders(),
+//         },
+//         timeout: 120000,
+//       }
+//     );
+//     console.log(response);
+//     return response.data;
+//   } catch (error: any) {
+//     console.error(
+//       'AI CHECK ERROR:',
+//       error.response?.data || error.message
+//     );
+//     return null;
+//   }
+// };
 export const mockInterviewAnswerCheck = async (
   question: string,
   segment: string,
-  videoPath: string
+  videoBuffer: Buffer,
+  filename: string
 ): Promise<any | null> => {
   try {
     const formData = new FormData();
-
     formData.append('question', question);
     formData.append('segment', segment);
-    formData.append('video', fs.createReadStream(videoPath));
+    formData.append('video', videoBuffer, {
+      filename: filename,
+      contentType: 'video/mp4'
+    });
 
     const response = await axios.post(
       'https://ai-api-wasabigamning.onrender.com/api/mock-interview/',
       formData,
       {
-        headers: formData.getHeaders(),
+        headers: {
+          ...formData.getHeaders(),
+        },
         timeout: 120000,
       }
     );
-
     return response.data;
   } catch (error: any) {
-    console.error(
-      'AI CHECK ERROR:',
-      error.response?.data || error.message
-    );
+    console.error('AI CHECK ERROR:', error.response?.data || error.message);
+    console.error('Full error:', error);
     return null;
   }
 };
-
 
 export const aiIntregation = {
   lawFirmAi

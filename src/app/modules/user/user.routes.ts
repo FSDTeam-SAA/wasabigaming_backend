@@ -21,7 +21,7 @@ router.put(
   userController.updateUserById,
 );
 router.get('/overview', auth(userRole.admin), userController.schoolOverview);
-
+router.get('/match-job', auth(userRole.admin, userRole.student), userController.getJobsMatchingUserSkillsController);
 router.get('/all-user', auth(userRole.admin), userController.getAllUser);
 router.get('/:id', auth(userRole.admin), userController.getUserById);
 router.put('/:id', auth(userRole.admin), userController.updateUserById);

@@ -41,7 +41,6 @@ const createJob = async (
 
   const dataResponse: ILawFirmJob[] = await aiIntregation.lawFirmAi(
     job_title,
-    location,
   );
 
   const result = await Promise.all(

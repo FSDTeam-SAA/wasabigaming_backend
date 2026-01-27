@@ -29,6 +29,7 @@ import { coverLetterRouter } from '../modules/coverLetter/coverLetter.route';
 import { appliedJobRoutes } from '../modules/appliedJob/appliedJob.routes';
 import { mockInterviewRouter } from '../modules/mockInterview/mockInterview.route';
 import { mockInterviewSessionRouter } from '../modules/mockInterviewSession/mockInterviewSession.route';
+import { bookMarkRouter } from '../modules/jobBookMark/jobBookMark.route';
 
 const router = Router();
 
@@ -136,6 +137,10 @@ const moduleRoutes = [
   {
     path:'/mock-interview-session',
     route:mockInterviewSessionRouter
+  },
+  {
+    path:'/book-mark',
+    route:bookMarkRouter
   },
 ];
 
