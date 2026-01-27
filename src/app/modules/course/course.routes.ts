@@ -11,6 +11,8 @@ const router = express.Router();
 //   fileUploader.upload.array('courseVideo'),
 //   courseController.createCourse,
 // );
+router.get('/header',auth(userRole.admin, userRole.student), courseController.courseHeader)
+router.get('/dashboard', courseController.dashboardOverview)
 router.post(
   '/',
   auth(userRole.admin, userRole.school),

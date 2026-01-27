@@ -85,18 +85,6 @@ const deleteMockInterviewSessionById = catchAsync(async (req, res) => {
   });
 });
 
-// const startMockTest = catchAsync(async(req , res) => {
-
-//     const userId = req.user.id;
-//     const result = await mockInterviewSessionService.startMockTest(req.body, userId!);
-
-//      sendResponse(res, {
-//         statusCode: 200,
-//         success: true,
-//         message: 'Mock test start successfully',
-//         data: result,
-//     });
-// })
 
 const submitMockAnswer = catchAsync(async (req, res) => {
   const { sessionId, questionIndex, question, segment } = req.body;

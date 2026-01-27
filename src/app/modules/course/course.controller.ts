@@ -218,6 +218,29 @@ const couseEnroleuser = catchAsync(async (req, res) => {
   });
 });
 
+const courseHeader = catchAsync(async (req, res) => {
+  const userId = req.user?.id;
+  const result = await courseService.couseHeader(userId);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Course Enrolled successfully',
+    data: result,
+  });
+});
+//hdfghskfjhsfj
+const dashboardOverview = catchAsync(async (req, res) => {
+  const result = await courseService.dashboardOverview();
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Dashboard overview fetched successfully',
+    data: result,
+  });
+});
+
 export const courseController = {
   createCourse,
   getAllCourse,
@@ -229,4 +252,6 @@ export const courseController = {
   payCourse,
   couseEnroleuser,
   getUserSingleCourse,
+  courseHeader,
+  dashboardOverview
 };
