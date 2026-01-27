@@ -8,6 +8,7 @@ import { fileUploader } from '../../helper/fileUploder';
 const router = express.Router();
 
 router.post('/create-student', auth(userRole.admin), userController.createUser);
+router.get('/login-history', auth(userRole.admin, userRole.student), userController.getLoginHistory);
 
 router.get(
   '/profile',

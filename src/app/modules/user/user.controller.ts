@@ -1,7 +1,7 @@
 import catchAsync from '../../utils/catchAsycn';
 import sendResponse from '../../utils/sendResponse';
 import pick from '../../helper/pick';
-import { userService } from './user.service';
+import { getLoginHistoryFromDB, userService } from './user.service';
 
 const createUser = catchAsync(async (req, res) => {
   const { fullName } = req.body;
@@ -117,6 +117,19 @@ export const getJobsMatchingUserSkillsController = catchAsync(async (req, res) =
     });
   },
 );
+export const getLoginHistory = catchAsync(async (req, res) => {
+    const userId = req.user.id; // auth middleware থেকে আসবে
+
+    const result = await getLoginHistoryFromDB(userId);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: 'Login history retrieved successfully',
+      data: result,
+    });
+  }
+);
 
 export const userController = {
   createUser,
@@ -126,5 +139,6 @@ export const userController = {
   deleteUserById,
   profile,
   schoolOverview,
-  getJobsMatchingUserSkillsController
+  getJobsMatchingUserSkillsController,
+  getLoginHistory
 };

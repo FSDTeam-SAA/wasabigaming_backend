@@ -228,7 +228,23 @@ const getJobsMatchingUserSkills = async (userId: string, options: IOption) => {
     meta: { total, page, limit },
   };
 };
+export const getLoginHistoryFromDB = async (userId: string) => {
+  const user = await User.findById(userId).select('loginHistory');
 
+  if (!user) {
+    throw new AppError(404, 'User not found');
+  }
+
+  // latest first
+  const sortedHistory = user.loginHistory
+    ?.sort(
+      (a: any, b: any) =>
+        new Date(b.loginTime).getTime() -
+        new Date(a.loginTime).getTime()
+    );
+
+  return sortedHistory || [];
+};
 export const userService = {
   createUser,
   getAllUser,
@@ -238,4 +254,5 @@ export const userService = {
   profile,
   schoolOverview,
   getJobsMatchingUserSkills,
+  getLoginHistoryFromDB
 };
