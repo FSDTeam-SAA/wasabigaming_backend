@@ -11,6 +11,10 @@ const quizAnswerSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    correctAnswer: {
+      type: String,
+      required: true,
+    },
     isCorrect: {
       type: Boolean,
       required: true,

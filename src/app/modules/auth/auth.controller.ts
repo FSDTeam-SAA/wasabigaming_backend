@@ -24,10 +24,15 @@ const registerVerifyEmail = catchAsync(async (req, res) => {
     data: result,
   });
 });
+export const loginUser = catchAsync(async (req, res) => {
+  const { email, password, deviceInfo } = req.body;
 
-const loginUser = catchAsync(async (req, res) => {
-  const { email, password } = req.body;
-  const result = await authService.loginUser({ email, password });
+  const result = await authService.loginUser(
+    { email, password },
+    deviceInfo,
+    req.headers['user-agent'],
+    req.ip
+  );
 
   res.cookie('refreshToken', result.refreshToken, {
     httpOnly: true,

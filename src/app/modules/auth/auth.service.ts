@@ -10,6 +10,7 @@ import sendMailer from '../../helper/sendMailer';
 import bcrypt from 'bcryptjs';
 import createOtpTemplate from '../../utils/createOtpTemplate';
 import { userRole } from '../user/user.constant';
+import { UAParser } from 'ua-parser-js';
 
 const registerUser = async (payload: Partial<IUser>) => {
   let user = await User.findOne({ email: payload.email });
@@ -108,7 +109,12 @@ const registerVerifyEmail = async (email: string, otp: string) => {
   return { message: 'user registered successfully' };
 };
 
-const loginUser = async (payload: Partial<IUser>) => {
+export const loginUser = async (
+  payload: Partial<IUser>,
+  deviceInfo: any,
+  userAgentHeader?: string,
+  ipAddress?: string
+) => {
   const user = await User.findOne({ email: payload.email });
   if (!user) throw new AppError(401, 'User not found');
   if (!payload.password) throw new AppError(400, 'Password is required');
@@ -117,27 +123,48 @@ const loginUser = async (payload: Partial<IUser>) => {
 
   const isPasswordMatched = await bcrypt.compare(
     payload.password,
-    user.password,
+    user.password
   );
   if (!isPasswordMatched) throw new AppError(401, 'Password not matched');
-  // if (!user.verified) throw new AppError(403, 'Please verify your email first');
 
+  // Generate tokens
   const accessToken = jwtHelpers.genaretToken(
     { id: user._id, role: user.role, email: user.email },
     config.jwt.accessTokenSecret as Secret,
-    config.jwt.accessTokenExpires,
+    config.jwt.accessTokenExpires
   );
 
   const refreshToken = jwtHelpers.genaretToken(
     { id: user._id, role: user.role, email: user.email },
     config.jwt.refreshTokenSecret as Secret,
-    config.jwt.refreshTokenExpires,
+    config.jwt.refreshTokenExpires
   );
 
+  // Determine device name
+  let deviceName = 'Unknown Device';
+  if (deviceInfo && deviceInfo.name) {
+    deviceName = `${deviceInfo.name} (${deviceInfo.os || ''})`.trim();
+  } else if (userAgentHeader) {
+    const parser = new UAParser(userAgentHeader);
+    const result = parser.getResult();
+    deviceName =
+      result.device.model ||
+      `${result.browser.name || 'Unknown Browser'} on ${result.os.name || 'Unknown OS'}`;
+  }
+
+  // Save login history
+  user.loginHistory.unshift({
+    device: deviceName,
+    ipAddress: ipAddress || 'Unknown IP',
+    loginTime: { type: new Date() },
+  });
+
+  await user.save({ validateBeforeSave: false });
+
   const { password, ...userWithoutPassword } = user.toObject();
+
   return { accessToken, refreshToken, user: userWithoutPassword };
 };
-
 const refreshToken = async (token: string) => {
   const varifiedToken = jwtHelpers.verifyToken(
     token,

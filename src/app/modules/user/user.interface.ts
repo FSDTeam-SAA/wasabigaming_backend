@@ -51,6 +51,13 @@ export interface IUser {
   isSubscription?: boolean;
   subscriptionExpiry?: Date | null;
   subscription?: Types.ObjectId;
+  loginHistory: [{
+    device: string,
+    ipAddress: string,
+    loginTime: {
+      type: Date
+    }
+  }],
 
   createdAt: Date;
   updatedAt: Date;
