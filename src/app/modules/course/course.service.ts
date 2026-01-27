@@ -8,6 +8,7 @@ import Course from './course.model';
 import config from '../../config';
 import Payment from '../payment/payment.model';
 import { CourseQuizAttempt } from '../courseQuizAttempt/courseQuizAttempt.model';
+import mongoose from 'mongoose';
 
 const stripe = new Stripe(config.stripe.secretKey!);
 
@@ -452,6 +453,52 @@ const couseEnroleuser = async (userId: string, courseId: string) => {
   return result;
 };
 
+const couseHeader = async (userId: string) => {
+  const userObjectId = new mongoose.Types.ObjectId(userId);
+
+  const enrolledCourseCount = await Course.countDocuments({
+    enrolledStudents: userObjectId,
+  });
+
+  const purchasedCourseCount = await Payment.countDocuments({
+    user: userObjectId,
+    status: 'completed',
+    course: { $ne: null },
+  });
+
+  const completedVideoCount = 0;
+  // const completedVideoCount = await VideoProgress.countDocuments({
+  //   user: userObjectId,
+  //   isCompleted: true,
+  // });
+
+  return {
+    enrolledCourseCount,
+    purchasedCourseCount,
+    completedVideoCount,
+  };
+};
+
+const dashboardOverview = async () => {
+ 
+  const totalStudents = await User.countDocuments({
+    role: 'student',
+    status: 'active',
+  });
+
+  const totalFreeCourses = await Course.countDocuments({
+    isCourseFree: true,
+    status: 'active',
+  });
+
+  return {
+    totalStudents,
+    totalFreeCourses,
+  };
+};
+
+
+
 export const courseService = {
   createCourse,
   uploadCourse,
@@ -463,4 +510,6 @@ export const courseService = {
   payCourse,
   couseEnroleuser,
   getUserSingleCourse,
+  couseHeader,
+  dashboardOverview
 };
