@@ -8,7 +8,7 @@ const lawFirmAi = async (jobTitle: string) => {
     formData.append('job_title', jobTitle);
 
     const response = await axios.post(
-      'https://ai-wasabigaming.onrender.com/api/find-jobs/',
+      'https://ai-api-wasabigamning.onrender.com/api/find-jobs/',
       formData,
       {
         headers: {
@@ -21,7 +21,7 @@ const lawFirmAi = async (jobTitle: string) => {
       typeof response.data === 'string'
         ? JSON.parse(response.data)
         : response.data;
-
+        
     return parsedData.text;
   } catch (error: any) {
     console.log('AI ERROR STATUS:', error.response?.status);
@@ -259,7 +259,7 @@ export const mockInterviewAnswerCheck = async (
     });
 
     const response = await axios.post(
-      'https://ai-api-wasabigamning.onrender.com/api/mock-interview/',
+      'https://ai-api-wasabigamning.onrender.com/api//',
       formData,
       {
         headers: {

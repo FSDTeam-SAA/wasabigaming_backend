@@ -12,7 +12,7 @@ const jobSchema = new Schema<IJob>(
     salaryRange: { type: String },
     startDate: { type: String },
     applicationDeadline: { type: String },
-    jobId: { type: Schema.Types.Mixed, unique: true }, // string | number
+    jobId: { type: Schema.Types.Mixed, unique:true},
     jobStatus: { type: String, enum: ['Open', 'Closed'] },
     description: { type: String },
     additionalInfo: { type: String },

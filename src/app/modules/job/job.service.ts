@@ -34,7 +34,6 @@ const createManualJob = async (userId: string, payload: IJob) => {
 const createJob = async (
   userId: string,
   job_title: string,
-  location: string,
 ) => {
   const user = await User.findById(userId);
   if (!user) throw new AppError(404, 'user is not found');
@@ -50,7 +49,7 @@ const createJob = async (
       if (jobID) {
         return null;
       }
-      const job = await Job.create({
+      const job = await Job.findOneAndUpdate({
         title: data.title,
         url: data.url,
         location: data.location,
@@ -69,7 +68,7 @@ const createJob = async (
         companyId: lawfirm?._id || null,
       });
 
-      if (lawfirm) {
+      if (lawfirm && job) {
         lawfirm?.jobs?.push(job._id);
         await lawfirm.save();
       }
