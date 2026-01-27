@@ -6,9 +6,9 @@ export interface IJob {
   location: string;
   companyName: string;
   companyType: string;
-  postedBy: string; // e.g., "BPP University Limited"
+  postedBy: string; 
   level?: string;
-  salaryRange: string; // e.g., "£27,000.00 - £30,704.00 Yearly"
+  salaryRange: string;
   startDate: string;
   applicationDeadline: string;
   jobId: string | number;
