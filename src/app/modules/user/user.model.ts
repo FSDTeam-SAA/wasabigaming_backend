@@ -74,6 +74,14 @@ const userSchema = new Schema<IUser>(
       ],
       default: [],
     },
+    loginHistory: [{
+      device: String,
+      ipAddress: String,
+      loginTime: {
+        type: Date,
+        default: Date.now
+      }
+    }],
   },
   { timestamps: true },
 );
