@@ -16,8 +16,8 @@ const createManualJob = catchAsync(async (req, res) => {
 
 const createJob = catchAsync(async (req, res) => {
   const userId = req.user.id;
-  const { job_title, location } = req.body;
-  const result = await jobService.createJob(userId, job_title, location);
+  const { job_title} = req.body;
+  const result = await jobService.createJob(userId, job_title);
   sendResponse(res, {
     statusCode: 201,
     success: true,
@@ -125,6 +125,20 @@ const appliedJob = catchAsync(async (req, res) => {
   });
 });
 
+// const filterJobCvBased = catchAsync(async(req , res) => {
+    
+//   const file = req.file;
+//   const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+//   const result = await jobService.filterJobCvBased(file);
+
+//     sendResponse(res, {
+//       statusCode: 200,
+//       success: true,
+//       message: 'Applied jobs retrieved successfully',
+//       data: result,
+//   });
+// })
+
 export const jobController = {
   createJob,
   getAllJobs,
@@ -134,4 +148,5 @@ export const jobController = {
   approvedJob,
   createManualJob,
   appliedJob,
+  // filterJobCvBased
 };
