@@ -17,6 +17,7 @@ router.post(
   lawfirmController.createLawfirm,
 );
 router.get('/', lawfirmController.getAllLawfirm);
+router.get('/law-firm-based-job', lawfirmController.getJobLawFirmBased);
 
 router.put(
   '/:id/approved',

@@ -80,6 +80,8 @@ const LawfirmSchema = new Schema<ILawfirm>(
     },
     jobs: { type: [Types.ObjectId], ref: 'Job', default: [] },
     applyNumber: { type: [Types.ObjectId], ref: 'User', default: [] },
+    cultureAndValue:[{type:String}],
+    benefitsAndPerks:[{type:String}],
   },
   { timestamps: true },
 );

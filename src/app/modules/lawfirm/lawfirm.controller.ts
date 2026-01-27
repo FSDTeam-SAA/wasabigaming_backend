@@ -86,6 +86,20 @@ const approvedLawfirm = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const getJobLawFirmBased = catchAsync(async(req , res) => {
+
+  const firmName = req.query.firmName as string;
+
+  const result = await lawfirmService.getJobLawFirmBased(firmName);
+
+   sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Get all law firm based job successfully',
+    data: result,
+  });
+
+})
 
 export const lawfirmController = {
   createLawfirm,
@@ -94,4 +108,5 @@ export const lawfirmController = {
   uploadLawfirm,
   deleteLawfirm,
   approvedLawfirm,
+  getJobLawFirmBased
 };

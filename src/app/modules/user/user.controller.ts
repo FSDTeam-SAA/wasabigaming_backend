@@ -104,6 +104,19 @@ const schoolOverview = catchAsync(async (req, res) => {
     data: result,
   });
 });
+export const getJobsMatchingUserSkillsController = catchAsync(async (req, res) => {
+    const userId = req.user.id;
+    const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+    const result = await userService.getJobsMatchingUserSkills(userId, options);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: 'Jobs matching your skills retrieved successfully',
+      data: result,
+    });
+  },
+);
 
 export const userController = {
   createUser,
@@ -113,4 +126,5 @@ export const userController = {
   deleteUserById,
   profile,
   schoolOverview,
+  getJobsMatchingUserSkillsController
 };

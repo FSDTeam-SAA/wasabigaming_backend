@@ -45,7 +45,10 @@ const mockInterviewSessionSchema = new Schema<IMockInterviewSession>({
             problem_solving: Number,
             professionalism_and_presence: Number,
             Commercial_awareness: Number,
-            feedback: [String],
+            feedback: {
+              strength: { type: String },
+              areas_for_improvement: { type: String },
+            },
         },
         },
     ],

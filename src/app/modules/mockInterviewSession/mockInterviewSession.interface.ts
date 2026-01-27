@@ -1,13 +1,17 @@
 import { Types } from 'mongoose';
 
 export interface IAIResult {
-  score: number;
-  communication_and_clarity: number;
-  problem_solving: number;
-  professionalism_and_presence: number;
-  Commercial_awareness:number;
-  feedback: string[];
+  score?: number;
+  communication_and_clarity?: number;
+  problem_solving?: number;
+  professionalism_and_presence?: number;
+  Commercial_awareness?: number;
+  feedback?: {
+    strength: string;
+    areas_for_improvement: string;
+  };
 }
+
 export interface IMockInterviewAnswer {
   questionIndex: number;
   videoUrl: string;

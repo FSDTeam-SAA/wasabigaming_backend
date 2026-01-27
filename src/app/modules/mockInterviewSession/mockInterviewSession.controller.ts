@@ -86,13 +86,39 @@ const deleteMockInterviewSessionById = catchAsync(async (req, res) => {
 });
 
 
+// const submitMockAnswer = catchAsync(async (req, res) => {
+//   const { sessionId, questionIndex, question, segment } = req.body;
+//   const videoFile = req.file;
+
+//   if (!videoFile) {
+//     throw new AppError(400, 'Video is required');
+//   }
+
+//   const result = await mockInterviewSessionService.submitAnswer(
+//     {
+//       sessionId,
+//       questionIndex: Number(questionIndex),
+//       question,
+//       segment,
+//       videoPath: videoFile.path,
+//     },
+//     req.user.id
+//   );
+
+//     sendResponse(res, {
+//         statusCode: 200,
+//         success: true,
+//         message: 'Mock test start successfully',
+//         data: result,
+//     });
+// });
+
 const submitMockAnswer = catchAsync(async (req, res) => {
   const { sessionId, questionIndex, question, segment } = req.body;
   const videoFile = req.file;
-
-  if (!videoFile) {
-    throw new AppError(400, 'Video is required');
-  }
+  // if (!videoFile) {
+  //   throw new AppError(400, 'Video is required');
+  // }
 
   const result = await mockInterviewSessionService.submitAnswer(
     {
@@ -100,7 +126,7 @@ const submitMockAnswer = catchAsync(async (req, res) => {
       questionIndex: Number(questionIndex),
       question,
       segment,
-      videoPath: videoFile.path,
+      videoFile: videoFile, 
     },
     req.user.id
   );
@@ -112,8 +138,6 @@ const submitMockAnswer = catchAsync(async (req, res) => {
         data: result,
     });
 });
-
-
 
 export const mockInterviewSessionController = {
   createMockInterviewSession,

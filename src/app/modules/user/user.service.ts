@@ -2,6 +2,7 @@ import AppError from '../../error/appError';
 import { fileUploader } from '../../helper/fileUploder';
 import pagination, { IOption } from '../../helper/pagenation';
 import sendMailer from '../../helper/sendMailer';
+import Job from '../job/job.model';
 import { userRole } from './user.constant';
 
 import { IUser } from './user.interface';
@@ -203,6 +204,31 @@ const schoolOverview = async () => {
   };
 };
 
+const getJobsMatchingUserSkills = async (userId: string, options: IOption) => {
+ 
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(404, 'User not found');
+  if (!user.skills || user.skills.length === 0) {
+    return { data: [], meta: { total: 0, page: options.page, limit: options.limit } };
+  }
+  const { page, limit, skip, sortBy, sortOrder } = pagination(options);
+  const query = {
+    requiredSkills: { $in: user.skills },
+  };
+
+  const jobs = await Job.find(query)
+    .skip(skip)
+    .limit(limit)
+    .sort({ [sortBy]: sortOrder } as any);
+
+  const total = await Job.countDocuments(query);
+
+  return {
+    data: jobs,
+    meta: { total, page, limit },
+  };
+};
+
 export const userService = {
   createUser,
   getAllUser,
@@ -211,4 +237,5 @@ export const userService = {
   deleteUserById,
   profile,
   schoolOverview,
+  getJobsMatchingUserSkills,
 };
