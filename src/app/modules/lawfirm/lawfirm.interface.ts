@@ -27,21 +27,21 @@ export interface ILawfirm {
     keyHighlights?: string;
   };
 
-  practiceAndWork?: {
-    practiceAreas?: string[];
-    practiceAreaDescription?: string;
-    recentWorks?: string;
-  };
+  // practiceAndWork?: {
+  //   practiceAreas?: string[];
+  //   practiceAreaDescription?: string;
+  //   recentWorks?: string;
+  // };
 
-  initiatives?: {
-    technologyInitiatives?: string;
-    awardsAndRecognition?: string;
-  };
+  // initiatives?: {
+  //   technologyInitiatives?: string;
+  //   awardsAndRecognition?: string;
+  // };
 
-  csrAndDeAndI?: {
-    diversityEquityAndInclusion?: string;
-    csrAndProBono?: string;
-  };
+  // csrAndDeAndI?: {
+  //   diversityEquityAndInclusion?: string;
+  //   csrAndProBono?: string;
+  // };
 
   awardsAndRecognition?: string;
   aboutFirm: string;
@@ -57,7 +57,7 @@ export interface ILawfirm {
   status?: 'approved' | 'pending' | 'rejected';
 
   jobs?: Types.ObjectId[];
-  applyNumber?: Types.ObjectId[];
+  applyNumber?: number;
   cultureAndValue:string[];
   benefitsAndPerks:string[];
 }
