@@ -23,6 +23,12 @@ router.post(
   mockInterviewSessionController.submitMockAnswer
 );
 router.get(
+  '/average-score/:id',
+  auth(userRole.admin, userRole.student),
+  mockInterviewSessionController.getAverageScoresWithFeedback
+);
+
+router.get(
   '/:id',
   auth(userRole.admin, userRole.student),
   mockInterviewSessionController.getMockInterviewSessionById
@@ -37,6 +43,7 @@ router.delete(
   auth(userRole.admin, userRole.student),
   mockInterviewSessionController.deleteMockInterviewSessionById
 );
+
 
 
 export const mockInterviewSessionRouter = router;
