@@ -30,6 +30,9 @@ import { appliedJobRoutes } from '../modules/appliedJob/appliedJob.routes';
 import { mockInterviewRouter } from '../modules/mockInterview/mockInterview.route';
 import { mockInterviewSessionRouter } from '../modules/mockInterviewSession/mockInterviewSession.route';
 import { bookMarkRouter } from '../modules/jobBookMark/jobBookMark.route';
+import { aiassessmentRouter } from '../modules/aiassessment/aiassessment.routes';
+import { writtencasestudyRoutes } from '../modules/writtencasestudy/writtencasestudy.routes';
+import { presentationtaskRoutes } from '../modules/presentationtask/presentationtask.routes';
 
 const router = Router();
 
@@ -141,6 +144,18 @@ const moduleRoutes = [
   {
     path:'/book-mark',
     route:bookMarkRouter
+  },
+  {
+    path:'/aiassessment',
+    route:aiassessmentRouter
+  },
+  {
+    path:'/writtencasestudy',
+    route:writtencasestudyRoutes
+  },
+  {
+    path:'/presentationtask',
+    route:presentationtaskRoutes
   },
 ];
 
