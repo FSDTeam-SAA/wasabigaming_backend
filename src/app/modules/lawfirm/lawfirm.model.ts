@@ -70,7 +70,7 @@ const LawfirmSchema = new Schema<ILawfirm>(
     internshipOpportunities: [{ type: String, default: '' }],
     description: { type: String },
     location: { type: String },
-    practiceAreas:{types:String},
+    practiceAreas:{type:String},
 
     createdBy: { type: Types.ObjectId, ref: 'User', default: null },
     status: {
