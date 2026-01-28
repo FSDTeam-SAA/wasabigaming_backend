@@ -13,6 +13,7 @@ router.post(
 );
 
 router.get('/applied-job', auth(userRole.student), jobController.appliedJob);
+router.post('/filter-job-cv-based', auth(userRole.student, userRole.admin), fileUploader.upload.single('file'), jobController.filterJobCvBased);
 
 router.post('/', auth(userRole.admin), jobController.createManualJob);
 router.get('/', jobController.getAllJobs);

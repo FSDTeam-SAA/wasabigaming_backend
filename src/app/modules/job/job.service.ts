@@ -1,5 +1,5 @@
 import AppError from '../../error/appError';
-import { aiIntregation } from '../../helper/aiEndpoint';
+import { aiIntregation, cvBasedJobFilter } from '../../helper/aiEndpoint';
 import pagination, { IOption } from '../../helper/pagenation';
 import Lawfirm from '../lawfirm/lawfirm.model';
 import { userRole } from '../user/user.constant';
@@ -266,12 +266,33 @@ const appliedJob = async (userId: string, params: any, options: IOption) => {
   };
 };
 
-// const filterJobCvBased = async(
-//   file?:Express.Multer.file
-// ) => {
+const filterJobCvBased = async(options:IOption, file?: Express.Multer.File) => {
 
+  const { page, limit, skip, sortBy, sortOrder } = pagination(options);
+  if(!file){
+    throw new AppError(404, "File upload required");
+  }
 
-// }
+  const aiApiCall = await cvBasedJobFilter(file);
+  if(!aiApiCall){
+    throw new AppError(404, "Currently not found job your cv based")
+  }
+  // const andCondition: any[] = [];
+  // const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
+
+  // const result = await Job.find(whereCondition)
+  //   .skip(skip)
+  //   .limit(limit)
+  //   .sort({ [sortBy]: sortOrder } as any);
+
+  // if (!result) {
+  //   throw new AppError(404, 'Job not found');
+  // }
+
+  // const total = await Job.countDocuments(whereCondition);
+
+  return  aiApiCall;
+  };
 
 export const jobService = {
   createJob,
@@ -282,5 +303,5 @@ export const jobService = {
   approvedJob,
   createManualJob,
   appliedJob,
-  // filterJobCvBased
+  filterJobCvBased
 };
