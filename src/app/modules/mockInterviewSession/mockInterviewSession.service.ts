@@ -75,7 +75,24 @@ const getMockInterviewSessionById = async (id: string) => {
     throw new AppError(404, 'Mock interview session not found');
   }
 
-  return session;
+  // Extract all question scores
+  const questionScores = session.answers.map(a => a.aiResult?.score || 0);
+
+  // Calculate session average score
+  const sessionAverageScore =
+    questionScores.length > 0
+      ? Number(
+          (questionScores.reduce((a, b) => a + b, 0) / questionScores.length).toFixed(2)
+        )
+      : 0;
+
+  // // Add averageScore to finalResult
+  // const sessionData = session.toObject();
+  // sessionData.finalResult = {
+  //   ...sessionData.finalResult,
+  //   averageScore: sessionAverageScore
+  // };
+  return { session, sessionAverageScore };
 };
 
 const updateMockInterviewSession = async (
@@ -106,7 +123,6 @@ const deleteMockInterviewSessionById = async (id: string) => {
 
   return session;
 };
-
 const submitAnswer = async (payload: any, userId: string) => {
   const {
     sessionId,
@@ -115,62 +131,142 @@ const submitAnswer = async (payload: any, userId: string) => {
     segment,
     videoFile,
   } = payload;
+
   const session = await MockInterviewSession.findById(sessionId);
-  
   if (!session) {
     throw new AppError(404, 'Mock interview session not found');
   }
-  // if (session.userId.toString() !== userId) {
-  //   throw new AppError(403, 'Unauthorized');
-  // }
-  
+
   const startTime = new Date();
+
   const aiResult = await mockInterviewAnswerCheck(
     question,
     segment,
     videoFile.buffer,
     videoFile.originalname
   );
-  
+
   if (!aiResult) {
     throw new AppError(500, 'AI failed to analyze answer');
   }
-  console.log(aiResult);
+
   const endTime = new Date();
-  
   const uploadedVideo = await fileUploader.uploadToCloudinary(videoFile);
-  
+
+  const MAX_SCORE = 100;
+  const normalize = (value: number) => (value / MAX_SCORE) * 10;
+
+  const score =
+    (
+      normalize(aiResult.text.interview_crushed) +
+      normalize(aiResult.text.communication_and_clarity) +
+      normalize(aiResult.text.commercial_awareness) +
+      normalize(aiResult.text.problem_solving) +
+      normalize(aiResult.text.professionalism_and_presence)
+    ) / 5;
+
+  const finalScore = Number(score.toFixed(2));
+
   const answerPayload = {
     questionIndex,
     videoUrl: uploadedVideo.url,
     startTime,
     endTime,
     aiResult: {
+      score: finalScore,
+      interview_crushed: aiResult.text.interview_crushed,
       communication_and_clarity: aiResult.text.communication_and_clarity,
+      commercial_awareness: aiResult.text.commercial_awareness,
       problem_solving: aiResult.text.problem_solving,
       professionalism_and_presence: aiResult.text.professionalism_and_presence,
-      Commercial_awareness: aiResult.text.Commercial_awareness,
-      feedback: aiResult.text.feedback || [],
+      feedback: aiResult.text.feedback || {},
     },
   };
-  
+
   const index = session.answers.findIndex(
     a => a.questionIndex === questionIndex
   );
+
   if (index !== -1) {
     session.answers[index] = answerPayload;
   } else {
     session.answers.push(answerPayload);
   }
-  
+
   await session.save();
   return session.answers;
 };
+
+
+const getAverageScoresWithFeedback = async (sessionId: string) => {
+  const session = await MockInterviewSession.findById(sessionId);
+
+  if (!session) {
+    throw new AppError(404, 'Mock interview session not found');
+  }
+
+  if (!session.answers || session.answers.length === 0) {
+    throw new AppError(400, 'No answers submitted yet');
+  }
+
+  const totals = {
+    interview_crushed: 0,
+    communication_and_clarity: 0,
+    commercial_awareness: 0,
+    problem_solving: 0,
+    professionalism_and_presence: 0,
+  };
+
+  const feedback = {
+    strength: [] as string[],
+    areas_for_improvement: [] as string[],
+  };
+
+  let count = 0;
+
+  session.answers.forEach(answer => {
+    const ai = answer.aiResult;
+    if (!ai) return;
+
+    totals.interview_crushed += ai.interview_crushed ?? 0;
+    totals.communication_and_clarity += ai.communication_and_clarity ?? 0;
+    totals.commercial_awareness += ai.commercial_awareness ?? 0;
+    totals.problem_solving += ai.problem_solving ?? 0;
+    totals.professionalism_and_presence += ai.professionalism_and_presence ?? 0;
+
+    if (ai.feedback?.strength) {
+      feedback.strength.push(ai.feedback.strength);
+    }
+
+    if (ai.feedback?.areas_for_improvement) {
+      feedback.areas_for_improvement.push(ai.feedback.areas_for_improvement);
+    }
+
+    count++;
+  });
+
+  const averageScores = {
+    interview_crushed: Number((totals.interview_crushed / count).toFixed(2)),
+    communication_and_clarity: Number((totals.communication_and_clarity / count).toFixed(2)),
+    commercial_awareness: Number((totals.commercial_awareness / count).toFixed(2)),
+    problem_solving: Number((totals.problem_solving / count).toFixed(2)),
+    professionalism_and_presence: Number((totals.professionalism_and_presence / count).toFixed(2)),
+  };
+
+  return {
+    sessionId,
+    totalAnsweredQuestions: count,
+    averageScores,
+    feedback,
+  };
+};
+
 export const mockInterviewSessionService = {
   createMockInterviewSession,
   getAllMockInterviewSessions,
   getMockInterviewSessionById,
   updateMockInterviewSession,
   deleteMockInterviewSessionById,
-  submitAnswer
+  submitAnswer,
+  getAverageScoresWithFeedback
 };

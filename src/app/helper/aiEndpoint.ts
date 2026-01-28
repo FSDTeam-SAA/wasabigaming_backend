@@ -193,7 +193,7 @@ export const mockInterviewAnswerCheck = async (
     });
 
     const response = await axios.post(
-      'https://ai-api-wasabigamning.onrender.com/api//',
+      'https://ai-api-wasabigamning.onrender.com/api/mock-interview/',
       formData,
       {
         headers: {
