@@ -247,6 +247,29 @@ export const aiareanalysisSubmission = async (analysis: string) => {
   }
 };
 
+export const aipsychometricTestResult = async (id: string) => {
+  try {
+    const response = await axios.post(
+      'https://ai-api-wasabigamning.onrender.com/api/anlz-psychometric/',
+      {
+        test_id: id,
+      },
+      {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    return response;
+  } catch (error: any) {
+    console.log('AI ERROR STATUS:', error.response?.status);
+    console.log('AI ERROR DATA:', error.response?.data);
+    throw error;
+  }
+};
+
 export const cvBuilderDescription = async (
   job_information: {
     role: string;
