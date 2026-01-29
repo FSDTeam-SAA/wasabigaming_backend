@@ -15,8 +15,7 @@ const generateSixDigitCode = () => {
 };
  const sendInvite = async (
   userId: string,
-  payload: IInviteStudent | IInviteStudent[],
-  file: Express.Multer.File, 
+  payload: IInviteStudent | IInviteStudent[] 
 ) => {
   const user = await User.findById(userId);
   if (!user) {
@@ -29,17 +28,17 @@ const generateSixDigitCode = () => {
   if (user.role !== userRole.school) {
     throw new AppError(403, 'Only school users can send invites');
   }
-  let fileUrl = null;
-  if(file){
-    const uploadedFile = await fileUploader.uploadToCloudinary(file);
-    fileUrl = uploadedFile.url;
-  }
+  // let fileUrl = null;
+  // if(file){
+  //   const uploadedFile = await fileUploader.uploadToCloudinary(file);
+  //   fileUrl = uploadedFile.url;
+  // }
 
   const students = Array.isArray(payload) ? payload : [payload];
   const formattedStudents = students.map((student) => ({
     ...student,
     createBy: user._id,
-    url: fileUrl,
+    // url: fileUrl,
   }));
 
   const result = await InviteStudent.insertMany(formattedStudents);
