@@ -1,43 +1,43 @@
 import mongoose, { Schema, Model, Types } from 'mongoose';
 import { ILawfirm } from './lawfirm.interface';
 
-const SectionUrlSchema = new Schema(
-  {
-    keyHighlights: { type: String, default: '' },
-    practiceAreas: { type: String, default: '' },
-    technologyInitiatives: { type: String, default: '' },
-    recentWorks: { type: String, default: '' },
-    deAndIUrl: { type: String, default: '' },
-    csrUrl: { type: String, default: '' },
-    awardsUrl: { type: String, default: '' },
-  },
-  { _id: false },
-);
+// const SectionUrlSchema = new Schema(
+//   {
+//     keyHighlights: { type: String, default: '' },
+//     practiceAreas: { type: String, default: '' },
+//     technologyInitiatives: { type: String, default: '' },
+//     recentWorks: { type: String, default: '' },
+//     deAndIUrl: { type: String, default: '' },
+//     csrUrl: { type: String, default: '' },
+//     awardsUrl: { type: String, default: '' },
+//   },
+//   { _id: false },
+// );
 
-const PracticeAndWorkSchema = new Schema(
-  {
-    practiceAreas: { type: [String], default: [] },
-    practiceAreaDescription: { type: String, default: '' },
-    recentWorks: { type: String, default: '' },
-  },
-  { _id: false },
-);
+// const PracticeAndWorkSchema = new Schema(
+//   {
+//     practiceAreas: { type: [String], default: [] },
+//     practiceAreaDescription: { type: String, default: '' },
+//     recentWorks: { type: String, default: '' },
+//   },
+//   { _id: false },
+// );
 
-const InitiativesSchema = new Schema(
-  {
-    technologyInitiatives: { type: String, default: '' },
-    awardsAndRecognition: { type: String, default: '' },
-  },
-  { _id: false },
-);
+// const InitiativesSchema = new Schema(
+//   {
+//     technologyInitiatives: { type: String, default: '' },
+//     awardsAndRecognition: { type: String, default: '' },
+//   },
+//   { _id: false },
+// );
 
-const CsrAndDeAndISchema = new Schema(
-  {
-    diversityEquityAndInclusion: { type: String, default: '' },
-    csrAndProBono: { type: String, default: '' },
-  },
-  { _id: false },
-);
+// const CsrAndDeAndISchema = new Schema(
+//   {
+//     diversityEquityAndInclusion: { type: String, default: '' },
+//     csrAndProBono: { type: String, default: '' },
+//   },
+//   { _id: false },
+// );
 
 const LawfirmSchema = new Schema<ILawfirm>(
   {
@@ -59,9 +59,9 @@ const LawfirmSchema = new Schema<ILawfirm>(
     annualRevenue: { type: String, default: '' },
 
      keyHighlights: { type: String, default: '' },
-    practiceAndWork: { type: PracticeAndWorkSchema, default: () => ({}) },
-    initiatives: { type: InitiativesSchema, default: () => ({}) },
-    csrAndDeAndI: { type: CsrAndDeAndISchema, default: () => ({}) },
+    // practiceAndWork: { type: PracticeAndWorkSchema, default: () => ({}) },
+    // initiatives: { type: InitiativesSchema, default: () => ({}) },
+    // csrAndDeAndI: { type: CsrAndDeAndISchema, default: () => ({}) },
 
     awardsAndRecognition: { type: String, default: '' },
     aboutFirm: { type: String },
@@ -70,7 +70,7 @@ const LawfirmSchema = new Schema<ILawfirm>(
     internshipOpportunities: [{ type: String, default: '' }],
     description: { type: String },
     location: { type: String },
-    practiceAreas:{types:String},
+    practiceAreas:{type:String},
 
     createdBy: { type: Types.ObjectId, ref: 'User', default: null },
     status: {
@@ -79,7 +79,7 @@ const LawfirmSchema = new Schema<ILawfirm>(
       default: 'pending',
     },
     jobs: { type: [Types.ObjectId], ref: 'Job', default: [] },
-    applyNumber: { type: [Types.ObjectId], ref: 'User', default: [] },
+    applyNumber: {Type: Number},
     cultureAndValue:[{type:String}],
     benefitsAndPerks:[{type:String}],
   },

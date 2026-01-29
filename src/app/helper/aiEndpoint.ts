@@ -346,72 +346,6 @@ export const mockInterviewQuestionGenerate = async (
   }
 };
 
-// export const mockInterviewAnswerCheck = async (
-//   question: string,
-//   segment: string,
-//   videoPath: string
-// ): Promise<any | null> => {
-//   try {
-//     const formData = new FormData();
-
-//     formData.append('question', question);
-//     formData.append('segment', segment);
-//     formData.append('video', fs.createReadStream(videoPath));
-
-//     const response = await axios.post(
-//       'https://ai-api-wasabigamning.onrender.com/api/mock-interview/',
-//       formData,
-//       {
-//         headers: formData.getHeaders(),
-//         timeout: 120000,
-//       }
-//     );
-
-//     return response.data;
-//   } catch (error: any) {
-//     console.error(
-//       'AI CHECK ERROR:',
-//       error.response?.data || error.message
-//     );
-//     return null;
-//   }
-// };
-
-// export const mockInterviewAnswerCheck = async (
-//   question: string,
-//   segment: string,
-//   videoPath: string
-// ): Promise<any | null> => {
-//   try {
-//     const formData = new FormData();
-
-//     formData.append('question', question);
-//     formData.append('segment', segment);
-//     formData.append('video', fs.createReadStream(videoPath), {
-//       filename: 'video.mp4',
-//       contentType: 'video/mp4'
-//     });
-
-//     const response = await axios.post(
-//       'https://ai-api-wasabigamning.onrender.com/api/mock-interview/',
-//       formData,
-//       {
-//         headers: {
-//           ...formData.getHeaders(),
-//         },
-//         timeout: 120000,
-//       }
-//     );
-//     console.log(response);
-//     return response.data;
-//   } catch (error: any) {
-//     console.error(
-//       'AI CHECK ERROR:',
-//       error.response?.data || error.message
-//     );
-//     return null;
-//   }
-// };
 export const mockInterviewAnswerCheck = async (
   question: string,
   segment: string,
@@ -428,7 +362,7 @@ export const mockInterviewAnswerCheck = async (
     });
 
     const response = await axios.post(
-      'https://ai-api-wasabigamning.onrender.com/api//',
+      'https://ai-api-wasabigamning.onrender.com/api/mock-interview/',
       formData,
       {
         headers: {
@@ -443,6 +377,28 @@ export const mockInterviewAnswerCheck = async (
     console.error('Full error:', error);
     return null;
   }
+};
+
+export const cvBasedJobFilter = async(
+  file: Express.Multer.File
+):Promise<any | null> => {
+  const formData = new FormData();
+  formData.append('file', file.buffer, {
+    filename: file.originalname,
+    contentType: file.mimetype,
+  });
+
+  const response = await axios.post(
+    'https://ai-api-wasabigamning.onrender.com/api/find-jobs-by-cv/',
+    formData,
+    {
+      headers: formData.getHeaders(),
+      maxBodyLength: Infinity,
+      timeout: 120000,
+    },
+  );
+
+  return response.data;
 };
 
 export const aiIntregation = {

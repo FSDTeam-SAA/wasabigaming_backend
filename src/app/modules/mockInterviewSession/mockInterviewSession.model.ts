@@ -41,10 +41,11 @@ const mockInterviewSessionSchema = new Schema<IMockInterviewSession>({
         endTime: Date,
         aiResult: {
             score: Number,
+            interview_crushed: Number,
             communication_and_clarity: Number,
+            commercial_awareness: Number,
             problem_solving: Number,
-            professionalism_and_presence: Number,
-            Commercial_awareness: Number,
+            professionalism_and_presence:Number,
             feedback: {
               strength: { type: String },
               areas_for_improvement: { type: String },
@@ -56,12 +57,12 @@ const mockInterviewSessionSchema = new Schema<IMockInterviewSession>({
     },
 
 
-  finalResult: {
-    averageScore: Number,
-    strengths: [String],
-    weaknesses: [String],
-    finalFeedback: String
-  }
+  // finalResult: {
+  //   averageScore: Number,
+  //   strengths: [String],
+  //   weaknesses: [String],
+  //   finalFeedback: String
+  // }
 }, { timestamps: true });
 
 

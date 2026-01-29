@@ -1,11 +1,12 @@
 import { Types } from 'mongoose';
 
 export interface IAIResult {
-  score?: number;
-  communication_and_clarity?: number;
-  problem_solving?: number;
-  professionalism_and_presence?: number;
-  Commercial_awareness?: number;
+   score?: number;
+   interview_crushed?: number,
+   communication_and_clarity?: number,
+   commercial_awareness?: number,
+   problem_solving?: number,
+   professionalism_and_presence?:number,
   feedback?: {
     strength: string;
     areas_for_improvement: string;
@@ -23,12 +24,12 @@ export interface IMockInterviewQuestion {
   questionText: string;
   order: number;
 }
-export interface IFinalResult {
-  averageScore: number;
-  strengths: string[];
-  weaknesses: string[];
-  finalFeedback: string;
-}
+// export interface IFinalResult {
+//   averageScore: number;
+//   strengths: string[];
+//   weaknesses: string[];
+//   finalFeedback: string;
+// }
 
 export interface IMockInterviewSession {
   userId: Types.ObjectId;
@@ -42,7 +43,7 @@ export interface IMockInterviewSession {
 
   answers: IMockInterviewAnswer[];
 
-  finalResult?: IFinalResult;
+  // finalResult?: IFinalResult;
 
   createdAt?: Date;
   updatedAt?: Date;
