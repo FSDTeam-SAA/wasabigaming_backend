@@ -30,6 +30,11 @@ import { appliedJobRoutes } from '../modules/appliedJob/appliedJob.routes';
 import { mockInterviewRouter } from '../modules/mockInterview/mockInterview.route';
 import { mockInterviewSessionRouter } from '../modules/mockInterviewSession/mockInterviewSession.route';
 import { bookMarkRouter } from '../modules/jobBookMark/jobBookMark.route';
+import { aiassessmentRouter } from '../modules/aiassessment/aiassessment.routes';
+import { writtencasestudyRoutes } from '../modules/writtencasestudy/writtencasestudy.routes';
+import { presentationtaskRoutes } from '../modules/presentationtask/presentationtask.routes';
+import { intrayemailRouter } from '../modules/intrayemail/intrayemail.routes';
+import { careanalysisRouter } from '../modules/careanalysis/careanalysis.routes';
 
 const router = Router();
 
@@ -124,23 +129,43 @@ const moduleRoutes = [
   },
   {
     path: '/cover-letter',
-    route: coverLetterRouter 
+    route: coverLetterRouter,
   },
   {
     path: '/applied-job',
     route: appliedJobRoutes,
   },
   {
-    path:'/mock-interview',
-    route:mockInterviewRouter
+    path: '/mock-interview',
+    route: mockInterviewRouter,
   },
   {
-    path:'/mock-interview-session',
-    route:mockInterviewSessionRouter
+    path: '/mock-interview-session',
+    route: mockInterviewSessionRouter,
   },
   {
-    path:'/book-mark',
-    route:bookMarkRouter
+    path: '/book-mark',
+    route: bookMarkRouter,
+  },
+  {
+    path: '/aiassessment',
+    route: aiassessmentRouter,
+  },
+  {
+    path: '/writtencasestudy',
+    route: writtencasestudyRoutes,
+  },
+  {
+    path: '/presentationtask',
+    route: presentationtaskRoutes,
+  },
+  {
+    path: '/intrayemail',
+    route: intrayemailRouter,
+  },
+  {
+    path: '/careanalysis',
+    route: careanalysisRouter,
   },
 ];
 
