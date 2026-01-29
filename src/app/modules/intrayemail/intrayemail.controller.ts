@@ -5,7 +5,7 @@ import { intrayemailService } from './intrayemail.service';
 const createintrayemail = catchAsync(async (req, res) => {
   const result = await intrayemailService.createIntrayemail(
     req.user?.id,
-    req.body,
+    req.params.id!,
   );
 
   sendResponse(res, {

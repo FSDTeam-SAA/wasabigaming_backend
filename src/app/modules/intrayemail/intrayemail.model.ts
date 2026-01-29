@@ -22,36 +22,24 @@ const intrayemailSchema = new mongoose.Schema<IIntrayemail>(
       type: String,
     },
 
-    feedback: {
+    prioritization: {
       type: String,
     },
 
-    totalScore: {
-      type: Number,
-    },
-
-    wordsCompleted: {
-      type: Number,
-    },
-
-    completionRate: {
-      type: Number,
-    },
-
-    writingSpeed: {
-      type: Number,
-    },
-
-    overallGrade: {
+    commercialAwarness: {
       type: String,
     },
 
-    successTips: {
-      type: [String],
+    contextUnderstanding: {
+      type: String,
     },
 
-    recommendations: {
-      type: [String],
+    judgment: {
+      type: String,
+    },
+
+    riskAssessment: {
+      type: String,
     },
 
     applicant: {

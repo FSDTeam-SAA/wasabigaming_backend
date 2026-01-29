@@ -5,14 +5,10 @@ export interface IIntrayemail {
   discribtion?: string;
   question?: string;
   yourResponse?: string;
-  feedback?: string;
-  totalScore?: number;
-  wordsCompleted?: number;
-  completionRate?: number;
-  writingSpeed?: number;
-  overallGrade?: string;
-  successTips?: string[];
-  recommendations?: string[];
-
+  prioritization?: string;
+  judgment?: string;
+  commercialAwarness?: string;
+  contextUnderstanding?: string;
+  riskAssessment?: string;
   applicant?: Types.ObjectId;
 }

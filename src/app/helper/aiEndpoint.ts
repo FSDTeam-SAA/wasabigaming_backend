@@ -187,7 +187,59 @@ export const aiintrayemailSubmission = async (caseStudy: string) => {
         ? JSON.parse(response.data)
         : response.data;
 
+    return parsedData;
+  } catch (error: any) {
+    console.log('AI ERROR STATUS:', error.response?.status);
+    console.log('AI ERROR DATA:', error.response?.data);
+    throw error;
+  }
+};
+
+export const aicareanalysisquestion = async () => {
+  try {
+    const response = await axios.post(
+      'https://ai-api-wasabigamning.onrender.com/api/case_summary_gen/',
+      {},
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    const parsedData =
+      typeof response.data === 'string'
+        ? JSON.parse(response.data)
+        : response.data;
+
     return parsedData.text;
+  } catch (error: any) {
+    console.log('AI ERROR STATUS:', error.response?.status);
+    console.log('AI ERROR DATA:', error.response?.data);
+    throw error;
+  }
+};
+export const aiareanalysisSubmission = async (analysis: string) => {
+  const formData = new URLSearchParams();
+  formData.append('your_summary', analysis);
+
+  try {
+    const response = await axios.post(
+      'https://ai-api-wasabigamning.onrender.com/api/case_law_summary/',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      },
+    );
+
+    const parsedData =
+      typeof response.data === 'string'
+        ? JSON.parse(response.data)
+        : response.data;
+
+    return parsedData;
   } catch (error: any) {
     console.log('AI ERROR STATUS:', error.response?.status);
     console.log('AI ERROR DATA:', error.response?.data);
@@ -379,9 +431,9 @@ export const mockInterviewAnswerCheck = async (
   }
 };
 
-export const cvBasedJobFilter = async(
-  file: Express.Multer.File
-):Promise<any | null> => {
+export const cvBasedJobFilter = async (
+  file: Express.Multer.File,
+): Promise<any | null> => {
   const formData = new FormData();
   formData.append('file', file.buffer, {
     filename: file.originalname,
