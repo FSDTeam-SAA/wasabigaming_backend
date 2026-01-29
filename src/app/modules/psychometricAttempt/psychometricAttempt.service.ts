@@ -10,6 +10,7 @@ import PsychometricTest from '../psychometricTest/psychometricTest.model';
 import PsychometricAttempt from './psychometricAttempt.model';
 import pagination, { IOption } from '../../helper/pagenation';
 import User from '../user/user.model';
+import { aipsychometricTestResult } from '../../helper/aiEndpoint';
 
 // const createPsychometric = async (userId: string, payload: IPsychometric) => {
 //   const user = await User.findById(userId);
@@ -113,18 +114,85 @@ import User from '../user/user.model';
 // };
 
 //================================ update ============================================
+// const submitPsychometricTest = async (
+//   testId: string,
+//   userId: string,
+//   answers: any[],
+// ) => {
+//   const test = await PsychometricTest.findById(testId);
+//   if (!test) throw new AppError(404, 'Test not found');
+
+//   const alreadyAttempted = await PsychometricAttempt.findOne({
+//     test: testId,
+//     user: userId,
+//   });
+//   if (alreadyAttempted) {
+//     throw new AppError(400, 'Already attempted');
+//   }
+
+//   let score = 0;
+//   let totalTime = 0;
+
+//   const evaluatedAnswers = answers.map((ans) => {
+//     const question = test.allQuestions.find(
+//       (q: any) => q._id.toString() === ans.questionId,
+//     );
+
+//     if (!question) {
+//       throw new AppError(
+//         400,
+//         `Question with ID ${ans.questionId} not found in test`,
+//       );
+//     }
+
+//     const isCorrect = question.answer === ans.userAnswer;
+//     if (isCorrect) score++;
+
+//     totalTime += ans.timeTakenSec;
+
+//     return {
+//       questionId: ans.questionId,
+//       userAnswer: ans.userAnswer,
+//       isCorrect,
+//       timeTakenSec: ans.timeTakenSec,
+//     };
+//   });
+
+//   if (!test.attamUser?.some((id) => id.toString() === userId.toString())) {
+//     test.attamUser?.push(new mongoose.Types.ObjectId(userId));
+//     await test.save();
+//   }
+//   const result = PsychometricAttempt.create({
+//     user: userId,
+//     test: testId,
+//     answers: evaluatedAnswers,
+//     score,
+//     totalTime,
+//   });
+
+//   const aiResponse = await aipsychometricTestResult(
+//     (await result)._id.toString(),
+//   );
+//   console.log(aiResponse);
+
+//   return aiResponse;
+// };
+
 const submitPsychometricTest = async (
   testId: string,
   userId: string,
   answers: any[],
 ) => {
   const test = await PsychometricTest.findById(testId);
-  if (!test) throw new AppError(404, 'Test not found');
+  if (!test) {
+    throw new AppError(404, 'Test not found');
+  }
 
   const alreadyAttempted = await PsychometricAttempt.findOne({
     test: testId,
     user: userId,
   });
+
   if (alreadyAttempted) {
     throw new AppError(400, 'Already attempted');
   }
@@ -157,18 +225,36 @@ const submitPsychometricTest = async (
     };
   });
 
-  if (!test.attamUser?.some((id) => id.toString() === userId.toString())) {
-    test.attamUser?.push(new mongoose.Types.ObjectId(userId));
+  // ✅ Ensure attamUser exists
+  if (!test.attamUser) {
+    test.attamUser = [];
+  }
+
+  if (!test.attamUser.some((id) => id.toString() === userId)) {
+    test.attamUser.push(new mongoose.Types.ObjectId(userId));
     await test.save();
   }
 
-  return PsychometricAttempt.create({
+  // ✅ Proper await
+  const attempt = await PsychometricAttempt.create({
     user: userId,
     test: testId,
     answers: evaluatedAnswers,
     score,
     totalTime,
   });
+
+  let aiResponse = null;
+  try {
+    aiResponse = await aipsychometricTestResult(attempt._id.toString());
+  } catch (error) {
+    console.error('AI ERROR:', error);
+  }
+
+  return {
+    attempt,
+    aiAnalysis: JSON.stringify(aiResponse),
+  };
 };
 
 const tryAgainPsychometricAttempt = async (
@@ -319,9 +405,17 @@ const getSinglePsychometricAttempt = async (attemptId: string) => {
   if (!attempt) {
     throw new AppError(404, 'Attempt not found');
   }
-  
 
-  return attempt;
+  let aiResponse = null;
+  try {
+    aiResponse = await aipsychometricTestResult(attempt._id.toString());
+  } catch (error) {
+    console.error('AI ERROR:', error);
+  }
+
+  return {
+    aiResponse,
+  };
 };
 
 export const psychometricAttemptService = {

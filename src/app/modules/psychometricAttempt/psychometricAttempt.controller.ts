@@ -83,6 +83,7 @@ import { psychometricAttemptService } from './psychometricAttempt.service';
 
 //=================================== update psychometricController =============================================
 const submitPsychometricTest = catchAsync(async (req, res) => {
+  console.log("hello saurav")
   const { id } = req.params; // testId
   const userId = req.user?.id;
 
