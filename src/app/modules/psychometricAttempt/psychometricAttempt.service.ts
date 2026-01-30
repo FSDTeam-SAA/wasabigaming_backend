@@ -245,11 +245,11 @@ const submitPsychometricTest = async (
   });
 
   let aiResponse = null;
-  try {
-    aiResponse = await aipsychometricTestResult(attempt._id.toString());
-  } catch (error) {
-    console.error('AI ERROR:', error);
-  }
+  // try {
+  //   aiResponse = await aipsychometricTestResult(attempt._id.toString());
+  // } catch (error) {
+  //   console.error('AI ERROR:', error);
+  // }
 
   return {
     attempt,
@@ -407,13 +407,14 @@ const getSinglePsychometricAttempt = async (attemptId: string) => {
   }
 
   let aiResponse = null;
-  try {
-    aiResponse = await aipsychometricTestResult(attempt._id.toString());
-  } catch (error) {
-    console.error('AI ERROR:', error);
-  }
+  // try {
+  //   aiResponse = await aipsychometricTestResult(attempt._id.toString());
+  // } catch (error) {
+  //   console.error('AI ERROR:', error);
+  // }
 
   return {
+    attempt,
     aiResponse,
   };
 };
