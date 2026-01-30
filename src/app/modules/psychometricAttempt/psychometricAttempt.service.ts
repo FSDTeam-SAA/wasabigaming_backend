@@ -245,17 +245,73 @@ const submitPsychometricTest = async (
   });
 
   let aiResponse = null;
-  // try {
-  //   aiResponse = await aipsychometricTestResult(attempt._id.toString());
-  // } catch (error) {
-  //   console.error('AI ERROR:', error);
-  // }
+  try {
+    aiResponse = await aipsychometricTestResult(attempt._id.toString());
+  } catch (error) {
+    console.error('AI ERROR:', error);
+  }
 
-  return {
-    attempt,
-    aiAnalysis: JSON.stringify(aiResponse),
-  };
+  attempt.keyStrength = aiResponse.keyStrength;
+  attempt.areaImprovements = aiResponse.AreaImprovements;
+  attempt.overallFeedback = aiResponse.overallFeedback;
+  await attempt.save();
+
+  return attempt;
 };
+
+// const tryAgainPsychometricAttempt = async (
+//   testId: string,
+//   userId: string,
+//   answers: any[],
+// ) => {
+//   const test = await PsychometricTest.findById(testId);
+//   if (!test) throw new AppError(404, 'Test not found');
+
+//   const previousAttempt = await PsychometricAttempt.findOne({
+//     test: testId,
+//     user: userId,
+//   });
+
+//   if (previousAttempt) {
+//     await previousAttempt.deleteOne();
+//   }
+
+//   let score = 0;
+//   let totalTime = 0;
+
+//   const evaluatedAnswers = answers.map((ans) => {
+//     const question = test.allQuestions.find(
+//       (q: any) => q._id.toString() === ans.questionId,
+//     );
+
+//     if (!question) {
+//       throw new AppError(
+//         400,
+//         `Question with ID ${ans.questionId} not found in test`,
+//       );
+//     }
+
+//     const isCorrect = question.answer === ans.userAnswer;
+//     if (isCorrect) score++;
+
+//     totalTime += ans.timeTakenSec;
+
+//     return {
+//       questionId: ans.questionId,
+//       userAnswer: ans.userAnswer,
+//       isCorrect,
+//       timeTakenSec: ans.timeTakenSec,
+//     };
+//   });
+
+//   return PsychometricAttempt.create({
+//     user: userId,
+//     test: testId,
+//     answers: evaluatedAnswers,
+//     score,
+//     totalTime,
+//   });
+// };
 
 const tryAgainPsychometricAttempt = async (
   testId: string,
@@ -263,8 +319,11 @@ const tryAgainPsychometricAttempt = async (
   answers: any[],
 ) => {
   const test = await PsychometricTest.findById(testId);
-  if (!test) throw new AppError(404, 'Test not found');
+  if (!test) {
+    throw new AppError(404, 'Test not found');
+  }
 
+  // 🔁 Remove previous attempt if exists
   const previousAttempt = await PsychometricAttempt.findOne({
     test: testId,
     user: userId,
@@ -302,13 +361,31 @@ const tryAgainPsychometricAttempt = async (
     };
   });
 
-  return PsychometricAttempt.create({
+  // 🆕 Create new attempt
+  const attempt = await PsychometricAttempt.create({
     user: userId,
     test: testId,
     answers: evaluatedAnswers,
     score,
     totalTime,
   });
+
+  //  AI Evaluation (same as submit)
+  let aiResponse = null;
+  try {
+    aiResponse = await aipsychometricTestResult(attempt._id.toString());
+  } catch (error) {
+    console.error('AI ERROR:', error);
+  }
+
+  if (aiResponse) {
+    attempt.keyStrength = aiResponse.keyStrength;
+    attempt.areaImprovements = aiResponse.AreaImprovements;
+    attempt.overallFeedback = aiResponse.overallFeedback;
+    await attempt.save();
+  }
+
+  return attempt;
 };
 
 const getMyPsychometricAnswers = async (
@@ -406,17 +483,7 @@ const getSinglePsychometricAttempt = async (attemptId: string) => {
     throw new AppError(404, 'Attempt not found');
   }
 
-  let aiResponse = null;
-  // try {
-  //   aiResponse = await aipsychometricTestResult(attempt._id.toString());
-  // } catch (error) {
-  //   console.error('AI ERROR:', error);
-  // }
-
-  return {
-    attempt,
-    aiResponse,
-  };
+  return attempt;
 };
 
 export const psychometricAttemptService = {

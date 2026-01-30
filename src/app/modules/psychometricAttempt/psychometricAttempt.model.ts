@@ -1,10 +1,11 @@
 //
 
 import mongoose from 'mongoose';
+import { IPsychometricAttempt } from './psychometricAttempt.interface';
 
 //=================================psychometricAttempt===================
 
-const psychometricAttemptSchema = new mongoose.Schema(
+const psychometricAttemptSchema = new mongoose.Schema<IPsychometricAttempt>(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -30,6 +31,15 @@ const psychometricAttemptSchema = new mongoose.Schema(
     },
     totalTime: {
       type: Number,
+    },
+    keyStrength: {
+      type: String,
+    },
+    areaImprovements: {
+      type: String,
+    },
+    overallFeedback: {
+      type: String,
     },
   },
   { timestamps: true },

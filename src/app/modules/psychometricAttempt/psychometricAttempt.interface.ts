@@ -1,18 +1,19 @@
 import { Types } from 'mongoose';
 
-export interface IPsychometric {
-  title: string;
-  description: string;
-  durationMin: number;
-  type: string;
+export interface IAnswer {
+  questionId: Types.ObjectId;
+  userAnswer?: string;
+  isCorrect?: boolean;
+  timeTakenSec?: number;
+}
 
-  questions: {
-    question: string;
-    options: string[];
-    correctAnswer: string;
-    difficulty: 'easy' | 'medium' | 'hard';
-    skill: string;
-  }[];
-  status?: 'active' | 'inactive';
-  createdBy?: Types.ObjectId;
+export interface IPsychometricAttempt  {
+  user: Types.ObjectId;
+  test: Types.ObjectId;
+  answers: IAnswer[];
+  score: number;
+  totalTime?: number;
+  keyStrength?: string;
+  areaImprovements?: string;
+  overallFeedback?: string;
 }
