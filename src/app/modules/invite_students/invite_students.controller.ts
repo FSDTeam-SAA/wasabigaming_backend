@@ -18,22 +18,20 @@ import { parse } from 'csv-parse/sync';
 // });
 const sendInvite = catchAsync(async (req, res) => {
   const userId = req.user?.id;
-
-  let payload;
-
-  if (req.body.data) {
+  let payload = [];
+  
+  // Only set payload from req.body if it's not a file upload
+  if (!req.file && req.body.data) {
     payload =
       typeof req.body.data === 'string'
         ? JSON.parse(req.body.data)
         : req.body.data;
-  } else {
+  } else if (!req.file) {
     payload = req.body;
   }
-
+  
   payload = Array.isArray(payload) ? payload : [payload];
-
-  // let attachmentFile: Express.Multer.File | null = null;
-
+  
   if (req.file) {
     if (req.file.mimetype === 'text/csv') {
       try {
@@ -43,27 +41,26 @@ const sendInvite = catchAsync(async (req, res) => {
           skip_empty_lines: true,
           trim: true,
         }) as Array<{ [key: string]: string }>;
-
+        
         if (!records.length) {
           return res.status(400).json({
             success: false,
             message: 'CSV file is empty or invalid',
           });
         }
-
+        
         const csvStudents = records.map((record, index) => {
-          if (!record.email || !(record.name)) {
-            throw new Error(`CSV Row ${index + 1}: fullName and email are required`);
+          if (!record.name || !record.email) {
+            throw new Error(`CSV Row ${index + 1}: Name and email are required`);
           }
-
           return {
             name: record.name,
             email: record.email,
           };
         });
-
+        
         payload = [...payload, ...csvStudents];
-        console.log("email", payload)
+        console.log("email", payload);
       } catch (err: any) {
         return res.status(400).json({
           success: false,
@@ -73,12 +70,17 @@ const sendInvite = catchAsync(async (req, res) => {
       }
     } 
   }
-
+  
+  // Filter out empty objects before sending to service
+  payload = payload.filter(item => 
+    item && Object.keys(item).length > 0 && item.name && item.email
+  );
+  
   const result = await studentInviteService.sendInvite(
     userId,
     payload,
   );
-
+  
   sendResponse(res, {
     statusCode: 201,
     success: true,
