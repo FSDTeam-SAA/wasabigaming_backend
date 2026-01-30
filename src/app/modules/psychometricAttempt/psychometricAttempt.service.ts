@@ -251,9 +251,9 @@ const submitPsychometricTest = async (
     console.error('AI ERROR:', error);
   }
 
-  attempt.keyStrength = aiResponse.keyStrength;
-  attempt.areaImprovements = aiResponse.AreaImprovements;
-  attempt.overallFeedback = aiResponse.overallFeedback;
+  attempt.keyStrength = aiResponse?.keyStrength ?? '';
+  attempt.areaImprovements = aiResponse?.areaImprovements ?? '';
+  attempt.overallFeedback = aiResponse?.overallFeedback ?? '';
   await attempt.save();
 
   return attempt;
@@ -379,9 +379,9 @@ const tryAgainPsychometricAttempt = async (
   }
 
   if (aiResponse) {
-    attempt.keyStrength = aiResponse.keyStrength;
-    attempt.areaImprovements = aiResponse.AreaImprovements;
-    attempt.overallFeedback = aiResponse.overallFeedback;
+    attempt.keyStrength = aiResponse?.keyStrength ?? '';
+    attempt.areaImprovements = aiResponse?.areaImprovements ?? '';
+    attempt.overallFeedback = aiResponse?.overallFeedback ?? '';
     await attempt.save();
   }
 
