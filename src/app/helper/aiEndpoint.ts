@@ -256,13 +256,14 @@ export const aipsychometricTestResult = async (id: string) => {
       },
       {
         headers: {
-          Accept: 'application/json',
+          // Accept: 'application/json',
           'Content-Type': 'application/json',
         },
       },
     );
+    // console.log(response.data);
 
-    return response;
+    return response.data;
   } catch (error: any) {
     console.log('AI ERROR STATUS:', error.response?.status);
     console.log('AI ERROR DATA:', error.response?.data);
