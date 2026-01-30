@@ -2,12 +2,85 @@ import { studentInviteService } from './invite_students.service';
 import catchAsync from '../../utils/catchAsycn';
 import sendResponse from '../../utils/sendResponse';
 import pick from '../../helper/pick';
+import { parse } from 'csv-parse/sync';
 
+// const sendInvite = catchAsync(async (req, res) => {
+//   const userId = req.user?.id;
+//   const file = req.file as Express.Multer.File;
+//   const fromdate = req.body.data ? JSON.parse(req.body.data) : req.body;
+//   const result = await studentInviteService.sendInvite(userId, fromdate, file);
+//   sendResponse(res, {
+//     statusCode: 201,
+//     success: true,
+//     message: 'Invitations sent successfully',
+//     data: result,
+//   });
+// });
 const sendInvite = catchAsync(async (req, res) => {
   const userId = req.user?.id;
-  const file = req.file as Express.Multer.File;
-  const fromdate = req.body.data ? JSON.parse(req.body.data) : req.body;
-  const result = await studentInviteService.sendInvite(userId, fromdate, file);
+  let payload = [];
+  
+  // Only set payload from req.body if it's not a file upload
+  if (!req.file && req.body.data) {
+    payload =
+      typeof req.body.data === 'string'
+        ? JSON.parse(req.body.data)
+        : req.body.data;
+  } else if (!req.file) {
+    payload = req.body;
+  }
+  
+  payload = Array.isArray(payload) ? payload : [payload];
+  
+  if (req.file) {
+    if (req.file.mimetype === 'text/csv') {
+      try {
+        const csvData = req.file.buffer.toString('utf-8');
+        const records = parse(csvData, {
+          columns: true,
+          skip_empty_lines: true,
+          trim: true,
+        }) as Array<{ [key: string]: string }>;
+        
+        if (!records.length) {
+          return res.status(400).json({
+            success: false,
+            message: 'CSV file is empty or invalid',
+          });
+        }
+        
+        const csvStudents = records.map((record, index) => {
+          if (!record.name || !record.email) {
+            throw new Error(`CSV Row ${index + 1}: Name and email are required`);
+          }
+          return {
+            name: record.name,
+            email: record.email,
+          };
+        });
+        
+        payload = [...payload, ...csvStudents];
+        console.log("email", payload);
+      } catch (err: any) {
+        return res.status(400).json({
+          success: false,
+          message: 'Failed to parse CSV file',
+          error: err.message,
+        });
+      }
+    } 
+  }
+  
+  // Filter out empty objects before sending to service
+  payload = payload.filter(item => 
+    item && Object.keys(item).length > 0 && item.name && item.email
+  );
+  
+  const result = await studentInviteService.sendInvite(
+    userId,
+    payload,
+  );
+  
   sendResponse(res, {
     statusCode: 201,
     success: true,
@@ -15,6 +88,8 @@ const sendInvite = catchAsync(async (req, res) => {
     data: result,
   });
 });
+
+
 
 const getAllInviteStudents = catchAsync(async (req, res) => {
   const filters = pick(req.query, ['searchTerm', 'fullName', 'email']);
