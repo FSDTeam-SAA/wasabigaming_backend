@@ -1,3 +1,4 @@
+import config from '../config';
 
 const createOtpTemplate = (
   code: string,
@@ -102,13 +103,13 @@ export const sendInvitation = (
               <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px;">
                 <tr>
                   <td align="center" style="padding: 0 10px 15px 0;">
-                    <a href="http://localhost:3000?status=accepted&email=${studentEmail}andschoolId=${schoolId}" 
+                    <a href="${config.frontendUrl}/accepted?status=accepted&email=${studentEmail}andschoolId=${schoolId}" 
                        style="display: inline-block; padding: 14px 40px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); transition: transform 0.2s;">
                       ✓ Accept Invitation
                     </a>
                   </td>
                   <td align="center" style="padding: 0 0 15px 10px;">
-                    <a href="http://localhost:3000?status=rejected&email=${studentEmail}andschoolId=${schoolId}" 
+                    <a href="${config.frontendUrl}/rejected?status=rejected&email=${studentEmail}andschoolId=${schoolId}" 
                        style="display: inline-block; padding: 14px 40px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3); transition: transform 0.2s;">
                       ✗ Reject Invitation
                     </a>

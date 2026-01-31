@@ -3,7 +3,7 @@ import { IInviteStudent } from './invite_students.interface';
 
 const inviteStudentSchema = new mongoose.Schema<IInviteStudent>(
   {
-    name: { type: String, required: true },
+    name: { type: String },
     email: { type: String, required: true },
     message: { type: String},
     url: { type: String },

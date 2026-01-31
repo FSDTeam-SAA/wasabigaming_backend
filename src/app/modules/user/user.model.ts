@@ -82,6 +82,7 @@ const userSchema = new Schema<IUser>(
         default: Date.now
       }
     }],
+    shareLink:{type: String}
   },
   { timestamps: true },
 );
