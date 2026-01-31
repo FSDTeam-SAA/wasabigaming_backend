@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
 
 export interface IInviteStudent {
-  name: string;
+  name?: string;
   email: string;
   message?: string;
   url?: string;

@@ -4,18 +4,6 @@ import sendResponse from '../../utils/sendResponse';
 import pick from '../../helper/pick';
 import { parse } from 'csv-parse/sync';
 
-// const sendInvite = catchAsync(async (req, res) => {
-//   const userId = req.user?.id;
-//   const file = req.file as Express.Multer.File;
-//   const fromdate = req.body.data ? JSON.parse(req.body.data) : req.body;
-//   const result = await studentInviteService.sendInvite(userId, fromdate, file);
-//   sendResponse(res, {
-//     statusCode: 201,
-//     success: true,
-//     message: 'Invitations sent successfully',
-//     data: result,
-//   });
-// });
 const sendInvite = catchAsync(async (req, res) => {
   const userId = req.user?.id;
   let payload = [];

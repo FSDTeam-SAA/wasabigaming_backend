@@ -58,6 +58,7 @@ export interface IUser {
       type: Date
     }
   }],
+  shareLink?:string;
 
   createdAt: Date;
   updatedAt: Date;

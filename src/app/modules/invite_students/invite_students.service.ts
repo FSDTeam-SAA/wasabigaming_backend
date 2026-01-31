@@ -28,11 +28,6 @@ const generateSixDigitCode = () => {
   if (user.role !== userRole.school) {
     throw new AppError(403, 'Only school users can send invites');
   }
-  // let fileUrl = null;
-  // if(file){
-  //   const uploadedFile = await fileUploader.uploadToCloudinary(file);
-  //   fileUrl = uploadedFile.url;
-  // }
 
   const students = Array.isArray(payload) ? payload : [payload];
   const formattedStudents = students.map((student) => ({
@@ -49,7 +44,7 @@ await Promise.all(
       student.email,
       "Student Invitation",
        sendInvitation(
-        student.name,
+        student.name || '',
         schoolName || '',
         schoolCategory,
         student.email,
@@ -210,7 +205,8 @@ const updateInviteStudentStatus = async (payload: any) => {
         email: inviteStudent.email,
         role: 'student',
         schoolId: school._id,
-        password
+        password,
+        registered:true,
       });
 
         await sendMailer(

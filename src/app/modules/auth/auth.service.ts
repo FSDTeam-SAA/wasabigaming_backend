@@ -51,9 +51,13 @@ const registerUser = async (payload: Partial<IUser>) => {
 
     user = await User.create(payload);
 
+    const shareLink = `${config?.frontendUrl}/accepted?schoolId=${user._id}`
+    user.shareLink = shareLink;
+
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     user.otp = otp;
     user.otpExpiry = new Date(Date.now() + 20 * 60 * 1000); // 20 mins
+    
     await user.save();
 
     await sendMailer(
