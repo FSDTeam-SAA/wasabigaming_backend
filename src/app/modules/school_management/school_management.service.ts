@@ -8,6 +8,7 @@ const getAllStudents = async (params: any, options: IOption, schoolId: string) =
       const { searchTerm, year, ...filterData } = params;
 
       const andCondition: any[] = [];
+      console.log(schoolId);
 
       andCondition.push({ role: 'student' });
       if (schoolId) {
