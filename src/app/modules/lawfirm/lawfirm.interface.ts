@@ -5,7 +5,7 @@ export interface ILawfirm {
   coverImage?: string;
 
   firmName: string;
-  firmType:string;
+  firmType: string;
   tags?: string[];
   headquarters: string;
 
@@ -18,7 +18,6 @@ export interface ILawfirm {
   phoneNumber?: string;
   annualRevenue?: string;
 
-  
   keyHighlights?: string;
 
   overview?: {
@@ -51,13 +50,14 @@ export interface ILawfirm {
 
   description: string;
   location: string;
-  practiceAreas:string;
+  practiceAreas: string;
 
   createdBy?: Types.ObjectId;
   status?: 'approved' | 'pending' | 'rejected';
 
   jobs?: Types.ObjectId[];
   applyNumber?: number;
-  cultureAndValue:string[];
-  benefitsAndPerks:string[];
+  cultureAndValue: string[];
+  benefitsAndPerks: string[];
+  bookmarkedUser?: Types.ObjectId[];
 }

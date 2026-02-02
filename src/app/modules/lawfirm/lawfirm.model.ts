@@ -45,8 +45,8 @@ const LawfirmSchema = new Schema<ILawfirm>(
     coverImage: { type: String, default: '' },
 
     firmName: { type: String },
-    firmType:{type:String},
-    tags: [{type:String}],
+    firmType: { type: String },
+    tags: [{ type: String }],
     headquarters: { type: String },
 
     numberOfAttorneys: { type: Number, default: 0 },
@@ -58,7 +58,7 @@ const LawfirmSchema = new Schema<ILawfirm>(
     phoneNumber: { type: String, default: '' },
     annualRevenue: { type: String, default: '' },
 
-     keyHighlights: { type: String, default: '' },
+    keyHighlights: { type: String, default: '' },
     // practiceAndWork: { type: PracticeAndWorkSchema, default: () => ({}) },
     // initiatives: { type: InitiativesSchema, default: () => ({}) },
     // csrAndDeAndI: { type: CsrAndDeAndISchema, default: () => ({}) },
@@ -70,7 +70,7 @@ const LawfirmSchema = new Schema<ILawfirm>(
     internshipOpportunities: [{ type: String, default: '' }],
     description: { type: String },
     location: { type: String },
-    practiceAreas:{type:String},
+    practiceAreas: { type: String },
 
     createdBy: { type: Types.ObjectId, ref: 'User', default: null },
     status: {
@@ -79,9 +79,10 @@ const LawfirmSchema = new Schema<ILawfirm>(
       default: 'pending',
     },
     jobs: { type: [Types.ObjectId], ref: 'Job', default: [] },
-    applyNumber: {Type: Number},
-    cultureAndValue:[{type:String}],
-    benefitsAndPerks:[{type:String}],
+    applyNumber: { Type: Number },
+    cultureAndValue: [{ type: String }],
+    benefitsAndPerks: [{ type: String }],
+    bookmarkedUser: { type: [Types.ObjectId], ref: 'User', default: [] },
   },
   { timestamps: true },
 );

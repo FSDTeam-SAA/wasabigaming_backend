@@ -5,7 +5,6 @@ import User from '../user/user.model';
 import Bookmark from './lawbookmark.model';
 
 const addBookmark = async (userId: string, lawfirmId: string) => {
-  console.log(lawfirmId);
   const user = await User.findById(userId);
   if (!user) throw new AppError(404, 'User not found');
 
@@ -22,6 +21,7 @@ const addBookmark = async (userId: string, lawfirmId: string) => {
       upsert: true,
     },
   );
+  await lawfirm.updateOne({ $addToSet: { bookmarkedUser: userId } });
 
   return result;
 };
@@ -74,6 +74,10 @@ const removeBookmark = async (userId: string, lawfirmId: string) => {
     },
     { new: true },
   );
+
+  await Lawfirm.findByIdAndUpdate(lawfirmId, {
+    $pull: { bookmarkedUser: userId },
+  });
 
   return result;
 };
