@@ -25,6 +25,7 @@ const getAllLawfirm = catchAsync(async (req, res) => {
     'internshipTraining',
     'exertise',
     'aboutFirm',
+    'tags',
   ]);
   const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
   const result = await lawfirmService.getAllLawfirm(filters, options);

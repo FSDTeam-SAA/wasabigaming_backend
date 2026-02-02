@@ -5,8 +5,11 @@ import { coverLetterService } from "./coverLetter.service";
 
 const makeCoverLetter = catchAsync(async(req , res) => {
 
+
     const userId = req.user.id;
     const file = req.file;
+    console.log(file,userId,req.body);
+
     const result = await coverLetterService.makeCoverLetter(req.body, file, userId);
 
     sendResponse(res, {

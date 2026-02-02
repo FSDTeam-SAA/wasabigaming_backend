@@ -36,6 +36,7 @@ const getAllLawfirm = async (params: any, options: IOption) => {
     'internshipTraining',
     'exertise',
     'aboutFirm',
+    'tags',
   ];
 
   if (searchTerm) {
