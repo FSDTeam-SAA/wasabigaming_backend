@@ -26,6 +26,9 @@ const getAllLawfirm = catchAsync(async (req, res) => {
     'exertise',
     'aboutFirm',
     'tags',
+    'firmName',
+    'firmType',
+    'headquarters'
   ]);
   const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
   const result = await lawfirmService.getAllLawfirm(filters, options);

@@ -37,6 +37,9 @@ const getAllLawfirm = async (params: any, options: IOption) => {
     'exertise',
     'aboutFirm',
     'tags',
+    'firmName',
+    'firmType',
+    'headquarters'
   ];
 
   if (searchTerm) {
