@@ -35,6 +35,7 @@ import { writtencasestudyRoutes } from '../modules/writtencasestudy/writtencases
 import { presentationtaskRoutes } from '../modules/presentationtask/presentationtask.routes';
 import { intrayemailRouter } from '../modules/intrayemail/intrayemail.routes';
 import { careanalysisRouter } from '../modules/careanalysis/careanalysis.routes';
+import { lawBookmarkRoutes } from '../modules/lawbookmark/lawbookmark.routes';
 
 const router = Router();
 
@@ -166,6 +167,10 @@ const moduleRoutes = [
   {
     path: '/careanalysis',
     route: careanalysisRouter,
+  },
+  {
+    path: '/law-bookmark',
+    route: lawBookmarkRoutes,
   },
 ];
 
