@@ -23,9 +23,9 @@ const getAllMockInterviews = async (
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
 
   const andCondition: any[] = [];
-  if (userId) {
-    andCondition.push({ createdBy: userId });
-  }
+  // if (userId) {
+  //   andCondition.push({ createdBy: userId });
+  // }
 
   const whereCondition = andCondition.length ? { $and: andCondition } : {};
 
