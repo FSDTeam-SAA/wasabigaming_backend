@@ -91,12 +91,15 @@ const sendInvite = catchAsync(async (req, res) => {
 
 
 const getAllInviteStudents = catchAsync(async (req, res) => {
+
+  const schoolId = req.user.id;
   const filters = pick(req.query, ['searchTerm', 'fullName', 'email']);
   const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
 
   const result = await studentInviteService.getAllInviteStudents(
     filters,
     options,
+    schoolId!
   );
 
   sendResponse(res, {
