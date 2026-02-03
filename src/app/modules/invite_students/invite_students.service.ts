@@ -58,11 +58,12 @@ await Promise.all(
   return result;
 };
 
-const getAllInviteStudents = async (params: any, options: IOption) => {
+const getAllInviteStudents = async (params: any, options: IOption, schoolId:string) => {
+  
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
   const { searchTerm, year, ...filterData } = params;
 
-  const andCondition: any[] = [];
+  const andCondition: any[] = [{ createBy: schoolId }];
   const userSearchableFields = ['name', 'email'];
   if (searchTerm) {
     andCondition.push({
@@ -80,7 +81,6 @@ const getAllInviteStudents = async (params: any, options: IOption) => {
     });
   }
 
-  // YEAR Filter → createdAt
   if (year) {
     const startDate = new Date(`${year}-01-01T00:00:00.000Z`);
     const endDate = new Date(`${year}-12-31T23:59:59.999Z`);
@@ -99,9 +99,6 @@ const getAllInviteStudents = async (params: any, options: IOption) => {
     .limit(limit)
     .sort({ [sortBy]: sortOrder } as any);
 
-  if (!result) {
-    throw new AppError(404, 'Student not found');
-  }
 
   const total = await InviteStudent.countDocuments(whereCondition);
 
