@@ -115,6 +115,14 @@ const paySubscription = async (userId: string, subscriptionId: string) => {
   const premium = await Premium.findById(subscriptionId);
   if (!premium) throw new AppError(404, 'Premium not found');
 
+
+    if (
+    premium.name === 'free' &&
+    premium.totalSubscripeUser?.includes(user._id)
+  ) {
+    throw new AppError(400, 'You have already subscribed to this plan');
+  }
+
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
     payment_method_types: ['card'],
