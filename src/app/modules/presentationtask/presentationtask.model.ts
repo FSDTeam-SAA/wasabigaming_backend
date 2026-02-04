@@ -20,7 +20,7 @@ const presentationTaskSchema = new mongoose.Schema<IPresentationTask>(
       type: String,
     },
     feedback: {
-      type: String,
+      type: [String],
     },
     totalScore: {
       type: Number,
