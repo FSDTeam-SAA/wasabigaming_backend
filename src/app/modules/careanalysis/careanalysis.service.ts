@@ -31,14 +31,17 @@ const createCareanalysis = async (userId: string, aiassigmentId: string) => {
     await aiassessment.save();
   }
 
-  return result;
+  const resultData = await Careanalysis.findById(result._id)
+    .populate('aiassigmentId')
+    .populate('applicant', 'firstName lastName email profileImage');
+
+  return resultData;
 };
 
 const getSingleCareanalysis = async (id: string) => {
-  const result = await Careanalysis.findById(id).populate(
-    'applicant',
-    'firstName lastName email profileImage',
-  );
+  const result = await Careanalysis.findById(id)
+    .populate('applicant', 'firstName lastName email profileImage')
+    .populate('aiassigmentId');
   if (!result) throw new AppError(404, 'interview not found');
   return result;
 };

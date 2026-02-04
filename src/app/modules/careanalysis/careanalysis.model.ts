@@ -5,7 +5,7 @@ const careanalysisSchema = new Schema<ICareanalysis>(
   {
     aiassigmentId: {
       type: Types.ObjectId,
-      ref: 'AiAssignment',
+      ref: 'Aiassessment',
     },
     precedentSummary: {
       type: String,

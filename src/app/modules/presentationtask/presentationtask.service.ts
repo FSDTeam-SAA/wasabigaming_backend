@@ -36,14 +36,17 @@ const createPresentationTask = async (
     await aiassessment.save();
   }
 
-  return result;
+  const resultData = await PresentationTask.findById(result._id)
+    .populate('aiassigmentId')
+    .populate('applicant', 'firstName lastName email profileImage');
+
+  return resultData;
 };
 
 const getSinglePresentationTask = async (id: string) => {
-  const result = await PresentationTask.findById(id).populate(
-    'applicant',
-    'firstName lastName email profileImage',
-  );
+  const result = await PresentationTask.findById(id)
+    .populate('applicant', 'firstName lastName email profileImage')
+    .populate('aiassigmentId');
   if (!result) throw new AppError(404, 'interview not found');
   return result;
 };
@@ -55,7 +58,7 @@ const updatePresentationTask = async (
   const existingData = await PresentationTask.findById(id);
   if (!existingData) throw new AppError(404, 'Data not found');
   const aiResponse = await aiPresentationTaskSubmission(payload.yourResponse!);
-//   console.log(aiResponse);
+  //   console.log(aiResponse);
   const result = await PresentationTask.findByIdAndUpdate(
     id,
     {

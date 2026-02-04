@@ -18,6 +18,9 @@ const aiassessmentSchema = new mongoose.Schema<IAiassessment>(
     duration: {
       type: Number,
     },
+    type: {
+      type: String,
+    },
 
     status: {
       type: String,

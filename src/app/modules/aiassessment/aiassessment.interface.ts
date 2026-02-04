@@ -7,4 +7,5 @@ export interface IAiassessment {
   duration?: number;
   status: 'PENDING' | 'AVAILABLE' | 'COMPLETED';
   applicationUser?: Types.ObjectId[];
+  type?: string;
 }
