@@ -55,10 +55,19 @@ const webHookHandlers = async (req: Request, res: Response) => {
           await subscription.save();
         }
 
-        const monthAdd = subscription.type === 'year' ? 12 : 1;
+        // const monthAdd = subscription.type === 'year' ? 12 : 1;
 
-        const expireDate = new Date();
-        expireDate.setMonth(expireDate.getMonth() + monthAdd);
+        // const expireDate = new Date();
+        // expireDate.setMonth(expireDate.getMonth() + monthAdd);
+         let expireDate = new Date();
+
+        if (subscription.type === 'yearly') {
+          expireDate.setFullYear(expireDate.getFullYear() + 1);
+        } else if (subscription.type === 'monthly') {
+          expireDate.setMonth(expireDate.getMonth() + 1);
+        } else if (subscription.type === 'weekly') {
+          expireDate.setDate(expireDate.getDate() + 7);
+        }
 
 
 

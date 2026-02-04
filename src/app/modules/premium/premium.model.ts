@@ -14,7 +14,7 @@ const premiumSchema = new mongoose.Schema<IPremium>(
     },
     type: {
       type: String,
-      enum: ['monthly', 'yearly'],
+      enum: ['monthly', 'yearly', 'weekly'],
     },
     features: {
       type: [String],
