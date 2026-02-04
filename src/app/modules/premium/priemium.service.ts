@@ -22,7 +22,7 @@ const getAllPremium = async (params: any, options: IOption) => {
   const { searchTerm, year, ...filterData } = params;
 
   const andCondition: any[] = [];
-  const userSearchableFields = ['name', 'type', 'features', 'status'];
+  const userSearchableFields = ['name', 'type', 'features', 'status', 'subscriptionCategory'];
 
   if (searchTerm) {
     andCondition.push({
