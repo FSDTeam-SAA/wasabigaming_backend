@@ -46,6 +46,7 @@ const webHookHandlers = async (req: Request, res: Response) => {
       // SUBSCRIPTION PAYMENT
       // ===============================
       if (paymentType === 'subscription') {
+
         const subscription = await Premium.findById(payment.subscription);
         if (!subscription) return res.json({ received: true });
 
@@ -59,13 +60,40 @@ const webHookHandlers = async (req: Request, res: Response) => {
         const expireDate = new Date();
         expireDate.setMonth(expireDate.getMonth() + monthAdd);
 
+
+
         user.isSubscription = true;
         user.subscription = subscription._id;
         user.subscriptionExpiry = expireDate;
         await user.save();
 
+
+
         return res.json({ received: true });
       }
+      // if (paymentType === 'subscription') {
+
+      //   const subscription = await Premium.findById(payment.subscription);
+      //   if (!subscription) {
+      //     return res.status(404).json({ success: false, message: 'Subscription not found' });
+      //   }
+      //   if (!subscription.totalSubscripeUser?.includes(user._id)) {
+      //     subscription.totalSubscripeUser?.push(user._id);
+      //     await subscription.save();
+      //   }
+
+      //   const monthAdd = subscription.type === 'year' ? 12 : 1;
+      //   const expireDate = new Date();
+      //   expireDate.setMonth(expireDate.getMonth() + monthAdd);
+
+      //   user.isSubscription = true;
+      //   user.subscription = subscription._id;
+      //   user.subscriptionExpiry = expireDate;
+      //   await user.save();
+
+      //   return res.json({ received: true });
+      // }
+
 
       // ===============================
       // COURSE PAYMENT
