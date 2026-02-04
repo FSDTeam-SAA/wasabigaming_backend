@@ -28,6 +28,7 @@ const premiumSchema = new mongoose.Schema<IPremium>(
       type: [mongoose.Schema.Types.ObjectId],
       ref: 'User',
     },
+    subscriptionCategory:{ type: String },
   },
   {
     timestamps: true,

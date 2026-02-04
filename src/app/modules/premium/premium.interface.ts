@@ -7,4 +7,5 @@ export interface IPremium {
   features: string[];
   status: 'active' | 'inactive';
   totalSubscripeUser?: Types.ObjectId[];
+  subscriptionCategory:string;
 }
