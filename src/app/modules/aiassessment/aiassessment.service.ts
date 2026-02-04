@@ -57,7 +57,8 @@ const getAllAiassessment = async (params: any, options: IOption) => {
   const result = await Aiassessment.find(whereCondition)
     .skip(skip)
     .limit(limit)
-    .sort({ [sortBy]: sortOrder } as any);
+    .sort({ [sortBy]: sortOrder } as any)
+    // .populate('applicationUser');
 
   if (!result) {
     throw new AppError(404, 'Aiassessment not found');
