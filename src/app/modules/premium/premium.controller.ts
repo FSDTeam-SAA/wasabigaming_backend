@@ -20,6 +20,7 @@ const getAllPremium = catchAsync(async (req, res) => {
     'type',
     'features',
     'status',
+    'subscriptionCategory'
   ]);
   const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
   const result = await premiumService.getAllPremium(filters, options);
