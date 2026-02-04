@@ -21,11 +21,11 @@ export const checkStudentSubscription = catchAsync(async (req, res, next) => {
     }
 
     if (!school.isSubscription) {
-      throw new AppError(400, "You are not allowed to access this feature");
+      throw new AppError(400, "Subscription plan error ");
     }
   } else {
   
-     throw new AppError(400, "You are not allowed to access this feature");
+     throw new AppError(400, "Subscription plan error");
   }
 
   return next();
