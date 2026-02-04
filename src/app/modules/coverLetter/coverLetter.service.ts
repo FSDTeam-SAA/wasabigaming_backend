@@ -4,6 +4,7 @@ import CoverLetter from "./coverLetter.model";
 import { updatedCoverLetter } from '../../helper/aiEndpoint';
 import pagination, { IOption } from "../../helper/pagenation";
 import AppError from "../../error/appError";
+import User from "../user/user.model";
 
 const makeCoverLetter = async(
     payload: ICoverLetter,
