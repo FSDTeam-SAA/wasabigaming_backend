@@ -34,14 +34,17 @@ const createWrittenCaseStudy = async (
     await aiassessment.save();
   }
 
-  return result;
+  const resultData = await Writtencasestudy.findById(result._id)
+    .populate('aiassigmentId')
+    .populate('applicant', 'firstName lastName email profileImage');
+
+  return resultData;
 };
 
 const getSingleWrittenCaseStudy = async (id: string) => {
-  const result = await Writtencasestudy.findById(id).populate(
-    'applicant',
-    'firstName lastName email profileImage',
-  );
+  const result = await Writtencasestudy.findById(id)
+    .populate('applicant', 'firstName lastName email profileImage')
+    .populate('aiassigmentId');
   if (!result) throw new AppError(404, 'interview not found');
   return result;
 };
