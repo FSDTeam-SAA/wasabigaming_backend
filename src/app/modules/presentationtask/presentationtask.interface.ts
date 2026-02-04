@@ -6,7 +6,7 @@ export interface IPresentationTask {
   keyObject?: string[];
   proTip?: string[];
   yourResponse?: string;
-  feedback?: string;
+  feedback?: string[];
   totalScore?: number;
   wordsCompleted?: number;
   completionRate?: number;

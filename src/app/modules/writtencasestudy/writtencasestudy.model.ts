@@ -25,7 +25,7 @@ const writtencasestudySchema = new Schema<IWrittencasestudy>(
     },
 
     feedback: {
-      type: String,
+      type: [String],
     },
 
     totalScore: {

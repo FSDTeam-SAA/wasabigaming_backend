@@ -6,7 +6,7 @@ export interface IWrittencasestudy {
   ventaraAutomotive?: string;
   yourManager?: string;
   yourResponse?: string;
-  feedback?: string;
+  feedback?: string[];
   totalScore?: number;
   wordsCompleted?: number;
   completionRate?: number;
