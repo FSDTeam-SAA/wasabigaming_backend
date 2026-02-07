@@ -3,12 +3,14 @@ import auth from '../../middlewares/auth';
 import { userRole } from '../user/user.constant';
 import { mockInterviewSessionController } from './mockInterviewSession.controller';
 import { fileUploader } from '../../helper/fileUploder';
+import { checkStudentSubscription } from '../../middlewares/checkSubscription';
 
 const router = express.Router();
 
 router.post(
   '/',
   auth(userRole.admin, userRole.student),
+  checkStudentSubscription,
   mockInterviewSessionController.createMockInterviewSession
 );
 router.get(
