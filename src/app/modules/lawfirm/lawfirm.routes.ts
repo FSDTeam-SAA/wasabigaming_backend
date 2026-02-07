@@ -3,6 +3,7 @@ import auth from '../../middlewares/auth';
 import { userRole } from '../user/user.constant';
 import { lawfirmController } from './lawfirm.controller';
 import { fileUploader } from '../../helper/fileUploder';
+import { checkStudentSubscription } from '../../middlewares/checkSubscription';
 const router = express.Router();
 
 const fileFields = fileUploader.upload.fields([
@@ -17,7 +18,12 @@ router.post(
   lawfirmController.createLawfirm,
 );
 router.get('/', lawfirmController.getAllLawfirm);
-router.get('/law-firm-based-job', lawfirmController.getJobLawFirmBased);
+router.get(
+  '/law-firm-based-job', 
+  auth(userRole.admin, 
+  userRole.student), 
+  checkStudentSubscription, 
+  lawfirmController.getJobLawFirmBased);
 
 router.put(
   '/:id/approved',
