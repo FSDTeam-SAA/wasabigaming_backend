@@ -2,6 +2,7 @@ import express from 'express';
 import auth from '../../middlewares/auth';
 import { userRole } from '../user/user.constant';
 import { psychometricAttemptController } from './psychometricAttempt.controller';
+import { checkStudentSubscription } from '../../middlewares/checkSubscription';
 // import { psychometricController } from './psychometricAttempt.controller';
 const router = express.Router();
 
@@ -28,12 +29,14 @@ const router = express.Router();
 router.post(
   '/:id/submit',
   auth(userRole.student),
+  checkStudentSubscription,
   psychometricAttemptController.submitPsychometricTest,
 );
 
 router.post(
   '/:id/try-again',
   auth(userRole.student),
+  checkStudentSubscription,
   psychometricAttemptController.tryAgainPsychometricAttempt,
 );
 
