@@ -29,7 +29,7 @@ const mockInterviewSessionSchema = new Schema<IMockInterviewSession>({
   status: {
     type: String,
     // enum: ['IN_PROGRESS', 'COMPLETED', 'EXPIRED'],
-    // default: 'IN_PROGRESS'
+     default: 'in_progress'
   },
 
     answers: {
