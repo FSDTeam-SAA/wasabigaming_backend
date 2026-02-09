@@ -4,6 +4,7 @@ import pagination, { IOption } from '../../helper/pagenation';
 import { mockInterviewAnswerCheck, mockInterviewQuestionGenerate } from '../../helper/aiEndpoint';
 import MockInterviewSession from './mockInterviewSession.model';
 import { fileUploader } from '../../helper/fileUploder';
+import MockInterview from '../mockInterview/mockInterview.model';
 
 const createMockInterviewSession = async (
   payload: IMockInterviewSession
@@ -12,6 +13,7 @@ const createMockInterviewSession = async (
     userId: payload.userId,
     category: payload.category,
     questionNumber: payload.questionNumber,
+    mockInterviewId: payload.mockInterviewId
   });
   const aiApiCall = await mockInterviewQuestionGenerate(
     payload.category,
@@ -201,12 +203,28 @@ const submitAnswer = async (payload: any, userId: string) => {
 const getAverageScoresWithFeedback = async (sessionId: string) => {
   const session = await MockInterviewSession.findById(sessionId);
 
+  // console.log('mahabur', session);
   if (!session) {
     throw new AppError(404, 'Mock interview session not found');
   }
 
   if (!session.answers || session.answers.length === 0) {
     throw new AppError(400, 'No answers submitted yet');
+  }
+
+  let questionLength = Number(session.questionNumber);
+  let answerLength = session.answers.length;
+
+  if(questionLength == answerLength){
+    session.status = 'completed'
+    await session.save();
+
+    const interviewCategory = await MockInterview.findById(session.mockInterviewId);
+    if (interviewCategory) {
+      interviewCategory.status = 'completed';
+      await interviewCategory.save();
+    }
+    
   }
 
   const totals = {

@@ -27,7 +27,7 @@ const mockInterviewSchema = new Schema<IMockInterview>(
 
     status: {
       type: String,
-      default: 'available',
+      default: 'available' ,
     },
 
     createdBy: {

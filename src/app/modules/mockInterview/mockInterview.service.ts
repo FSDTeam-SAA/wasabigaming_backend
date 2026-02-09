@@ -2,6 +2,7 @@ import MockInterview from './mockInterview.model';
 import { IMockInterview } from './mockInterview.interface';
 import pagination, { IOption } from '../../helper/pagenation';
 import AppError from '../../error/appError';
+import MockInterviewSession from '../mockInterviewSession/mockInterviewSession.model';
 
 const createMockInterview = async (
   payload: IMockInterview,
@@ -16,33 +17,83 @@ const createMockInterview = async (
   return result;
 };
 
+// const getAllMockInterviews = async (
+//   userId: string,
+//   options: IOption
+// ) => {
+//   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
+
+//   const andCondition: any[] = [];
+//   // if (userId) {
+//   //   andCondition.push({ createdBy: userId });
+//   // }
+
+//   const whereCondition = andCondition.length ? { $and: andCondition } : {};
+
+//   const result = await MockInterview.find(whereCondition)
+//     .skip(skip)
+//     .limit(limit)
+//     .sort({ [sortBy]: sortOrder } as any);
+
+//   const total = await MockInterview.countDocuments(whereCondition);
+
+//   return {
+//     data: result,
+//     meta: {
+//       total,
+//       page,
+//       limit,
+//     },
+//   };
+// };
+
 const getAllMockInterviews = async (
-  userId: string,
+  userId: string | null,
   options: IOption
 ) => {
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
 
-  const andCondition: any[] = [];
-  // if (userId) {
-  //   andCondition.push({ createdBy: userId });
-  // }
-
-  const whereCondition = andCondition.length ? { $and: andCondition } : {};
-
-  const result = await MockInterview.find(whereCondition)
+  const interviews = await MockInterview.find()
     .skip(skip)
     .limit(limit)
-    .sort({ [sortBy]: sortOrder } as any);
+    .sort({ [sortBy]: sortOrder } as any)
+    .lean(); // ✅ VERY IMPORTANT
 
-  const total = await MockInterview.countDocuments(whereCondition);
+  const total = await MockInterview.countDocuments();
+
+  // 👇 If user not logged in → return normal list
+  if (!userId) {
+    return {
+      data: interviews.map(interview => ({
+        ...interview,
+        interviewStatus: 'AVAILABLE',
+      })),
+      meta: { total, page, limit },
+    };
+  }
+
+  // 👇 Fetch completed sessions for this user
+  const sessions = await MockInterviewSession.find({
+    userId,
+  }).lean();
+
+  const sessionMap = new Map(
+    sessions.map(session => [
+      session.mockInterviewId,
+      session.status,
+    ])
+  );
+
+  // 👇 Merge status into interview list
+  const finalData = interviews.map(interview => ({
+    ...interview,
+    interviewStatus:
+      sessionMap.get(interview._id) || 'AVAILABLE',
+  }));
 
   return {
-    data: result,
-    meta: {
-      total,
-      page,
-      limit,
-    },
+    data: finalData,
+    meta: { total, page, limit },
   };
 };
 
