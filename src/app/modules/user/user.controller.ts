@@ -104,7 +104,8 @@ const schoolOverview = catchAsync(async (req, res) => {
     data: result,
   });
 });
-export const getJobsMatchingUserSkillsController = catchAsync(async (req, res) => {
+export const getJobsMatchingUserSkillsController = catchAsync(
+  async (req, res) => {
     const userId = req.user.id;
     const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
     const result = await userService.getJobsMatchingUserSkills(userId, options);
@@ -118,18 +119,17 @@ export const getJobsMatchingUserSkillsController = catchAsync(async (req, res) =
   },
 );
 export const getLoginHistory = catchAsync(async (req, res) => {
-    const userId = req.user.id; // auth middleware থেকে আসবে
+  const userId = req.user.id; // auth middleware থেকে আসবে
 
-    const result = await getLoginHistoryFromDB(userId);
+  const result = await getLoginHistoryFromDB(userId);
 
-    sendResponse(res, {
-      statusCode: 200,
-      success: true,
-      message: 'Login history retrieved successfully',
-      data: result,
-    });
-  }
-);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Login history retrieved successfully',
+    data: result,
+  });
+});
 
 export const userController = {
   createUser,
@@ -140,5 +140,5 @@ export const userController = {
   profile,
   schoolOverview,
   getJobsMatchingUserSkillsController,
-  getLoginHistory
+  getLoginHistory,
 };
