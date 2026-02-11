@@ -3,6 +3,7 @@ import { fileUploader } from '../../helper/fileUploder';
 import pagination, { IOption } from '../../helper/pagenation';
 import sendMailer from '../../helper/sendMailer';
 import Job from '../job/job.model';
+import Premium from '../premium/premium.model';
 import { userRole } from './user.constant';
 
 import { IUser } from './user.interface';
@@ -168,13 +169,21 @@ const profile = async (id: string) => {
   if (!result) {
     throw new AppError(404, 'User not found');
   }
-  return result;
+
+  let subscribe = null;
+  if (result?.subscription) {
+    subscribe = await Premium.findById(result?.subscription);
+  }
+  return {
+    data: result,
+    subscription: subscribe,
+  };
 };
 
 const schoolOverview = async () => {
   console.log('first');
   const totalSchool = await User.countDocuments({ role: 'school' });
-  
+
   const premiumSchool = await User.countDocuments({
     role: 'school',
     isSubscription: true,
@@ -205,11 +214,13 @@ const schoolOverview = async () => {
 };
 
 const getJobsMatchingUserSkills = async (userId: string, options: IOption) => {
- 
   const user = await User.findById(userId);
   if (!user) throw new AppError(404, 'User not found');
   if (!user.skills || user.skills.length === 0) {
-    return { data: [], meta: { total: 0, page: options.page, limit: options.limit } };
+    return {
+      data: [],
+      meta: { total: 0, page: options.page, limit: options.limit },
+    };
   }
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
   const query = {
@@ -236,12 +247,10 @@ export const getLoginHistoryFromDB = async (userId: string) => {
   }
 
   // latest first
-  const sortedHistory = user.loginHistory
-    ?.sort(
-      (a: any, b: any) =>
-        new Date(b.loginTime).getTime() -
-        new Date(a.loginTime).getTime()
-    );
+  const sortedHistory = user.loginHistory?.sort(
+    (a: any, b: any) =>
+      new Date(b.loginTime).getTime() - new Date(a.loginTime).getTime(),
+  );
 
   return sortedHistory || [];
 };
@@ -254,5 +263,5 @@ export const userService = {
   profile,
   schoolOverview,
   getJobsMatchingUserSkills,
-  getLoginHistoryFromDB
+  getLoginHistoryFromDB,
 };
