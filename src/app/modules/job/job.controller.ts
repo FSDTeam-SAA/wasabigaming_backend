@@ -16,7 +16,7 @@ const createManualJob = catchAsync(async (req, res) => {
 
 const createJob = catchAsync(async (req, res) => {
   const userId = req.user.id;
-  const { job_title} = req.body;
+  const { job_title } = req.body;
   const result = await jobService.createJob(userId, job_title);
   sendResponse(res, {
     statusCode: 201,
@@ -52,6 +52,98 @@ const getAllJobs = catchAsync(async (req, res) => {
     data: result.data,
   });
 });
+
+//=================================update applicated user =======================
+
+const getNotMyAppliedJobs = catchAsync(async (req, res) => {
+  const userId = req.user.id;
+  const filters = pick(req.query, [
+    'searchTerm',
+    'status',
+    'additionalInfo',
+    'responsibilities',
+    'description',
+    'jobStatus',
+    'salaryRange',
+    'level',
+    'postedBy',
+    'companyType',
+    'companyName',
+    'location',
+    'title',
+  ]);
+  const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+  const result = await jobService.getNotMyAppliedJobs(userId, filters, options);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Jobs retrieved successfully',
+    meta: result.meta,
+    data: result.data,
+  });
+});
+const getMyAppliedJobs = catchAsync(async (req, res) => {
+  const userId = req.user.id;
+  const filters = pick(req.query, [
+    'searchTerm',
+    'status',
+    'additionalInfo',
+    'responsibilities',
+    'description',
+    'jobStatus',
+    'salaryRange',
+    'level',
+    'postedBy',
+    'companyType',
+    'companyName',
+    'location',
+    'title',
+  ]);
+  const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+  const result = await jobService.getMyAppliedJobs(userId, filters, options);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Jobs retrieved successfully',
+    meta: result.meta,
+    data: result.data,
+  });
+});
+
+const applicationJobUser = catchAsync(async (req, res) => {
+  const { jobId } = req.params;
+  const userId = req.user.id;
+  const result = await jobService.applicationJobUser(userId, jobId!);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Job applied successfully',
+    data: result,
+  });
+});
+
+const updateApplicationStatus = catchAsync(async (req, res) => {
+  const userId = req.user.id;
+  const { jobId } = req.params;
+  const { status, interviewDate, notes } = req.body;
+
+  const result = await jobService.updateApplicationStatus(
+    userId,
+    jobId!,
+    status,
+    interviewDate,
+    notes,
+  );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: result.message,
+    data: result.application,
+  });
+});
+
+//===============================================================================
 
 const singleJob = catchAsync(async (req, res) => {
   const { id } = req.params;
@@ -125,19 +217,18 @@ const appliedJob = catchAsync(async (req, res) => {
   });
 });
 
-const filterJobCvBased = catchAsync(async(req , res) => {
-    
+const filterJobCvBased = catchAsync(async (req, res) => {
   const file = req.file;
   const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
   const result = await jobService.filterJobCvBased(options, file);
 
-    sendResponse(res, {
-      statusCode: 200,
-      success: true,
-      message: 'Applied jobs retrieved successfully',
-      data: result,
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Applied jobs retrieved successfully',
+    data: result,
   });
-})
+});
 
 export const jobController = {
   createJob,
@@ -148,5 +239,9 @@ export const jobController = {
   approvedJob,
   createManualJob,
   appliedJob,
-  filterJobCvBased
+  filterJobCvBased,
+  applicationJobUser,
+  getMyAppliedJobs,
+  getNotMyAppliedJobs,
+  updateApplicationStatus
 };

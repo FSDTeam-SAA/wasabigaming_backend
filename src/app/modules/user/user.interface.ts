@@ -12,6 +12,19 @@ export interface IExperience {
   duration: string;
 }
 
+export interface IApplication {
+  job: Types.ObjectId;
+  status?:
+    | 'Applied'
+    | 'Interview'
+    | 'Offer'
+    | 'Rejected'
+    | 'Pending'
+    | 'Cancelled';
+  interviewDate?: Date;
+  notes?: string;
+}
+
 export interface IUser {
   firstName?: string;
   lastName?: string;
@@ -31,8 +44,8 @@ export interface IUser {
   stripeAccountId?: string;
   status?: 'active' | 'inactive';
   address?: string;
-  course?:Types.ObjectId[];
-  
+  course?: Types.ObjectId[];
+
   jobTitle?: string;
   company?: string;
   bio?: string;
@@ -40,7 +53,7 @@ export interface IUser {
     name: string;
     link: string;
   }[];
-  schoolCategory:string;
+  schoolCategory: string;
 
   schoolId?: Types.ObjectId; // If student belongs to a school
   education?: IEducation[];
@@ -51,14 +64,17 @@ export interface IUser {
   isSubscription?: boolean;
   subscriptionExpiry?: Date | null;
   subscription?: Types.ObjectId;
-  loginHistory: [{
-    device: string,
-    ipAddress: string,
-    loginTime: {
-      type: Date
-    }
-  }],
-  shareLink?:string;
+  loginHistory: [
+    {
+      device: string;
+      ipAddress: string;
+      loginTime: {
+        type: Date;
+      };
+    },
+  ];
+  shareLink?: string;
+  applicationJob?: IApplication[];
 
   createdAt: Date;
   updatedAt: Date;

@@ -13,7 +13,37 @@ router.post(
 );
 
 router.get('/applied-job', auth(userRole.student), jobController.appliedJob);
-router.post('/filter-job-cv-based', auth(userRole.student, userRole.admin), fileUploader.upload.single('file'), jobController.filterJobCvBased);
+router.post(
+  '/filter-job-cv-based',
+  auth(userRole.student, userRole.admin),
+  fileUploader.upload.single('file'),
+  jobController.filterJobCvBased,
+);
+
+//================================update job==============================
+
+router.get(
+  '/my-applied-job',
+  auth(userRole.student),
+  jobController.getMyAppliedJobs,
+);
+router.get(
+  '/not-my-applied-job',
+  auth(userRole.student),
+  jobController.getNotMyAppliedJobs,
+);
+router.put(
+  '/applied-job/:jobId',
+  auth(userRole.student),
+  jobController.applicationJobUser,
+);
+router.put(
+  '/application-status/:jobId',
+  auth(userRole.student),
+  jobController.updateApplicationStatus,
+);
+
+//=========================================================================
 
 router.post('/', auth(userRole.admin), jobController.createManualJob);
 router.get('/', jobController.getAllJobs);

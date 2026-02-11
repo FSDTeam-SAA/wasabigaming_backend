@@ -1,7 +1,28 @@
 import { Schema, model } from 'mongoose';
-import { IEducation, IExperience, IUser } from './user.interface';
+import { IApplication, IEducation, IExperience, IUser } from './user.interface';
 import bcrypt from 'bcryptjs';
 import config from '../../config';
+
+const applicationSchema = new Schema<IApplication>(
+  {
+    job: { type: Schema.Types.ObjectId, ref: 'Job', required: true },
+    status: {
+      type: String,
+      // enum: [
+      //   'Applied',
+      //   'Interview',
+      //   'Offer',
+      //   'Rejected',
+      //   'Pending',
+      //   'Cancelled',
+      // ],
+      default: 'Applied',
+    },
+    interviewDate: { type: Date },
+    notes: { type: String },
+  },
+  { _id: false },
+);
 
 const educationSchema = new Schema<IEducation>({
   institution: { type: String, required: true },
@@ -35,8 +56,8 @@ const userSchema = new Schema<IUser>(
       enum: ['student', 'school', 'admin'],
       required: true,
     },
-    schoolCategory:{
-      type:String
+    schoolCategory: {
+      type: String,
     },
 
     profileImage: { type: String },
@@ -62,7 +83,7 @@ const userSchema = new Schema<IUser>(
     subscriptionExpiry: { type: Date },
     subscription: { type: Schema.Types.ObjectId, ref: 'Premium' },
     jobTitle: { type: String },
-    course:[{type:Schema.Types.ObjectId, ref:"Course"}],
+    course: [{ type: Schema.Types.ObjectId, ref: 'Course' }],
     company: { type: String },
     bio: { type: String },
     socileLinks: {
@@ -74,15 +95,18 @@ const userSchema = new Schema<IUser>(
       ],
       default: [],
     },
-    loginHistory: [{
-      device: String,
-      ipAddress: String,
-      loginTime: {
-        type: Date,
-        default: Date.now
-      }
-    }],
-    shareLink:{type: String}
+    loginHistory: [
+      {
+        device: String,
+        ipAddress: String,
+        loginTime: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
+    shareLink: { type: String },
+    applicationJob: [applicationSchema],
   },
   { timestamps: true },
 );

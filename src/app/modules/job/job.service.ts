@@ -31,16 +31,11 @@ const createManualJob = async (userId: string, payload: IJob) => {
   return result;
 };
 
-const createJob = async (
-  userId: string,
-  job_title: string,
-) => {
+const createJob = async (userId: string, job_title: string) => {
   const user = await User.findById(userId);
   if (!user) throw new AppError(404, 'user is not found');
 
-  const dataResponse: ILawFirmJob[] = await aiIntregation.lawFirmAi(
-    job_title,
-  );
+  const dataResponse: ILawFirmJob[] = await aiIntregation.lawFirmAi(job_title);
 
   const result = await Promise.all(
     dataResponse.map(async (data) => {
@@ -266,16 +261,239 @@ const appliedJob = async (userId: string, params: any, options: IOption) => {
   };
 };
 
-const filterJobCvBased = async(options:IOption, file?: Express.Multer.File) => {
+//================== update applicated user ===========================
+const getNotMyAppliedJobs = async (
+  userId: string,
+  params: any,
+  options: IOption,
+) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(404, 'User not found');
 
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
-  if(!file){
-    throw new AppError(404, "File upload required");
+  const { searchTerm, year, ...filterData } = params;
+
+  const andCondition: any[] = [];
+
+  const searchableFields = [
+    'status',
+    'additionalInfo',
+    'responsibilities',
+    'description',
+    'jobStatus',
+    'salaryRange',
+    'level',
+    'postedBy',
+    'companyType',
+    'companyName',
+    'location',
+    'title',
+  ];
+
+  if (searchTerm) {
+    andCondition.push({
+      $or: searchableFields.map((field) => ({
+        [field]: { $regex: searchTerm, $options: 'i' },
+      })),
+    });
+  }
+
+  if (Object.keys(filterData).length) {
+    andCondition.push({
+      $and: Object.entries(filterData).map(([field, value]) => ({
+        [field]: value,
+      })),
+    });
+  }
+
+  if (year) {
+    const startDate = new Date(`${year}-01-01T00:00:00.000Z`);
+    const endDate = new Date(`${year}-12-31T23:59:59.999Z`);
+
+    andCondition.push({
+      createdAt: { $gte: startDate, $lte: endDate },
+    });
+  }
+
+  const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
+
+  const finalQuery = {
+    ...whereCondition,
+    applicants: { $nin: [userId] },
+  };
+
+  const result = await Job.find(finalQuery)
+    .skip(skip)
+    .limit(limit)
+    .sort({ [sortBy]: sortOrder } as any);
+
+  const total = await Job.countDocuments(finalQuery);
+
+  return {
+    data: result,
+    meta: { total, page, limit },
+  };
+};
+
+const getMyAppliedJobs = async (
+  userId: string,
+  params: any,
+  options: IOption,
+) => {
+  const user = await User.findById(userId).populate('applicationJob.job');
+  if (!user) throw new AppError(404, 'User not found');
+
+  const { page, limit, skip, sortBy, sortOrder } = pagination(options);
+
+  // Map applications with job info
+  let applications = user.applicationJob || [];
+
+  // Optional: Filter/search
+  if (params.searchTerm) {
+    const term = params.searchTerm.toLowerCase();
+    applications = applications.filter(
+      (app) =>
+        app.job &&
+        typeof app.job !== 'string' &&
+        ((app.job as any).title?.toLowerCase().includes(term) ||
+          (app.job as any).companyName?.toLowerCase().includes(term)),
+    );
+  }
+
+  const total = applications.length;
+
+  // Pagination
+  const paginated = applications.slice(skip, skip + limit);
+
+  return {
+    data: paginated.map((app) => ({
+      jobId: (app.job as any)._id,
+      title: (app.job as any).title,
+      companyName: (app.job as any).companyName,
+      location: (app.job as any).location,
+      level: (app.job as any).level,
+      status: app.status, // include status
+      interviewDate: app.interviewDate,
+      notes: app.notes,
+      createdAt: (app.job as any).createdAt,
+    })),
+    meta: { total, page, limit },
+  };
+};
+
+const applicationJobUser = async (userId: string, jobId: string) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(404, 'User not found');
+
+  const job = await Job.findById(jobId);
+  if (!job) throw new AppError(404, 'Job not found');
+
+  if (job.jobStatus === 'Closed') {
+    throw new AppError(400, 'Cannot apply to a closed job');
+  }
+
+  const applicationIndex = user?.applicationJob
+    ? user.applicationJob.findIndex(
+        (app) => app.job.toString() === job._id.toString(),
+      )
+    : -1;
+
+  if (applicationIndex > -1) {
+    const app = user?.applicationJob
+      ? user.applicationJob[applicationIndex]
+      : undefined;
+
+    if (!app) {
+      throw new AppError(404, 'Application not found');
+    }
+
+    // Only allow cancel if job is open and status is not final
+    if (['Offer', 'Rejected', 'Interview'].includes(app.status || '')) {
+      throw new AppError(
+        400,
+        `Cannot cancel application with current status: ${app.status || 'Unknown'}`,
+      );
+    }
+
+    // Remove application
+    if (user?.applicationJob) {
+      user.applicationJob.splice(applicationIndex, 1);
+    }
+    await Job.findByIdAndUpdate(jobId, { $pull: { applicants: user._id } });
+    await user.save();
+
+    return { message: 'Application cancelled', status: 'Cancelled' };
+  }
+
+  // Apply new
+  user?.applicationJob?.push({ job: job._id, status: 'Applied' });
+  await Job.findByIdAndUpdate(jobId, { $addToSet: { applicants: user._id } });
+  await user.save();
+
+  return { message: 'Application successful', status: 'Applied', job };
+};
+
+const updateApplicationStatus = async (
+  userId: string,
+  jobId: string,
+  newStatus: string,
+  interviewDate?: Date,
+  notes?: string,
+) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(404, 'User not found');
+
+  const app = user?.applicationJob?.find(
+    (a) => a.job.toString() === jobId.toString(),
+  );
+
+  if (!app) throw new AppError(404, 'Application not found');
+
+  // // Cannot update final statuses
+  // if (['Offer', 'Rejected'].includes(app?.status || '')) {
+  //   throw new AppError(
+  //     400,
+  //     `Cannot update application with current status: ${app?.status || 'Unknown'}`,
+  //   );
+  // }
+
+  // Only allow allowed statuses
+  // const allowedStatuses = ['Applied', 'Interview', 'Pending', 'Cancelled'];
+  // if (!allowedStatuses.includes(newStatus)) {
+  //   throw new AppError(400, 'Invalid status update');
+  // }
+
+  if (app) {
+    app.status = newStatus as
+      | 'Applied'
+      | 'Interview'
+      | 'Offer'
+      | 'Rejected'
+      | 'Pending'
+      | 'Cancelled';
+    if (interviewDate) app.interviewDate = interviewDate;
+    if (notes) app.notes = notes;
+  }
+
+  await user.save();
+
+  return { message: 'Application updated', application: app };
+};
+
+//========================================================================
+
+const filterJobCvBased = async (
+  options: IOption,
+  file?: Express.Multer.File,
+) => {
+  const { page, limit, skip, sortBy, sortOrder } = pagination(options);
+  if (!file) {
+    throw new AppError(404, 'File upload required');
   }
 
   const aiApiCall = await cvBasedJobFilter(file);
-  if(!aiApiCall){
-    throw new AppError(404, "Currently not found job your cv based")
+  if (!aiApiCall) {
+    throw new AppError(404, 'Currently not found job your cv based');
   }
   // const andCondition: any[] = [];
   // const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
@@ -291,8 +509,8 @@ const filterJobCvBased = async(options:IOption, file?: Express.Multer.File) => {
 
   // const total = await Job.countDocuments(whereCondition);
 
-  return  aiApiCall;
-  };
+  return aiApiCall;
+};
 
 export const jobService = {
   createJob,
@@ -303,5 +521,9 @@ export const jobService = {
   approvedJob,
   createManualJob,
   appliedJob,
-  filterJobCvBased
+  filterJobCvBased,
+  applicationJobUser,
+  getNotMyAppliedJobs,
+  getMyAppliedJobs,
+  updateApplicationStatus,
 };
