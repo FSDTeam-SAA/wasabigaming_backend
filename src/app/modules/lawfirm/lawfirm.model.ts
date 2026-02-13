@@ -83,6 +83,11 @@ const LawfirmSchema = new Schema<ILawfirm>(
     cultureAndValue: [{ type: String }],
     benefitsAndPerks: [{ type: String }],
     bookmarkedUser: { type: [Types.ObjectId], ref: 'User', default: [] },
+    recentAnnualRevenue: { type: String, default: '' },
+    recentWorks: { type: String, default: '' },
+    technologyInitiatives: { type: String, default: '' },
+    diversityEquityAndInclusion: { type: String, default: '' },
+    CSRAndProBono: { type: String, default: '' },
   },
   { timestamps: true },
 );

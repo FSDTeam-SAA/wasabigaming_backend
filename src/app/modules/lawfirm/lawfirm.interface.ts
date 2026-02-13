@@ -25,7 +25,11 @@ export interface ILawfirm {
     establishmentDetails?: string;
     keyHighlights?: string;
   };
-
+  recentAnnualRevenue?: string;
+  recentWorks?: string;
+  technologyInitiatives?: string;
+  diversityEquityAndInclusion?: string;
+  CSRAndProBono?: string;
   // practiceAndWork?: {
   //   practiceAreas?: string[];
   //   practiceAreaDescription?: string;
