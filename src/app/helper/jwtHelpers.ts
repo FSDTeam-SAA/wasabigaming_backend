@@ -1,6 +1,7 @@
 import jwt, { JwtPayload, Secret, SignOptions } from 'jsonwebtoken';
 import AppError from '../error/appError';
 import config from '../config';
+import { OAuth2Client } from 'google-auth-library';
 
 const genaretToken = (
   payload: string | object | Buffer,
@@ -23,11 +24,23 @@ const verifyToken = (token: string, secret: Secret): JwtPayload => {
   return decoded as JwtPayload;
 };
 
-const verifyGoogleToken = (token: string) => {
+const client = new OAuth2Client(config.google.clientId!);
+
+const verifyGoogleToken = async (idToken: string) => {
   try {
-    return jwt.verify(token, config.google.clientId as string);
+    const ticket = await client.verifyIdToken({
+      idToken,
+      audience: config.google.clientId!,
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload || !payload.email) {
+      throw new AppError(401, 'Invalid Google token');
+    }
+
+    return payload;
   } catch (error) {
-    throw new AppError(401, 'Invalid or expired token');
+    throw new AppError(401, 'Google token verification failed');
   }
 };
 

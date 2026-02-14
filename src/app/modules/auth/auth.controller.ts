@@ -1,4 +1,5 @@
 import config from '../../config';
+import AppError from '../../error/appError';
 import catchAsync from '../../utils/catchAsycn';
 import sendResponse from '../../utils/sendResponse';
 import { authService } from './auth.service';
@@ -31,7 +32,7 @@ export const loginUser = catchAsync(async (req, res) => {
     { email, password },
     deviceInfo,
     req.headers['user-agent'],
-    req.ip
+    req.ip,
   );
 
   res.cookie('refreshToken', result.refreshToken, {
@@ -49,6 +50,50 @@ export const loginUser = catchAsync(async (req, res) => {
       user: result.user,
     },
   });
+});
+
+const googleLogin = catchAsync(async (req, res) => {
+  const { idToken, role } = req.body;
+
+  if (!idToken) {
+    throw new AppError(400, 'Google ID token is required');
+  }
+
+  const result = await authService.googleLogin(idToken, role);
+
+  // If user exists but no role was needed, return tokens
+  if (result.accessToken) {
+    res.cookie('refreshToken', result.refreshToken, {
+      httpOnly: true,
+      secure: config.env === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    return sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: 'Google login successful',
+      data: {
+        accessToken: result.accessToken,
+        user: result.user,
+      },
+    });
+  }
+
+  // If new user and role selection needed
+  if (result.needsRole) {
+    return sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: 'Role selection required',
+      data: {
+        needsRole: true,
+        tempToken: result.tempToken,
+        userInfo: result.userInfo,
+      },
+    });
+  }
 });
 
 const refreshToken = catchAsync(async (req, res) => {
@@ -145,4 +190,5 @@ export const authController = {
   resetPassword,
   logoutUser,
   changePassword,
+  googleLogin,
 };

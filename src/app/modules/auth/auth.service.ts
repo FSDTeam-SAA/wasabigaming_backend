@@ -175,6 +175,7 @@ export const loginUser = async (
   return { accessToken, refreshToken, user: userWithoutPassword };
 };
 
+// auth.service.ts
 const googleLogin = async (idToken: string, role?: string) => {
   try {
     console.log('=== GOOGLE LOGIN BACKEND START ===');
@@ -353,5 +354,5 @@ export const authService = {
   verifyEmail,
   resetPassword,
   changePassword,
-  googleLogin
+  googleLogin,
 };
