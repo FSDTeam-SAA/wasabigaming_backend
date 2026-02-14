@@ -6,6 +6,51 @@ import { userRole } from '../user/user.constant';
 import User from '../user/user.model';
 import { IJob } from './job.interface';
 import Job from './job.model';
+import dayjs from 'dayjs';
+
+// export const extractClosingDate = (text?: string): Date | null => {
+//   if (!text) return null;
+
+//   // Case 1: date inside parentheses
+//   const parenMatch = text.match(/\((.*?)\)/);
+//   if (parenMatch) {
+//     const clean = parenMatch[1]?.replace(/at\s.*$/i, "").trim();
+//     const parsed = dayjs(clean);
+//     return parsed.isValid() ? parsed.toDate() : null;
+//   }
+
+//   // Case 2: "Closes on Friday 10 April 2026"
+//   const onMatch = text.match(/Closes on (.+)/i);
+//   if (onMatch) {
+//     const clean = onMatch[1]?.replace(/at\s.*$/i, "").trim();
+//     const parsed = dayjs(clean);
+//     return parsed.isValid() ? parsed.toDate() : null;
+//   }
+
+//   return null;
+// };
+
+export const extractClosingDate = (text?: string): string | null => {
+  if (!text) return null;
+
+  // Case 1: date inside parentheses
+  const parenMatch = text.match(/\((.*?)\)/);
+  if (parenMatch) {
+    const clean = parenMatch[1]?.replace(/at\s.*$/i, '').trim();
+    const parsed = dayjs(clean);
+    return parsed.isValid() ? parsed.format('YYYY-MM-DD') : null;
+  }
+
+  // Case 2: "Closes on Friday 10 April 2026"
+  const onMatch = text.match(/Closes on (.+)/i);
+  if (onMatch) {
+    const clean = onMatch[1]?.replace(/at\s.*$/i, '').trim();
+    const parsed = dayjs(clean);
+    return parsed.isValid() ? parsed.format('YYYY-MM-DD') : null;
+  }
+
+  return null;
+};
 
 export interface ILawFirmJob {
   vacancy_id: string;
@@ -31,51 +76,125 @@ const createManualJob = async (userId: string, payload: IJob) => {
   return result;
 };
 
+// const createJob = async (userId: string, job_title: string) => {
+//   const user = await User.findById(userId);
+//   if (!user) throw new AppError(404, 'user is not found');
+
+//   const dataResponse: ILawFirmJob[] = await aiIntregation.lawFirmAi(job_title);
+// console.log(dataResponse)
+
+//   const result = await Promise.all(
+//     dataResponse.map(async (data) => {
+//       const lawfirm = await Lawfirm.findOne({ firmName: data.employer });
+//       const jobID = await Job.findOne({ jobId: data.vacancy_id });
+//       if (jobID) {
+//         return null;
+//       }
+//       const text = data.closing_text;
+//       const match = text.match(/\((.*?)\)/);
+
+//       const date = match ? dayjs(match[1]).toDate() : null;
+
+//       const job = await Job.findOneAndUpdate({
+//         title: data.title,
+//         url: data.url,
+//         location: data.location,
+//         companyName: data.employer,
+//         companyType: data?.companyType || null,
+//         postedBy: data.employer,
+//         description: data.training_course || null,
+//         level: data.training_course || null,
+//         salaryRange: data.wage || '0',
+//         startDate: data.start_date,
+//         applicationDeadline: date,
+//         jobId: data.vacancy_id,
+//         jobStatus: 'Open',
+//         status: 'inactive',
+//         createBy: userId,
+//         companyId: lawfirm?._id || null,
+//       });
+
+//       if (lawfirm && job) {
+//         lawfirm?.jobs?.push(job._id);
+//         await lawfirm.save();
+//       }
+
+//       return job;
+//     }),
+//   );
+
+//   // Filter out null values (existing jobs)
+//   const filteredResult = result.filter((job) => job !== null);
+
+//   return filteredResult;
+// };
+
 const createJob = async (userId: string, job_title: string) => {
   const user = await User.findById(userId);
-  if (!user) throw new AppError(404, 'user is not found');
+  if (!user) throw new AppError(404, 'User is not found');
 
   const dataResponse: ILawFirmJob[] = await aiIntregation.lawFirmAi(job_title);
 
-  const result = await Promise.all(
+  const results = await Promise.all(
     dataResponse.map(async (data) => {
-      const lawfirm = await Lawfirm.findOne({ firmName: data.employer });
-      const jobID = await Job.findOne({ jobId: data.vacancy_id });
-      if (jobID) {
+      try {
+        const lawfirm = await Lawfirm.findOne({
+          firmName: data.employer,
+        });
+
+        // ✅ robust date parsing
+        const applicationDeadline = extractClosingDate(data.closing_text);
+
+        // ✅ UPSERT — prevents duplicates + race condition
+        const job = await Job.findOneAndUpdate(
+          { jobId: data.vacancy_id },
+          {
+            title: data.title,
+            url: data.url,
+            location: data.location,
+            companyName: data.employer,
+            companyType: data?.companyType || null,
+            postedBy: data.employer,
+            description: data.training_course || null,
+            level: data.training_course || null,
+            salaryRange: data.wage || '0',
+            startDate: data.start_date,
+            applicationDeadline,
+            jobId: data.vacancy_id,
+            jobStatus: 'Open',
+            status: 'inactive',
+            createBy: userId,
+            companyId: lawfirm?._id || null,
+          },
+          {
+            upsert: true,
+            new: true,
+            setDefaultsOnInsert: true,
+          },
+        );
+
+        // ✅ prevent duplicate push into lawfirm.jobs
+        if (lawfirm && job) {
+          const alreadyExists = lawfirm.jobs?.some(
+            (id: any) => id.toString() === job._id.toString(),
+          );
+
+          if (!alreadyExists) {
+            lawfirm?.jobs?.push(job._id);
+            await lawfirm.save();
+          }
+        }
+
+        return job;
+      } catch (error) {
+        console.error('Job creation failed:', error);
         return null;
       }
-      const job = await Job.findOneAndUpdate({
-        title: data.title,
-        url: data.url,
-        location: data.location,
-        companyName: data.employer,
-        companyType: data?.companyType || null,
-        postedBy: data.employer,
-        description: data.training_course || null,
-        level: data.training_course || null,
-        salaryRange: data.wage || '0',
-        startDate: data.start_date,
-        applicationDeadline: data.closing_text,
-        jobId: data.vacancy_id,
-        jobStatus: 'Open',
-        status: 'inactive',
-        createBy: userId,
-        companyId: lawfirm?._id || null,
-      });
-
-      if (lawfirm && job) {
-        lawfirm?.jobs?.push(job._id);
-        await lawfirm.save();
-      }
-
-      return job;
     }),
   );
 
-  // Filter out null values (existing jobs)
-  const filteredResult = result.filter((job) => job !== null);
-
-  return filteredResult;
+  // ✅ remove null safely
+  return results.filter(Boolean);
 };
 
 const getAllJobs = async (params: any, options: IOption) => {
