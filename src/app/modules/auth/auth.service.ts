@@ -40,7 +40,12 @@ const registerUser = async (payload: Partial<IUser>) => {
   payload.profileImage = `https://avatar.iran.liara.run/public/${idx}.png`;
 
   if (payload.role === userRole.school) {
-    console.log('payload.schoolName', payload.schoolName, "mahabur", user?.schoolName);
+    console.log(
+      'payload.schoolName',
+      payload.schoolName,
+      'mahabur',
+      user?.schoolName,
+    );
     if (!payload.schoolName) {
       throw new AppError(400, 'School name is required');
     }
@@ -51,13 +56,13 @@ const registerUser = async (payload: Partial<IUser>) => {
 
     user = await User.create(payload);
 
-    const shareLink = `${config?.frontendUrl}/accepted?schoolId=${user._id}`
+    const shareLink = `${config?.frontendUrl}/accepted?schoolId=${user._id}`;
     user.shareLink = shareLink;
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     user.otp = otp;
     user.otpExpiry = new Date(Date.now() + 20 * 60 * 1000); // 20 mins
-    
+
     await user.save();
 
     await sendMailer(
@@ -117,7 +122,7 @@ export const loginUser = async (
   payload: Partial<IUser>,
   deviceInfo: any,
   userAgentHeader?: string,
-  ipAddress?: string
+  ipAddress?: string,
 ) => {
   const user = await User.findOne({ email: payload.email });
   if (!user) throw new AppError(401, 'User not found');
@@ -127,7 +132,7 @@ export const loginUser = async (
 
   const isPasswordMatched = await bcrypt.compare(
     payload.password,
-    user.password
+    user.password,
   );
   if (!isPasswordMatched) throw new AppError(401, 'Password not matched');
 
@@ -135,13 +140,13 @@ export const loginUser = async (
   const accessToken = jwtHelpers.genaretToken(
     { id: user._id, role: user.role, email: user.email },
     config.jwt.accessTokenSecret as Secret,
-    config.jwt.accessTokenExpires
+    config.jwt.accessTokenExpires,
   );
 
   const refreshToken = jwtHelpers.genaretToken(
     { id: user._id, role: user.role, email: user.email },
     config.jwt.refreshTokenSecret as Secret,
-    config.jwt.refreshTokenExpires
+    config.jwt.refreshTokenExpires,
   );
 
   // Determine device name
@@ -169,6 +174,78 @@ export const loginUser = async (
 
   return { accessToken, refreshToken, user: userWithoutPassword };
 };
+
+const googleLogin = async (idToken: string, role?: string) => {
+  try {
+    console.log('=== GOOGLE LOGIN BACKEND START ===');
+
+    const payload = await jwtHelpers.verifyGoogleToken(idToken);
+
+    const email = payload.email!;
+    const firstName = payload.given_name || payload.name || 'Google User';
+    const lastName = payload.family_name || '';
+    const profileImage = payload.picture;
+
+    // EXISTING USER CHECK - সবার আগে এটা check হয়
+    let user = await User.findOne({ email });
+
+    // পুরাতন user হলে DIRECTLY LOGIN (কোন role popup নেই)
+    if (user) {
+      console.log('👤 Existing user login - Direct login');
+      console.log('🔒 Role locked as:', user.role);
+
+      const accessToken = jwtHelpers.genaretToken(
+        { id: user._id, role: user.role, email: user.email },
+        config.jwt.accessTokenSecret as Secret,
+        config.jwt.accessTokenExpires,
+      );
+
+      const refreshToken = jwtHelpers.genaretToken(
+        { id: user._id, role: user.role, email: user.email },
+        config.jwt.refreshTokenSecret as Secret,
+        config.jwt.refreshTokenExpires,
+      );
+
+      const { password, ...userWithoutPassword } = user.toObject();
+
+      return {
+        accessToken, // এখানে token আছে
+        refreshToken, // এখানে token আছে
+        user: userWithoutPassword,
+      };
+    }
+
+    // নতুন user হলে ONLY THEN role selection popup দেখাবে
+    console.log('🆕 New Google user detected - role selection required');
+
+    const tempToken = jwtHelpers.genaretToken(
+      {
+        email,
+        firstName,
+        lastName,
+        profileImage,
+        isTemp: true,
+      },
+      config.jwt.accessTokenSecret as Secret,
+      '15m',
+    );
+
+    return {
+      needsRole: true, // নতুন user এর জন্য role চাইবে
+      tempToken,
+      userInfo: {
+        email,
+        firstName,
+        lastName,
+        profileImage,
+      },
+    };
+  } catch (error) {
+    console.error('Google login error:', error);
+    throw error;
+  }
+};
+
 const refreshToken = async (token: string) => {
   const varifiedToken = jwtHelpers.verifyToken(
     token,
@@ -276,4 +353,5 @@ export const authService = {
   verifyEmail,
   resetPassword,
   changePassword,
+  googleLogin
 };

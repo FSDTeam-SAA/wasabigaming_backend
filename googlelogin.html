@@ -1,0 +1,768 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Google Login - Role Selection</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 450px;
+        width: 100%;
+        padding: 40px;
+        animation: slideUp 0.5s ease;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .header h1 {
+        color: #333;
+        font-size: 28px;
+        margin-bottom: 10px;
+      }
+
+      .header p {
+        color: #666;
+        font-size: 14px;
+      }
+
+      .profile-section {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .profile-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        margin: 0 auto 15px;
+        border: 3px solid #667eea;
+        object-fit: cover;
+      }
+
+      .profile-name {
+        font-size: 22px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 5px;
+      }
+
+      .profile-email {
+        color: #666;
+        font-size: 14px;
+      }
+
+      .google-login-wrapper {
+        display: flex;
+        justify-content: center;
+        margin: 30px 0;
+      }
+
+      .role-selection {
+        display: none;
+      }
+
+      .role-selection.active {
+        display: block;
+        animation: slideUp 0.5s ease;
+      }
+
+      .role-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .role-option {
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .role-option:hover {
+        border-color: #667eea;
+        background: #f8f9ff;
+        transform: translateX(5px);
+      }
+
+      .role-option.selected {
+        border-color: #667eea;
+        background: #f0f3ff;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        transform: scale(1.02);
+      }
+
+      .role-option input[type='radio'] {
+        position: absolute;
+        opacity: 0;
+      }
+
+      .role-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .radio-custom {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #ccc;
+        border-radius: 50%;
+        margin-right: 12px;
+        position: relative;
+        transition: all 0.3s ease;
+      }
+
+      .role-option.selected .radio-custom {
+        border-color: #667eea;
+        background: #667eea;
+      }
+
+      .role-option.selected .radio-custom::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 8px;
+        height: 8px;
+        background: white;
+        border-radius: 50%;
+      }
+
+      .role-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        text-transform: capitalize;
+      }
+
+      .role-description {
+        color: #666;
+        font-size: 13px;
+        margin-left: 32px;
+      }
+
+      .btn {
+        width: 100%;
+        padding: 15px;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 20px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-primary:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+
+      .btn-secondary {
+        background: #fff;
+        color: #667eea;
+        border: 2px solid #667eea;
+      }
+
+      .btn-secondary:hover {
+        background: #f8f9ff;
+        transform: translateY(-2px);
+      }
+
+      .info-box {
+        background: #f0f3ff;
+        border-left: 4px solid #667eea;
+        padding: 15px;
+        margin-top: 25px;
+        border-radius: 8px;
+      }
+
+      .info-box h3 {
+        font-size: 14px;
+        color: #333;
+        margin-bottom: 10px;
+      }
+
+      .info-box ul {
+        list-style: none;
+        padding-left: 0;
+      }
+
+      .info-box li {
+        color: #666;
+        font-size: 13px;
+        margin-bottom: 8px;
+        padding-left: 20px;
+        position: relative;
+      }
+
+      .info-box li::before {
+        content: '✓';
+        position: absolute;
+        left: 0;
+        color: #667eea;
+        font-weight: bold;
+      }
+
+      .user-dashboard {
+        display: none;
+      }
+
+      .user-dashboard.active {
+        display: block;
+        animation: slideUp 0.5s ease;
+      }
+
+      .user-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        margin-bottom: 25px;
+        text-align: center;
+      }
+
+      .user-card .profile-image {
+        border-color: white;
+        margin-bottom: 15px;
+      }
+
+      .user-info {
+        background: #f8f9ff;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+      }
+
+      .user-info-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .user-info-item:last-child {
+        border-bottom: none;
+      }
+
+      .user-info-label {
+        color: #666;
+        font-weight: 500;
+      }
+
+      .user-info-value {
+        color: #333;
+        font-weight: 600;
+        text-transform: capitalize;
+      }
+
+      .loading {
+        text-align: center;
+        color: #667eea;
+        margin-top: 15px;
+        font-size: 14px;
+      }
+
+      .spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #667eea;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 10px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      .error-message {
+        background: #fee;
+        border-left: 4px solid #f44;
+        padding: 15px;
+        margin-top: 15px;
+        border-radius: 8px;
+        color: #c33;
+        animation: shake 0.5s;
+      }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-10px);
+        }
+        75% {
+          transform: translateX(10px);
+        }
+      }
+
+      .success-message {
+        background: #efe;
+        border-left: 4px solid #4f4;
+        padding: 15px;
+        margin-top: 15px;
+        border-radius: 8px;
+        color: #383;
+        animation: slideUp 0.5s ease;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-left: 8px;
+      }
+
+      .badge-new {
+        background: #ffd700;
+        color: #333;
+      }
+
+      .badge-returning {
+        background: #4caf50;
+        color: white;
+      }
+
+      @media (max-width: 480px) {
+        .container {
+          padding: 25px;
+        }
+
+        .header h1 {
+          font-size: 24px;
+        }
+
+        .profile-image {
+          width: 60px;
+          height: 60px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Login Screen -->
+      <div id="loginScreen">
+        <div class="header">
+          <h1>🎓 Welcome Back</h1>
+          <p>Sign in with your Google account to continue</p>
+        </div>
+
+        <div class="google-login-wrapper">
+          <div
+            id="g_id_onload"
+            data-client_id="Your client id"
+            data-callback="handleCredentialResponse"
+          ></div>
+          <div
+            class="g_id_signin"
+            data-type="standard"
+            data-size="large"
+            data-theme="outline"
+            data-text="sign_in_with"
+            data-shape="rectangular"
+            data-logo_alignment="left"
+          ></div>
+        </div>
+
+        <div id="loadingIndicator" class="loading hidden">
+          <div class="spinner"></div>
+          <p>Processing your login...</p>
+        </div>
+
+        <div id="errorMessage" class="error-message hidden"></div>
+        <div id="successMessage" class="success-message hidden"></div>
+
+        <div class="info-box">
+          <h3>How it works:</h3>
+          <ul>
+            <li>
+              <strong>First-time users:</strong> Select your role after Google
+              login
+            </li>
+            <li>
+              <strong>Existing users:</strong> Direct login with your existing
+              role
+            </li>
+            <li><strong>Your role is permanent</strong> once set</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Role Selection Screen -->
+      <div id="roleSelectionScreen" class="role-selection">
+        <div class="profile-section">
+          <img
+            id="roleProfileImage"
+            src=""
+            alt="Profile"
+            class="profile-image"
+          />
+          <div class="profile-name">
+            <span id="roleProfileName"></span>
+            <span class="badge badge-new">NEW USER</span>
+          </div>
+          <div class="profile-email" id="roleProfileEmail"></div>
+        </div>
+
+        <div class="role-title">
+          👋 Welcome! Please select your role to continue
+        </div>
+
+        <div id="roleOptions">
+          <div class="role-option" data-role="student">
+            <input type="radio" name="role" id="student" value="student" />
+            <div class="role-header">
+              <div class="radio-custom"></div>
+              <div class="role-name">🎓 Student</div>
+            </div>
+            <div class="role-description">
+              Access courses and learning materials
+            </div>
+          </div>
+
+          <div class="role-option" data-role="school">
+            <input type="radio" name="role" id="school" value="school" />
+            <div class="role-header">
+              <div class="radio-custom"></div>
+              <div class="role-name">🏫 School</div>
+            </div>
+            <div class="role-description">Manage school and create courses</div>
+          </div>
+
+          <div class="role-option" data-role="admin">
+            <input type="radio" name="role" id="admin" value="admin" />
+            <div class="role-header">
+              <div class="radio-custom"></div>
+              <div class="role-name">👑 Admin</div>
+            </div>
+            <div class="role-description">Full administrative access</div>
+          </div>
+        </div>
+
+        <button id="submitRoleBtn" class="btn btn-primary" disabled>
+          Continue →
+        </button>
+        <div id="roleLoadingIndicator" class="loading hidden">
+          <div class="spinner"></div>
+          <p>Creating your account...</p>
+        </div>
+      </div>
+
+      <!-- User Dashboard -->
+      <div id="userDashboard" class="user-dashboard">
+        <div class="user-card">
+          <img
+            id="dashboardProfileImage"
+            src=""
+            alt="Profile"
+            class="profile-image"
+          />
+          <div class="profile-name">
+            <span id="dashboardProfileName"></span>
+            <span class="badge badge-returning">RETURNING USER</span>
+          </div>
+        </div>
+
+        <div class="user-info">
+          <div class="user-info-item">
+            <span class="user-info-label">📧 Email:</span>
+            <span class="user-info-value" id="dashboardEmail"></span>
+          </div>
+          <div class="user-info-item">
+            <span class="user-info-label">👤 Role:</span>
+            <span class="user-info-value" id="dashboardRole"></span>
+          </div>
+          <div class="user-info-item">
+            <span class="user-info-label">✅ Status:</span>
+            <span class="user-info-value" style="color: #4caf50">Active</span>
+          </div>
+        </div>
+
+        <button id="logoutBtn" class="btn btn-secondary">🚪 Logout</button>
+      </div>
+    </div>
+
+    <script>
+      // Configuration
+      const API_BASE_URL = 'http://localhost:5000/api/v1/auth';
+      let tempToken = null;
+      let selectedRole = null;
+
+      // Show error message
+      function showError(message) {
+        const errorDiv = document.getElementById('errorMessage');
+        errorDiv.textContent = '❌ ' + message;
+        errorDiv.classList.remove('hidden');
+        setTimeout(() => {
+          errorDiv.classList.add('hidden');
+        }, 5000);
+      }
+
+      // Show success message
+      function showSuccess(message) {
+        const successDiv = document.getElementById('successMessage');
+        successDiv.textContent = '✅ ' + message;
+        successDiv.classList.remove('hidden');
+        setTimeout(() => {
+          successDiv.classList.add('hidden');
+        }, 3000);
+      }
+
+      // Handle Google Login Response
+      async function handleCredentialResponse(response) {
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        loadingIndicator.classList.remove('hidden');
+
+        try {
+          const idToken = response.credential;
+
+          console.log('🔐 Sending login request...');
+
+          const res = await fetch(`${API_BASE_URL}/google-login`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ idToken }),
+          });
+
+          const data = await res.json();
+
+          console.log('📥 Response:', data);
+
+          if (data.success) {
+            if (data.data.needsRole) {
+              // 🆕 New user - show role selection
+              console.log('🆕 New user detected - showing role selection');
+              showRoleSelection(data.data);
+            } else {
+              // 👤 Existing user - direct login
+              console.log('👤 Existing user - direct dashboard login');
+              showSuccess('Welcome back! Logging you in...');
+              setTimeout(() => {
+                showDashboard(data.data);
+              }, 500);
+            }
+          } else {
+            showError(data.message || 'Login failed');
+          }
+        } catch (error) {
+          console.error('❌ Login failed:', error);
+          showError(
+            'Login failed. Please check your connection and try again.',
+          );
+        } finally {
+          loadingIndicator.classList.add('hidden');
+        }
+      }
+
+      // Show Role Selection Screen
+      function showRoleSelection(data) {
+        tempToken = data.tempToken;
+
+        document.getElementById('roleProfileImage').src =
+          data.userInfo.profileImage || 'https://via.placeholder.com/80';
+        document.getElementById('roleProfileName').textContent =
+          `${data.userInfo.firstName} ${data.userInfo.lastName}`;
+        document.getElementById('roleProfileEmail').textContent =
+          data.userInfo.email;
+
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('roleSelectionScreen').classList.add('active');
+      }
+
+      // Show Dashboard
+      function showDashboard(data) {
+        localStorage.setItem('accessToken', data.accessToken);
+
+        document.getElementById('dashboardProfileImage').src =
+          data.user.profileImage || 'https://via.placeholder.com/80';
+        document.getElementById('dashboardProfileName').textContent =
+          `${data.user.firstName} ${data.user.lastName}`;
+        document.getElementById('dashboardEmail').textContent = data.user.email;
+        document.getElementById('dashboardRole').textContent = data.user.role;
+
+        document.getElementById('loginScreen').classList.add('hidden');
+        document
+          .getElementById('roleSelectionScreen')
+          .classList.remove('active');
+        document.getElementById('userDashboard').classList.add('active');
+
+        console.log('✅ Dashboard loaded for:', data.user.email);
+      }
+
+      // Role Selection Logic
+      const roleOptions = document.querySelectorAll('.role-option');
+      const submitRoleBtn = document.getElementById('submitRoleBtn');
+
+      roleOptions.forEach((option) => {
+        option.addEventListener('click', function () {
+          // Remove selected class from all options
+          roleOptions.forEach((opt) => opt.classList.remove('selected'));
+
+          // Add selected class to clicked option
+          this.classList.add('selected');
+
+          // Get role value
+          selectedRole = this.getAttribute('data-role');
+
+          // Enable submit button
+          submitRoleBtn.disabled = false;
+
+          console.log('🎯 Role selected:', selectedRole);
+        });
+      });
+
+      // Submit Role
+      submitRoleBtn.addEventListener('click', async function () {
+        if (!selectedRole) {
+          showError('Please select a role');
+          return;
+        }
+
+        const roleLoadingIndicator = document.getElementById(
+          'roleLoadingIndicator',
+        );
+        roleLoadingIndicator.classList.remove('hidden');
+        submitRoleBtn.disabled = true;
+
+        try {
+          console.log('📤 Submitting role:', selectedRole);
+
+          const res = await fetch(
+            `${API_BASE_URL}/complete-google-registration`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              credentials: 'include',
+              body: JSON.stringify({
+                tempToken: tempToken,
+                role: selectedRole,
+              }),
+            },
+          );
+
+          const data = await res.json();
+
+          console.log('📥 Registration response:', data);
+
+          if (data.success) {
+            console.log('✅ Registration completed successfully');
+            showDashboard(data.data);
+          } else {
+            showError(data.message || 'Registration failed');
+            submitRoleBtn.disabled = false;
+          }
+        } catch (error) {
+          console.error('❌ Registration failed:', error);
+          showError('Registration failed. Please try again.');
+          submitRoleBtn.disabled = false;
+        } finally {
+          roleLoadingIndicator.classList.add('hidden');
+        }
+      });
+
+      // Logout
+      document
+        .getElementById('logoutBtn')
+        .addEventListener('click', function () {
+          console.log('🚪 Logging out...');
+
+          localStorage.removeItem('accessToken');
+
+          document.getElementById('userDashboard').classList.remove('active');
+          document.getElementById('loginScreen').classList.remove('hidden');
+
+          // Reset role selection
+          roleOptions.forEach((opt) => opt.classList.remove('selected'));
+          selectedRole = null;
+          tempToken = null;
+          submitRoleBtn.disabled = true;
+
+          showSuccess('Logged out successfully!');
+        });
+
+      // Check if already logged in on page load
+      window.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('accessToken');
+        if (token) {
+          console.log(
+            '🔑 Found existing token, but user needs to login again for fresh session',
+          );
+        }
+      });
+    </script>
+  </body>
+</html>

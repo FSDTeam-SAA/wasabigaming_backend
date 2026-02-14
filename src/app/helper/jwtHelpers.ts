@@ -1,5 +1,6 @@
 import jwt, { JwtPayload, Secret, SignOptions } from 'jsonwebtoken';
 import AppError from '../error/appError';
+import config from '../config';
 
 const genaretToken = (
   payload: string | object | Buffer,
@@ -22,7 +23,16 @@ const verifyToken = (token: string, secret: Secret): JwtPayload => {
   return decoded as JwtPayload;
 };
 
+const verifyGoogleToken = (token: string) => {
+  try {
+    return jwt.verify(token, config.google.clientId as string);
+  } catch (error) {
+    throw new AppError(401, 'Invalid or expired token');
+  }
+};
+
 export const jwtHelpers = {
   genaretToken,
   verifyToken,
+  verifyGoogleToken,
 };
