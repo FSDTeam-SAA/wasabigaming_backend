@@ -1,35 +1,94 @@
+// import cron from 'node-cron';
+// import User from '../modules/user/user.model';
+// import Premium from '../modules/premium/premium.model';
+
+// cron.schedule('0 0 */1 * * *', async () => {
+//   console.log('running a task every 5 seconds');
+
+//   const now = new Date();
+
+//   const expireUser = await User.find({
+//     isSubscription: true,
+//     subscriptionExpiry: { $lte: now },
+//   });
+
+//   if (expireUser.length > 0) {
+//     for (const user of expireUser) {
+//       await Premium.updateMany(
+//         {
+//           totalSubscripeUser: user._id,
+//         },
+//         {
+//           $pull: {
+//             totalSubscripeUser: user._id,
+//           },
+//         },
+//       );
+
+//       user.isSubscription = false;
+//       user.subscriptionExpiry = null;
+//       await user.save();
+//     }
+//   }
+
+//   console.log('✔ Auto subscription expiry update done');
+// });
+
 import cron from 'node-cron';
 import User from '../modules/user/user.model';
 import Premium from '../modules/premium/premium.model';
+import Job from '../modules/job/job.model';
 
 cron.schedule('0 0 */1 * * *', async () => {
-  console.log('running a task every 5 seconds');
+  console.log('⏰ Running scheduled tasks...');
 
   const now = new Date();
 
-  const expireUser = await User.find({
-    isSubscription: true,
-    subscriptionExpiry: { $lte: now },
-  });
+  try {
+    // =====================================================
+    // 1. Subscription expiry 
+    // =====================================================
+    const expireUser = await User.find({
+      isSubscription: true,
+      subscriptionExpiry: { $lte: now },
+    });
 
-  if (expireUser.length > 0) {
-    for (const user of expireUser) {
-      await Premium.updateMany(
-        {
-          totalSubscripeUser: user._id,
-        },
-        {
-          $pull: {
+    if (expireUser.length > 0) {
+      for (const user of expireUser) {
+        await Premium.updateMany(
+          {
             totalSubscripeUser: user._id,
           },
-        },
-      );
+          {
+            $pull: {
+              totalSubscripeUser: user._id,
+            },
+          },
+        );
 
-      user.isSubscription = false;
-      user.subscriptionExpiry = null;
-      await user.save();
+        user.isSubscription = false;
+        user.subscriptionExpiry = null;
+        await user.save();
+      }
     }
-  }
 
-  console.log('✔ Auto subscription expiry update done');
+    console.log('✔ Auto subscription expiry update done');
+
+    // =====================================================
+    // 2. Auto close expired jobs (NEW PART)
+    // =====================================================
+    const closedJobs = await Job.updateMany(
+      {
+        jobStatus: 'Open',
+        applicationDeadline: { $lte: now },
+      },
+      {
+        $set: { jobStatus: 'Closed' },
+      },
+    );
+
+    console.log(`✔ Jobs auto closed: ${closedJobs.modifiedCount}`);
+  } catch (error) {
+    console.error('❌ Cron job failed:', error);
+  }
 });
