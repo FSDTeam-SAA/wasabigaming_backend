@@ -56,8 +56,8 @@ const getAllMockInterviews = async (
   const interviews = await MockInterview.find()
     .skip(skip)
     .limit(limit)
-    .sort({ [sortBy]: sortOrder } as any)
-    .lean(); // ✅ VERY IMPORTANT
+    // .sort({ [sortBy]: sortOrder } as any)
+    .lean(); 
 
   const total = await MockInterview.countDocuments();
 

@@ -1,6 +1,7 @@
 import User from '../modules/user/user.model';
 import AppError from '../error/appError';
 import catchAsync from '../utils/catchAsycn';
+import Premium from '../modules/premium/premium.model';
 
 export const checkStudentSubscription = catchAsync(async (req, res, next) => {
   const userId = req.user?.id;
@@ -11,7 +12,13 @@ export const checkStudentSubscription = catchAsync(async (req, res, next) => {
   }
 
   if (user.isSubscription) {
-    return next();
+    const subscription = await Premium.findOne({ _id : user.subscription });
+    if (!subscription) {
+      throw new AppError(400, "Subscription not found");
+    }
+    if(subscription.name === "Pro Plan"){
+      return next();
+    }
   }
 
   if (user.schoolId) {
@@ -23,11 +30,17 @@ export const checkStudentSubscription = catchAsync(async (req, res, next) => {
     if (!school.isSubscription) {
       throw new AppError(400, "Subscription plan error ");
     }
+    const subscription = await Premium.findOne({ _id : school.subscription });
+    if (!subscription) {
+      throw new AppError(400, "Subscription not found");
+    }
+    if(subscription.name === "Pro Plan"){
+      return next();
+    }
+    
   } else {
   
      throw new AppError(400, "Subscription plan error");
   }
-
-  return next();
 });
 

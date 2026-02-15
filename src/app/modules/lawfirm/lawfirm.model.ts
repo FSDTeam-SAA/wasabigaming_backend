@@ -1,53 +1,24 @@
 import mongoose, { Schema, Model, Types } from 'mongoose';
-import { ILawfirm } from './lawfirm.interface';
+import { ILawfirm, IInfoBlock } from './lawfirm.interface';
 
-// const SectionUrlSchema = new Schema(
-//   {
-//     keyHighlights: { type: String, default: '' },
-//     practiceAreas: { type: String, default: '' },
-//     technologyInitiatives: { type: String, default: '' },
-//     recentWorks: { type: String, default: '' },
-//     deAndIUrl: { type: String, default: '' },
-//     csrUrl: { type: String, default: '' },
-//     awardsUrl: { type: String, default: '' },
-//   },
-//   { _id: false },
-// );
-
-// const PracticeAndWorkSchema = new Schema(
-//   {
-//     practiceAreas: { type: [String], default: [] },
-//     practiceAreaDescription: { type: String, default: '' },
-//     recentWorks: { type: String, default: '' },
-//   },
-//   { _id: false },
-// );
-
-// const InitiativesSchema = new Schema(
-//   {
-//     technologyInitiatives: { type: String, default: '' },
-//     awardsAndRecognition: { type: String, default: '' },
-//   },
-//   { _id: false },
-// );
-
-// const CsrAndDeAndISchema = new Schema(
-//   {
-//     diversityEquityAndInclusion: { type: String, default: '' },
-//     csrAndProBono: { type: String, default: '' },
-//   },
-//   { _id: false },
-// );
+const InfoBlockSchema = new Schema<IInfoBlock>(
+  {
+    title: { type: String, default: '' },
+    description: { type: String, default: '' },
+    link: { type: String, default: '' },
+  },
+  { _id: false }
+);
 
 const LawfirmSchema = new Schema<ILawfirm>(
   {
     logo: { type: String, default: '' },
     coverImage: { type: String, default: '' },
 
-    firmName: { type: String },
-    firmType: { type: String },
+    firmName: { type: String, required: true },
+    firmType: { type: String, required: true },
     tags: [{ type: String }],
-    headquarters: { type: String },
+    headquarters: { type: String, required: true },
 
     numberOfAttorneys: { type: Number, default: 0 },
     foundationYear: { type: Number, default: null },
@@ -59,33 +30,48 @@ const LawfirmSchema = new Schema<ILawfirm>(
     annualRevenue: { type: String, default: '' },
 
     keyHighlights: { type: String, default: '' },
-    // practiceAndWork: { type: PracticeAndWorkSchema, default: () => ({}) },
-    // initiatives: { type: InitiativesSchema, default: () => ({}) },
-    // csrAndDeAndI: { type: CsrAndDeAndISchema, default: () => ({}) },
 
-    awardsAndRecognition: { type: String, default: '' },
-    aboutFirm: { type: String },
+    overview: {
+      firmOverview: { type: String, default: '' },
+      establishmentDetails: { type: String, default: '' },
+      keyHighlights: { type: String, default: '' },
+    },
+
+    recentAnnualRevenue: { type: InfoBlockSchema, default: () => ({}) },
+    recentWorks: { type: InfoBlockSchema, default: () => ({}) },
+    technologyInitiatives: { type: InfoBlockSchema, default: () => ({}) },
+    diversityEquityAndInclusion: { type: InfoBlockSchema, default: () => ({}) },
+    CSRAndProBono: { type: InfoBlockSchema, default: () => ({}) },
+    awardsAndRecognition: { type: InfoBlockSchema, default: () => ({}) },
+
+    aboutFirm: { type: String, required: true },
 
     expertise: { type: String, default: '' },
-    internshipOpportunities: [{ type: String, default: '' }],
-    description: { type: String },
-    location: { type: String },
-    practiceAreas: { type: String },
+    internshipOpportunities: [{ type: String }],
+
+    description: { type: String, required: true },
+    location: { type: String, required: true },
+    practiceAreas: { type: String, required: true },
 
     createdBy: { type: Types.ObjectId, ref: 'User', default: null },
+
     status: {
       type: String,
       enum: ['approved', 'pending', 'rejected'],
       default: 'pending',
     },
-    jobs: { type: [Types.ObjectId], ref: 'Job', default: [] },
-    applyNumber: { Type: Number },
+
+    jobs: [{ type: Types.ObjectId, ref: 'Job' }],
+    applyNumber: { type: Number, default: 0 },
+
     cultureAndValue: [{ type: String }],
     benefitsAndPerks: [{ type: String }],
-    bookmarkedUser: { type: [Types.ObjectId], ref: 'User', default: [] },
+
+    bookmarkedUser: [{ type: Types.ObjectId, ref: 'User' }],
   },
-  { timestamps: true },
+  { timestamps: true }
 );
+
 
 const Lawfirm: Model<ILawfirm> =
   mongoose.models.Lawfirm || mongoose.model<ILawfirm>('Lawfirm', LawfirmSchema);

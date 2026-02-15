@@ -1,5 +1,11 @@
 import { Types } from 'mongoose';
 
+export interface IInfoBlock {
+  title?: string;
+  description?: string;
+  link?: string;
+}
+
 export interface ILawfirm {
   logo?: string;
   coverImage?: string;
@@ -26,23 +32,13 @@ export interface ILawfirm {
     keyHighlights?: string;
   };
 
-  // practiceAndWork?: {
-  //   practiceAreas?: string[];
-  //   practiceAreaDescription?: string;
-  //   recentWorks?: string;
-  // };
+  recentAnnualRevenue?: IInfoBlock;
+  recentWorks?: IInfoBlock;
+  technologyInitiatives?: IInfoBlock;
+  diversityEquityAndInclusion?: IInfoBlock;
+  CSRAndProBono?: IInfoBlock;
+  awardsAndRecognition?: IInfoBlock;
 
-  // initiatives?: {
-  //   technologyInitiatives?: string;
-  //   awardsAndRecognition?: string;
-  // };
-
-  // csrAndDeAndI?: {
-  //   diversityEquityAndInclusion?: string;
-  //   csrAndProBono?: string;
-  // };
-
-  awardsAndRecognition?: string;
   aboutFirm: string;
 
   expertise?: string;
@@ -57,7 +53,9 @@ export interface ILawfirm {
 
   jobs?: Types.ObjectId[];
   applyNumber?: number;
+
   cultureAndValue: string[];
   benefitsAndPerks: string[];
+
   bookmarkedUser?: Types.ObjectId[];
 }
