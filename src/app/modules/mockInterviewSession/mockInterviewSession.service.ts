@@ -5,46 +5,76 @@ import { mockInterviewAnswerCheck, mockInterviewQuestionGenerate } from '../../h
 import MockInterviewSession from './mockInterviewSession.model';
 import { fileUploader } from '../../helper/fileUploder';
 import MockInterview from '../mockInterview/mockInterview.model';
+import User from '../user/user.model';
+import Premium from '../premium/premium.model';
 
 const createMockInterviewSession = async (
   payload: IMockInterviewSession
 ) => {
-  const session = await MockInterviewSession.create({
-    userId: payload.userId,
-    category: payload.category,
-    questionNumber: payload.questionNumber,
-    mockInterviewId: payload.mockInterviewId
+  const { userId, mockInterviewId } = payload;
+
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(404, 'User not found');
+  }
+
+  // 🔒 Must have subscription (Free or Pro)
+  if (!user.subscription) {
+    throw new AppError(
+      403,
+      'You must purchase a Free or Pro plan to join mock interviews.'
+    );
+  }
+
+  const subscription = await Premium.findById(user.subscription);
+  if (!subscription) {
+    throw new AppError(400, 'Subscription plan not found');
+  }
+
+  const isPro = subscription.name === 'pro';
+
+  const attemptCount = await MockInterviewSession.countDocuments({
+    userId,
+    mockInterviewId,
   });
+
+  // ❌ Free plan attempt limit
+  if (!isPro && attemptCount >= 1) {
+    throw new AppError(
+      403,
+      'Free plan allows only 1 mock interview attempt.'
+    );
+  }
+
+  const attemptNumber = attemptCount + 1;
+
   const aiApiCall = await mockInterviewQuestionGenerate(
     payload.category,
-    Number(payload.questionNumber) 
+    Number(payload.questionNumber)
   );
 
-//   let questionsArray: {
-//     questionText: string;
-//     order: number;
-//   }[] = [];
-
-  if (!aiApiCall) {
-    return { session, aiApiCall: [] };
-  }
   const questionsArray = Array.isArray(aiApiCall)
     ? aiApiCall.map((q, index) => ({
         questionText: q.question,
         order: index + 1,
       }))
     : [
-        {
-          questionText: aiApiCall,
-          order: 1,
-        },
+        { questionText: aiApiCall, order: 1 },
       ];
 
-  session.questions = questionsArray;
-  await session.save();
+  const session = await MockInterviewSession.create({
+    userId,
+    mockInterviewId,
+    category: payload.category,
+    questionNumber: payload.questionNumber,
+    attemptNumber,
+    status: 'in_progress',
+    questions: questionsArray,
+  });
 
   return { session };
 };
+
 const getAllMockInterviewSessions = async (
   userId: string,
   options: IOption

@@ -12,11 +12,11 @@ export const checkStudentSubscription = catchAsync(async (req, res, next) => {
   }
 
   if (user.isSubscription) {
-    const subscription = await Premium.findOne({ _id : user.subscription });
+    const subscription = await Premium.findById(user.subscription);
     if (!subscription) {
       throw new AppError(400, "Subscription not found");
     }
-    if(subscription.name === "Pro Plan"){
+    if(subscription.name === "pro"){
       return next();
     }
   }
@@ -34,10 +34,10 @@ export const checkStudentSubscription = catchAsync(async (req, res, next) => {
     if (!subscription) {
       throw new AppError(400, "Subscription not found");
     }
-    if(subscription.name === "Pro Plan"){
+    if(subscription.name === "pro"){
       return next();
     }
-    
+
   } else {
   
      throw new AppError(400, "Subscription plan error");
