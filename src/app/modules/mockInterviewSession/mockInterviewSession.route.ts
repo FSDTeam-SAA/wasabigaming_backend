@@ -10,7 +10,6 @@ const router = express.Router();
 router.post(
   '/',
   auth(userRole.admin, userRole.student),
-  checkStudentSubscription,
   mockInterviewSessionController.createMockInterviewSession
 );
 router.get(
