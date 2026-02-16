@@ -83,7 +83,8 @@ const deleteCVbuilder = catchAsync(async (req, res) => {
 
 const leaderShip = catchAsync(async(req , res) => {
 
-  const result = await cvbuilderService.leaderShip(req.body);
+  const userId = req.user?.id;
+  const result = await cvbuilderService.leaderShip(userId, req.body);
 
   sendResponse(res, {
     statusCode: 200,

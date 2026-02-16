@@ -61,6 +61,7 @@ const CVBuilderSchema = new Schema<ICVbuilder>(
     email: { type: String, required: true },
     phone: { type: String },
     location: { type: String },
+    attemptNumber: { type: Number, default: 1 },
 
     legalWorkExperience: {
       type: [LegalWorkExperience],

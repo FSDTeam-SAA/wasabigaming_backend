@@ -13,24 +13,42 @@ import Premium from '../premium/premium.model';
 
 const createCVbuilder = async (userId: string, payload: ICVbuilder) => {
   const user = await User.findById(userId);
-  if (!user) throw new AppError(400, 'User not found');
 
-  const cvCount = await CVbuilder.countDocuments({ createBy: user._id });
-  const subscription = await Premium.findById(user.subscription);
-  if (!subscription) throw new AppError(404, 'subscription is not found');
-  
-  if (subscription.name === 'Free') {
-    if (cvCount >= 1) {
-      throw new AppError(
-        403,
-        'Free plan users can create only one CV. Please upgrade your plan.',
-      );
-    }
+  const attemptCount = await CVbuilder.countDocuments({ createBy: user?._id });
+  if (!user) {
+    throw new AppError(404, 'User not found');
   }
+
+  // 🔒 Must have subscription (Free or Pro)
+  if (!user.subscription) {
+    throw new AppError(
+      403,
+      'You must purchase a Free or Pro plan to create CVs.'
+    );
+  }
+
+  const subscription = await Premium.findById(user.subscription);
+  if (!subscription) {
+    throw new AppError(400, 'Subscription plan not found');
+  }
+
+  const isPro = subscription.name === 'pro';
+
+
+  // ❌ Free plan attempt limit
+  if (!isPro && attemptCount >= 1) {
+    throw new AppError(
+      403,
+      'Free plan allows only 1 mock interview attempt.'
+    );
+  }
+
+  const attemptNumber = attemptCount + 1;
 
   const result = await CVbuilder.create({
     ...payload,
     createBy: user._id,
+    attemptNumber,
   });
 
   if (!result) throw new AppError(400, 'CVbuilder not created');
@@ -185,7 +203,39 @@ const deleteCVbuilder = async (userId: string, id: string) => {
   return result;
 };
 
-const leaderShip = async (payload: any) => {
+const leaderShip = async (userId: string, payload: any) => {
+
+  const user = await User.findById(userId);
+
+  const attemptCount = await CVbuilder.countDocuments({ createBy: user?._id });
+  if (!user) {
+    throw new AppError(404, 'User not found');
+  }
+
+  // 🔒 Must have subscription (Free or Pro)
+  if (!user.subscription) {
+    throw new AppError(
+      403,
+      'You must purchase a Free or Pro plan to create CVs.'
+    );
+  }
+
+  const subscription = await Premium.findById(user.subscription);
+  if (!subscription) {
+    throw new AppError(400, 'Subscription plan not found');
+  }
+
+  const isPro = subscription.name === 'pro';
+
+
+  // ❌ Free plan attempt limit
+  if (!isPro && attemptCount >= 1) {
+    throw new AppError(
+      403,
+      'Free plan allows only 1 mock interview attempt.'
+    );
+  }
+
   if (Array.isArray(payload.leadership) && payload.leadership.length > 0) {
     const enhancedLeadership = await Promise.all(
       payload.leadership.map(async (item: any) => {
