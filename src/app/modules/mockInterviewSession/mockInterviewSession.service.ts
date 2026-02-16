@@ -13,38 +13,38 @@ const createMockInterviewSession = async (
 ) => {
   const { userId, mockInterviewId } = payload;
 
-  const user = await User.findById(userId);
-  if (!user) {
-    throw new AppError(404, 'User not found');
-  }
+  // const user = await User.findById(userId);
+  // if (!user) {
+  //   throw new AppError(404, 'User not found');
+  // }
 
-  // 🔒 Must have subscription (Free or Pro)
-  if (!user.subscription) {
-    throw new AppError(
-      403,
-      'You must purchase a Free or Pro plan to join mock interviews.'
-    );
-  }
+  // // 🔒 Must have subscription (Free or Pro)
+  // if (!user.subscription) {
+  //   throw new AppError(
+  //     403,
+  //     'You must purchase a Free or Pro plan to join mock interviews.'
+  //   );
+  // }
 
-  const subscription = await Premium.findById(user.subscription);
-  if (!subscription) {
-    throw new AppError(400, 'Subscription plan not found');
-  }
+  // const subscription = await Premium.findById(user.subscription);
+  // if (!subscription) {
+  //   throw new AppError(400, 'Subscription plan not found');
+  // }
 
-  const isPro = subscription.name === 'pro';
+  // const isPro = subscription.name === 'pro';
 
   const attemptCount = await MockInterviewSession.countDocuments({
     userId,
     mockInterviewId,
   });
 
-  // ❌ Free plan attempt limit
-  if (!isPro && attemptCount >= 1) {
-    throw new AppError(
-      403,
-      'Free plan allows only 1 mock interview attempt.'
-    );
-  }
+  // // ❌ Free plan attempt limit
+  // if (!isPro && attemptCount >= 1) {
+  //   throw new AppError(
+  //     403,
+  //     'Free plan allows only 1 mock interview attempt.'
+  //   );
+  // }
 
   const attemptNumber = attemptCount + 1;
 
@@ -67,7 +67,7 @@ const createMockInterviewSession = async (
     mockInterviewId,
     category: payload.category,
     questionNumber: payload.questionNumber,
-    attemptNumber,
+    attemptNumber: attemptNumber,
     status: 'in_progress',
     questions: questionsArray,
   });
