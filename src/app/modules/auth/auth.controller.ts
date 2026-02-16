@@ -61,7 +61,7 @@ const googleLogin = catchAsync(async (req, res) => {
 
   const result = await authService.googleLogin(idToken, role);
 
-  // ❗ নতুন user, role দরকার
+  // নতুন user, role দরকার
   if (result.status === 'needs_role') {
     return sendResponse(res, {
       statusCode: 200,
@@ -75,7 +75,7 @@ const googleLogin = catchAsync(async (req, res) => {
     });
   }
 
-  // ✅ পুরাতন user login / নতুন user registered — দুটোতেই token দাও
+  //পুরাতন user login / নতুন user registered — দুটোতেই token দাও
   res.cookie('refreshToken', result.refreshToken, {
     httpOnly: true,
     secure: config.env === 'production',

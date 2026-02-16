@@ -191,17 +191,30 @@ const googleLogin = async (idToken: string, role?: string) => {
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
-    // ✅ পুরাতন user → সরাসরি login
-    console.log('👤 Existing user:', existingUser.email, '| Role:', existingUser.role);
+    // পুরাতন user → সরাসরি login
+    console.log(
+      '👤 Existing user:',
+      existingUser.email,
+      '| Role:',
+      existingUser.role,
+    );
 
     const accessToken = jwtHelpers.genaretToken(
-      { id: existingUser._id, role: existingUser.role, email: existingUser.email },
+      {
+        id: existingUser._id,
+        role: existingUser.role,
+        email: existingUser.email,
+      },
       config.jwt.accessTokenSecret as Secret,
       config.jwt.accessTokenExpires,
     );
 
     const refreshToken = jwtHelpers.genaretToken(
-      { id: existingUser._id, role: existingUser.role, email: existingUser.email },
+      {
+        id: existingUser._id,
+        role: existingUser.role,
+        email: existingUser.email,
+      },
       config.jwt.refreshTokenSecret as Secret,
       config.jwt.refreshTokenExpires,
     );
@@ -209,7 +222,7 @@ const googleLogin = async (idToken: string, role?: string) => {
     const { password, ...userWithoutPassword } = existingUser.toObject();
 
     return {
-      status: 'logged_in',         // পুরাতন user
+      status: 'logged_in', // পুরাতন user
       accessToken,
       refreshToken,
       user: userWithoutPassword,
@@ -218,7 +231,7 @@ const googleLogin = async (idToken: string, role?: string) => {
 
   // ৩. নতুন user — role দেওয়া হয়েছে কিনা দেখো
   if (!role) {
-    // ❗ role নেই → frontend কে বলো role চাইতে
+    // role নেই → frontend কে বলো role চাইতে
     console.log('🆕 New user, role needed');
 
     const tempToken = jwtHelpers.genaretToken(
@@ -228,14 +241,14 @@ const googleLogin = async (idToken: string, role?: string) => {
     );
 
     return {
-      status: 'needs_role',        // নতুন user, role দরকার
+      status: 'needs_role', // নতুন user, role দরকার
       tempToken,
       userInfo: { email, firstName, lastName, profileImage },
     };
   }
 
   // ৪. নতুন user + role আছে → account বানাও
-  console.log('✅ Creating new user with role:', role);
+  console.log('Creating new user with role:', role);
 
   const validRoles = ['student', 'school', 'admin'];
   if (!validRoles.includes(role)) {
@@ -248,7 +261,7 @@ const googleLogin = async (idToken: string, role?: string) => {
     lastName,
     profileImage,
     role,
-    password: 'GOOGLE_OAUTH_USER',   // Google user এর password নেই
+    password: 'GOOGLE_OAUTH_USER', // Google user এর password নেই
     verified: true,
     registered: true,
     status: 'active',
@@ -269,7 +282,7 @@ const googleLogin = async (idToken: string, role?: string) => {
   const { password, ...userWithoutPassword } = newUser.toObject();
 
   return {
-    status: 'registered',          // নতুন account তৈরি হয়েছে
+    status: 'registered', // নতুন account তৈরি হয়েছে
     accessToken,
     refreshToken,
     user: userWithoutPassword,
