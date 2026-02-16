@@ -1,6 +1,7 @@
 import pick from '../../helper/pick';
 import catchAsync from '../../utils/catchAsycn';
 import sendResponse from '../../utils/sendResponse';
+import { cvbuilderService } from '../cvbuilder/cvbuilder.service';
 import { applicationTrackerService } from './applicationTracker.service';
 
 const applicationTrackerOverview = catchAsync(async (req, res) => {
@@ -81,6 +82,18 @@ const deleteApplication = catchAsync(async (req, res) => {
     data: result,
   });
 });
+// const getMyAverageScore = catchAsync(async (req, res) => {
+//   const userId = req.user.id;
+
+//   const result = await cvbuilderService.getUserAverageScore(userId);
+
+//   sendResponse(res, {
+//     statusCode: 200,
+//     success: true,
+//     message: 'Your average CV score retrieved successfully',
+//     data: result,
+//   });
+// });
 
 export const applicationTrackerController = {
   applicationTrackerOverview,
@@ -88,5 +101,5 @@ export const applicationTrackerController = {
   getAllApplication,
   updateApplication,
   getSingleApplication,
-  deleteApplication,
+  deleteApplication
 };

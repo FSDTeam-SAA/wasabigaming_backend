@@ -1,6 +1,8 @@
+import mongoose from 'mongoose';
 import AppError from '../../error/appError';
 import pagination, { IOption } from '../../helper/pagenation';
 import Course from '../course/course.model';
+import CVbuilder from '../cvbuilder/cvbuilder.model';
 import Task from '../task/task.model';
 import { userRole } from '../user/user.constant';
 import User from '../user/user.model';
@@ -158,6 +160,32 @@ const deleteApplication = async (userId: string, id: string) => {
   return result;
 };
 
+// const getUserAverageScore = async (userId: string) => {
+//   const result = await CVbuilder.aggregate([
+//     {
+//       $match: {
+//         createBy: new mongoose.Types.ObjectId(userId),
+//         score: { $ne: null },
+//       },
+//     },
+//     {
+//       $group: {
+//         _id: '$createBy',
+//         averageScore: { $avg: '$score' },
+//       },
+//     },
+//     {
+//       $project: {
+//         _id: 0,
+//         averageScore: { $round: ['$averageScore', 2] },
+//       },
+//     },
+//   ]);
+
+//   return result[0] || { averageScore: 0 };
+// };
+
+
 export const applicationTrackerService = {
   applicationTrackerOverview,
   createApplication,
@@ -165,4 +193,5 @@ export const applicationTrackerService = {
   updateApplication,
   getSingleApplication,
   deleteApplication,
+
 };
