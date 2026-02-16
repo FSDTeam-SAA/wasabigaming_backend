@@ -38,6 +38,7 @@ import { careanalysisRouter } from '../modules/careanalysis/careanalysis.routes'
 import { lawBookmarkRoutes } from '../modules/lawbookmark/lawbookmark.routes';
 import path from 'path';
 import { communityRoutes } from '../modules/joinCommunity/joinCommunity.routes';
+import { dynamicWebsiteRoutes } from '../modules/dynamicWebsite/dynamicWebsite.route';
 
 const router = Router();
 
@@ -177,6 +178,10 @@ const moduleRoutes = [
   {
     path:"/community",
     route:communityRoutes
+  },
+   {
+    path:"/dynamic-website",
+    route:dynamicWebsiteRoutes
   }
 ];
 

@@ -59,4 +59,5 @@ export interface ICVbuilder {
 
   createBy?: Types.ObjectId;
   cvformet?:string;
+  score?: number;
 }

@@ -69,8 +69,11 @@ const createCVbuilder = async (userId: string, payload: ICVbuilder) => {
     result.summary,
   );
 
-  if (summaryText) {
-    result.summary = summaryText;
+  if (summaryText && summaryText.text) {
+    result.summary = summaryText.text;
+  }
+  if (summaryText && summaryText.score) {
+    result.score = summaryText.score;
   }
   await result.save();
 
