@@ -2,6 +2,8 @@ import express from 'express';
 import auth from '../../middlewares/auth';
 import { userRole } from '../user/user.constant';
 import { psychometricTestController } from './psychometricTest.controller';
+import { check } from 'zod';
+import { checkStudentSubscription } from '../../middlewares/checkSubscription';
 const router = express.Router();
 
 // router.post(
@@ -47,7 +49,10 @@ router.delete(
   psychometricTestController.removedSingleQuestion,
 );
 
-router.get('/:id', psychometricTestController.singlePsychometricTest);
+router.get('/:id', 
+  auth(userRole.student, userRole.admin),
+  checkStudentSubscription,
+  psychometricTestController.singlePsychometricTest);
 
 router.put(
   '/:id',
