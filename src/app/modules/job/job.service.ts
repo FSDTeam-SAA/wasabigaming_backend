@@ -409,7 +409,7 @@ const getNotMyAppliedJobs = async (
     'title',
   ];
 
-  if (searchTerm) {
+  if (searchTerm !== undefined && searchTerm !== null) {
     andCondition.push({
       $or: searchableFields.map((field) => ({
         [field]: { $regex: searchTerm, $options: 'i' },
