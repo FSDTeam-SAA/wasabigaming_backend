@@ -36,6 +36,8 @@ import { presentationtaskRoutes } from '../modules/presentationtask/presentation
 import { intrayemailRouter } from '../modules/intrayemail/intrayemail.routes';
 import { careanalysisRouter } from '../modules/careanalysis/careanalysis.routes';
 import { lawBookmarkRoutes } from '../modules/lawbookmark/lawbookmark.routes';
+import path from 'path';
+import { communityRoutes } from '../modules/joinCommunity/joinCommunity.routes';
 
 const router = Router();
 
@@ -172,6 +174,10 @@ const moduleRoutes = [
     path: '/law-bookmark',
     route: lawBookmarkRoutes,
   },
+  {
+    path:"/community",
+    route:communityRoutes
+  }
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
