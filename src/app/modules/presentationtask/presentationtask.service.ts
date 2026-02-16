@@ -54,10 +54,16 @@ const getSinglePresentationTask = async (id: string) => {
 const updatePresentationTask = async (
   id: string,
   payload: Partial<IPresentationTask>,
+  file?: Express.Multer.File,
 ) => {
   const existingData = await PresentationTask.findById(id);
   if (!existingData) throw new AppError(404, 'Data not found');
-  const aiResponse = await aiPresentationTaskSubmission(payload.yourResponse!);
+
+  const aiResponse = await aiPresentationTaskSubmission(
+    payload.yourResponse!,
+    file?.buffer!,
+    file?.originalname!,
+  );
   //   console.log(aiResponse);
   const result = await PresentationTask.findByIdAndUpdate(
     id,
