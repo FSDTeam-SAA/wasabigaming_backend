@@ -39,7 +39,7 @@ import User from '../modules/user/user.model';
 import Premium from '../modules/premium/premium.model';
 import Job from '../modules/job/job.model';
 
-cron.schedule('0 0 */1 * * *', async () => {
+cron.schedule('0 0 0 */5 * *', async () => {
   console.log('⏰ Running scheduled tasks...');
 
   const now = new Date();

@@ -114,18 +114,21 @@ export const aiPresentationTaskQuestion = async () => {
   }
 };
 
-export const aiPresentationTaskSubmission = async (presentation: string) => {
-  const formData = new URLSearchParams();
-  formData.append('written_submission', presentation);
+export const aiPresentationTaskSubmission = async (presentation: string, videoBuffer: Buffer, filename: string) => {
+  
+  const formData = new FormData();
+  formData.append('video', videoBuffer, {
+      filename: filename,
+      contentType: 'video/mp4',
+    });
+  // formData.append('written_submission', presentation);
 
   try {
     const response = await axios.post(
       'https://ai-api-wasabigamning.onrender.com/api/written_presentation_result/',
       formData,
       {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+        headers: formData.getHeaders(),
       },
     );
 

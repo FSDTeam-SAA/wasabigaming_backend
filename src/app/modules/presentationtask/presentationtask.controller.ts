@@ -1,3 +1,4 @@
+import AppError from '../../error/appError';
 import catchAsync from '../../utils/catchAsycn';
 import sendResponse from '../../utils/sendResponse';
 import { PresentationTaskService } from './presentationtask.service';
@@ -29,10 +30,16 @@ const getSinglePresentationTask = catchAsync(async (req, res) => {
 });
 
 const updatePresentationTask = catchAsync(async (req, res) => {
-    console.log("first")
+
+  const file = req.file;
+  console.log("first")
+  if(!file){
+    throw new AppError(400, 'File is required');
+  }
   const result = await PresentationTaskService.updatePresentationTask(
     req.params.id!,
     req.body,
+    file,
   );
 
   sendResponse(res, {
