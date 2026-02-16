@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
   <head>
@@ -48,13 +47,11 @@
         text-align: center;
         margin-bottom: 30px;
       }
-
       .header h1 {
         color: #333;
         font-size: 28px;
         margin-bottom: 10px;
       }
-
       .header p {
         color: #666;
         font-size: 14px;
@@ -72,6 +69,7 @@
         margin: 0 auto 15px;
         border: 3px solid #667eea;
         object-fit: cover;
+        display: block;
       }
 
       .profile-name {
@@ -80,7 +78,6 @@
         color: #333;
         margin-bottom: 5px;
       }
-
       .profile-email {
         color: #666;
         font-size: 14px;
@@ -92,10 +89,10 @@
         margin: 30px 0;
       }
 
+      /* ── Role Selection ── */
       .role-selection {
         display: none;
       }
-
       .role-selection.active {
         display: block;
         animation: slideUp 0.5s ease;
@@ -118,20 +115,17 @@
         transition: all 0.3s ease;
         position: relative;
       }
-
       .role-option:hover {
         border-color: #667eea;
         background: #f8f9ff;
         transform: translateX(5px);
       }
-
       .role-option.selected {
         border-color: #667eea;
         background: #f0f3ff;
         box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
         transform: scale(1.02);
       }
-
       .role-option input[type='radio'] {
         position: absolute;
         opacity: 0;
@@ -151,13 +145,12 @@
         margin-right: 12px;
         position: relative;
         transition: all 0.3s ease;
+        flex-shrink: 0;
       }
-
       .role-option.selected .radio-custom {
         border-color: #667eea;
         background: #667eea;
       }
-
       .role-option.selected .radio-custom::after {
         content: '';
         position: absolute;
@@ -174,15 +167,14 @@
         font-size: 16px;
         font-weight: 600;
         color: #333;
-        text-transform: capitalize;
       }
-
       .role-description {
         color: #666;
         font-size: 13px;
         margin-left: 32px;
       }
 
+      /* ── Buttons ── */
       .btn {
         width: 100%;
         padding: 15px;
@@ -194,34 +186,30 @@
         transition: all 0.3s ease;
         margin-top: 20px;
       }
-
       .btn-primary {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
       }
-
       .btn-primary:hover:not(:disabled) {
         transform: translateY(-2px);
         box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
       }
-
       .btn-primary:disabled {
         background: #ccc;
         cursor: not-allowed;
         opacity: 0.6;
       }
-
       .btn-secondary {
         background: #fff;
         color: #667eea;
         border: 2px solid #667eea;
       }
-
       .btn-secondary:hover {
         background: #f8f9ff;
         transform: translateY(-2px);
       }
 
+      /* ── Info box ── */
       .info-box {
         background: #f0f3ff;
         border-left: 4px solid #667eea;
@@ -229,18 +217,15 @@
         margin-top: 25px;
         border-radius: 8px;
       }
-
       .info-box h3 {
         font-size: 14px;
         color: #333;
         margin-bottom: 10px;
       }
-
       .info-box ul {
         list-style: none;
         padding-left: 0;
       }
-
       .info-box li {
         color: #666;
         font-size: 13px;
@@ -248,7 +233,6 @@
         padding-left: 20px;
         position: relative;
       }
-
       .info-box li::before {
         content: '✓';
         position: absolute;
@@ -257,10 +241,10 @@
         font-weight: bold;
       }
 
+      /* ── Dashboard ── */
       .user-dashboard {
         display: none;
       }
-
       .user-dashboard.active {
         display: block;
         animation: slideUp 0.5s ease;
@@ -274,7 +258,6 @@
         margin-bottom: 25px;
         text-align: center;
       }
-
       .user-card .profile-image {
         border-color: white;
         margin-bottom: 15px;
@@ -286,36 +269,32 @@
         border-radius: 12px;
         margin-bottom: 20px;
       }
-
       .user-info-item {
         display: flex;
         justify-content: space-between;
         padding: 10px 0;
         border-bottom: 1px solid #e0e0e0;
       }
-
       .user-info-item:last-child {
         border-bottom: none;
       }
-
       .user-info-label {
         color: #666;
         font-weight: 500;
       }
-
       .user-info-value {
         color: #333;
         font-weight: 600;
         text-transform: capitalize;
       }
 
+      /* ── Loading ── */
       .loading {
         text-align: center;
         color: #667eea;
         margin-top: 15px;
         font-size: 14px;
       }
-
       .spinner {
         border: 3px solid #f3f3f3;
         border-top: 3px solid #667eea;
@@ -325,7 +304,6 @@
         animation: spin 1s linear infinite;
         margin: 0 auto 10px;
       }
-
       @keyframes spin {
         0% {
           transform: rotate(0deg);
@@ -339,6 +317,7 @@
         display: none !important;
       }
 
+      /* ── Messages ── */
       .error-message {
         background: #fee;
         border-left: 4px solid #f44;
@@ -348,7 +327,6 @@
         color: #c33;
         animation: shake 0.5s;
       }
-
       @keyframes shake {
         0%,
         100% {
@@ -361,7 +339,6 @@
           transform: translateX(10px);
         }
       }
-
       .success-message {
         background: #efe;
         border-left: 4px solid #4f4;
@@ -372,6 +349,7 @@
         animation: slideUp 0.5s ease;
       }
 
+      /* ── Badges ── */
       .badge {
         display: inline-block;
         padding: 4px 12px;
@@ -380,12 +358,10 @@
         font-weight: 600;
         margin-left: 8px;
       }
-
       .badge-new {
         background: #ffd700;
         color: #333;
       }
-
       .badge-returning {
         background: #4caf50;
         color: white;
@@ -395,11 +371,9 @@
         .container {
           padding: 25px;
         }
-
         .header h1 {
           font-size: 24px;
         }
-
         .profile-image {
           width: 60px;
           height: 60px;
@@ -407,9 +381,12 @@
       }
     </style>
   </head>
+
   <body>
     <div class="container">
-      <!-- Login Screen -->
+      <!-- ═══════════════════════════════════════
+           LOGIN SCREEN
+      ════════════════════════════════════════ -->
       <div id="loginScreen">
         <div class="header">
           <h1>🎓 Welcome Back</h1>
@@ -419,7 +396,7 @@
         <div class="google-login-wrapper">
           <div
             id="g_id_onload"
-            data-client_id="Your client id"
+            data-client_id="your client id"
             data-callback="handleCredentialResponse"
           ></div>
           <div
@@ -457,7 +434,9 @@
         </div>
       </div>
 
-      <!-- Role Selection Screen -->
+      <!-- ═══════════════════════════════════════
+           ROLE SELECTION SCREEN
+      ════════════════════════════════════════ -->
       <div id="roleSelectionScreen" class="role-selection">
         <div class="profile-section">
           <img
@@ -511,13 +490,16 @@
         <button id="submitRoleBtn" class="btn btn-primary" disabled>
           Continue →
         </button>
+
         <div id="roleLoadingIndicator" class="loading hidden">
           <div class="spinner"></div>
           <p>Creating your account...</p>
         </div>
       </div>
 
-      <!-- User Dashboard -->
+      <!-- ═══════════════════════════════════════
+           USER DASHBOARD
+      ════════════════════════════════════════ -->
       <div id="userDashboard" class="user-dashboard">
         <div class="user-card">
           <img
@@ -550,107 +532,121 @@
         <button id="logoutBtn" class="btn btn-secondary">🚪 Logout</button>
       </div>
     </div>
+    <!-- /.container -->
 
     <script>
-      // Configuration
+      /* ════════════════════════════════════════════════════
+         CONFIG
+      ════════════════════════════════════════════════════ */
       const API_BASE_URL = 'http://localhost:5000/api/v1/auth';
-      let tempToken = null;
+
+      // cachedIdToken — role submit এর সময় আবার লাগবে
+      let cachedIdToken = null;
       let selectedRole = null;
 
-      // Show error message
+      /* ════════════════════════════════════════════════════
+         HELPERS
+      ════════════════════════════════════════════════════ */
       function showError(message) {
-        const errorDiv = document.getElementById('errorMessage');
-        errorDiv.textContent = '❌ ' + message;
-        errorDiv.classList.remove('hidden');
-        setTimeout(() => {
-          errorDiv.classList.add('hidden');
-        }, 5000);
+        const el = document.getElementById('errorMessage');
+        el.textContent = '❌ ' + message;
+        el.classList.remove('hidden');
+        setTimeout(() => el.classList.add('hidden'), 5000);
       }
 
-      // Show success message
       function showSuccess(message) {
-        const successDiv = document.getElementById('successMessage');
-        successDiv.textContent = '✅ ' + message;
-        successDiv.classList.remove('hidden');
-        setTimeout(() => {
-          successDiv.classList.add('hidden');
-        }, 3000);
+        const el = document.getElementById('successMessage');
+        el.textContent = '✅ ' + message;
+        el.classList.remove('hidden');
+        setTimeout(() => el.classList.add('hidden'), 3000);
       }
 
-      // Handle Google Login Response
-      async function handleCredentialResponse(response) {
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        loadingIndicator.classList.remove('hidden');
+      /* ════════════════════════════════════════════════════
+         CORE — একটাই API call function
+         role = null   → প্রথমবার (existing user check)
+         role = string → নতুন user registration
+      ════════════════════════════════════════════════════ */
+      async function doGoogleLogin(idToken, role) {
+        const loading = document.getElementById('loadingIndicator');
+        loading.classList.remove('hidden');
 
         try {
-          const idToken = response.credential;
-
-          console.log('🔐 Sending login request...');
+          // body তে role থাকলে পাঠাও, না হলে শুধু idToken
+          const body = role ? { idToken, role } : { idToken };
 
           const res = await fetch(`${API_BASE_URL}/google-login`, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
-            body: JSON.stringify({ idToken }),
+            body: JSON.stringify(body),
           });
 
           const data = await res.json();
-
           console.log('📥 Response:', data);
 
-          if (data.success) {
-            if (data.data.needsRole) {
-              // 🆕 New user - show role selection
-              console.log('🆕 New user detected - showing role selection');
-              showRoleSelection(data.data);
-            } else {
-              // 👤 Existing user - direct login
-              console.log('👤 Existing user - direct dashboard login');
-              showSuccess('Welcome back! Logging you in...');
-              setTimeout(() => {
-                showDashboard(data.data);
-              }, 500);
-            }
-          } else {
+          if (!data.success) {
             showError(data.message || 'Login failed');
+            return;
           }
-        } catch (error) {
-          console.error('❌ Login failed:', error);
-          showError(
-            'Login failed. Please check your connection and try again.',
-          );
+
+          if (data.data.needsRole) {
+            // 🆕 নতুন user → role selection দেখাও
+            console.log('🆕 New user — showing role selection');
+            showRoleSelectionScreen(data.data);
+          } else {
+            // ✅ existing user login / new user registered
+            const isNew = data.data.status === 'registered';
+            showSuccess(
+              isNew ? 'Account created! Welcome 🎉' : 'Welcome back! 👋',
+            );
+            setTimeout(() => showDashboard(data.data), 500);
+          }
+        } catch (err) {
+          console.error('❌ Error:', err);
+          showError('Connection error. Please try again.');
         } finally {
-          loadingIndicator.classList.add('hidden');
+          loading.classList.add('hidden');
         }
       }
 
-      // Show Role Selection Screen
-      function showRoleSelection(data) {
-        tempToken = data.tempToken;
+      /* ════════════════════════════════════════════════════
+         GOOGLE CALLBACK — প্রথম call (role ছাড়া)
+      ════════════════════════════════════════════════════ */
+      async function handleCredentialResponse(response) {
+        cachedIdToken = response.credential; // token save করে রাখো
+        await doGoogleLogin(cachedIdToken, null);
+      }
+
+      /* ════════════════════════════════════════════════════
+         SCREEN: Role Selection
+      ════════════════════════════════════════════════════ */
+      function showRoleSelectionScreen(data) {
+        const info = data.userInfo;
 
         document.getElementById('roleProfileImage').src =
-          data.userInfo.profileImage || 'https://via.placeholder.com/80';
+          info.profileImage || 'https://via.placeholder.com/80';
         document.getElementById('roleProfileName').textContent =
-          `${data.userInfo.firstName} ${data.userInfo.lastName}`;
-        document.getElementById('roleProfileEmail').textContent =
-          data.userInfo.email;
+          `${info.firstName} ${info.lastName}`;
+        document.getElementById('roleProfileEmail').textContent = info.email;
 
         document.getElementById('loginScreen').classList.add('hidden');
         document.getElementById('roleSelectionScreen').classList.add('active');
       }
 
-      // Show Dashboard
+      /* ════════════════════════════════════════════════════
+         SCREEN: Dashboard
+      ════════════════════════════════════════════════════ */
       function showDashboard(data) {
+        // token save করো
         localStorage.setItem('accessToken', data.accessToken);
 
+        const u = data.user;
         document.getElementById('dashboardProfileImage').src =
-          data.user.profileImage || 'https://via.placeholder.com/80';
+          u.profileImage || 'https://via.placeholder.com/80';
         document.getElementById('dashboardProfileName').textContent =
-          `${data.user.firstName} ${data.user.lastName}`;
-        document.getElementById('dashboardEmail').textContent = data.user.email;
-        document.getElementById('dashboardRole').textContent = data.user.role;
+          `${u.firstName} ${u.lastName}`;
+        document.getElementById('dashboardEmail').textContent = u.email;
+        document.getElementById('dashboardRole').textContent = u.role;
 
         document.getElementById('loginScreen').classList.add('hidden');
         document
@@ -658,109 +654,93 @@
           .classList.remove('active');
         document.getElementById('userDashboard').classList.add('active');
 
-        console.log('✅ Dashboard loaded for:', data.user.email);
+        console.log('✅ Dashboard loaded —', u.email, '| Role:', u.role);
+
+        // Optional: role অনুযায়ী redirect করতে চাইলে uncomment করো
+        // const redirects = { student: '/student/dashboard', school: '/school/dashboard', admin: '/admin/dashboard' };
+        // window.location.href = redirects[u.role] || '/dashboard';
       }
 
-      // Role Selection Logic
+      /* ════════════════════════════════════════════════════
+         ROLE OPTION CLICK
+      ════════════════════════════════════════════════════ */
       const roleOptions = document.querySelectorAll('.role-option');
       const submitRoleBtn = document.getElementById('submitRoleBtn');
 
       roleOptions.forEach((option) => {
         option.addEventListener('click', function () {
-          // Remove selected class from all options
           roleOptions.forEach((opt) => opt.classList.remove('selected'));
-
-          // Add selected class to clicked option
           this.classList.add('selected');
-
-          // Get role value
           selectedRole = this.getAttribute('data-role');
-
-          // Enable submit button
           submitRoleBtn.disabled = false;
-
           console.log('🎯 Role selected:', selectedRole);
         });
       });
 
-      // Submit Role
+      /* ════════════════════════════════════════════════════
+         SUBMIT ROLE — same API, এবার role সহ
+      ════════════════════════════════════════════════════ */
       submitRoleBtn.addEventListener('click', async function () {
         if (!selectedRole) {
           showError('Please select a role');
           return;
         }
+        if (!cachedIdToken) {
+          showError('Session expired. Please sign in with Google again.');
+          // Login screen এ ফেরত পাঠাও
+          document
+            .getElementById('roleSelectionScreen')
+            .classList.remove('active');
+          document.getElementById('loginScreen').classList.remove('hidden');
+          return;
+        }
 
-        const roleLoadingIndicator = document.getElementById(
-          'roleLoadingIndicator',
-        );
-        roleLoadingIndicator.classList.remove('hidden');
+        const roleLoading = document.getElementById('roleLoadingIndicator');
+        roleLoading.classList.remove('hidden');
         submitRoleBtn.disabled = true;
 
         try {
           console.log('📤 Submitting role:', selectedRole);
-
-          const res = await fetch(
-            `${API_BASE_URL}/complete-google-registration`,
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              credentials: 'include',
-              body: JSON.stringify({
-                tempToken: tempToken,
-                role: selectedRole,
-              }),
-            },
-          );
-
-          const data = await res.json();
-
-          console.log('📥 Registration response:', data);
-
-          if (data.success) {
-            console.log('✅ Registration completed successfully');
-            showDashboard(data.data);
-          } else {
-            showError(data.message || 'Registration failed');
-            submitRoleBtn.disabled = false;
-          }
-        } catch (error) {
-          console.error('❌ Registration failed:', error);
-          showError('Registration failed. Please try again.');
-          submitRoleBtn.disabled = false;
+          // same doGoogleLogin — এবার role সহ
+          await doGoogleLogin(cachedIdToken, selectedRole);
         } finally {
-          roleLoadingIndicator.classList.add('hidden');
+          roleLoading.classList.add('hidden');
+          submitRoleBtn.disabled = false;
         }
       });
 
-      // Logout
+      /* ════════════════════════════════════════════════════
+         LOGOUT
+      ════════════════════════════════════════════════════ */
       document
         .getElementById('logoutBtn')
         .addEventListener('click', function () {
           console.log('🚪 Logging out...');
 
           localStorage.removeItem('accessToken');
+          cachedIdToken = null;
+          selectedRole = null;
 
           document.getElementById('userDashboard').classList.remove('active');
           document.getElementById('loginScreen').classList.remove('hidden');
 
-          // Reset role selection
+          // role selection reset
           roleOptions.forEach((opt) => opt.classList.remove('selected'));
-          selectedRole = null;
-          tempToken = null;
           submitRoleBtn.disabled = true;
 
           showSuccess('Logged out successfully!');
         });
 
-      // Check if already logged in on page load
+      /* ════════════════════════════════════════════════════
+         PAGE LOAD — existing token check
+      ════════════════════════════════════════════════════ */
       window.addEventListener('DOMContentLoaded', () => {
         const token = localStorage.getItem('accessToken');
         if (token) {
           console.log(
-            '🔑 Found existing token, but user needs to login again for fresh session',
+            '🔑 Token found — user must re-authenticate for a fresh session',
           );
+          // চাইলে এখানে /verify-token API call করে auto-login করতে পারো
         }
       });
     </script>

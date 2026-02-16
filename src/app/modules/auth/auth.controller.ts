@@ -61,28 +61,8 @@ const googleLogin = catchAsync(async (req, res) => {
 
   const result = await authService.googleLogin(idToken, role);
 
-  // If user exists but no role was needed, return tokens
-  if (result.accessToken) {
-    res.cookie('refreshToken', result.refreshToken, {
-      httpOnly: true,
-      secure: config.env === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
-
-    return sendResponse(res, {
-      statusCode: 200,
-      success: true,
-      message: 'Google login successful',
-      data: {
-        accessToken: result.accessToken,
-        user: result.user,
-      },
-    });
-  }
-
-  // If new user and role selection needed
-  if (result.needsRole) {
+  // ❗ নতুন user, role দরকার
+  if (result.status === 'needs_role') {
     return sendResponse(res, {
       statusCode: 200,
       success: true,
@@ -94,6 +74,27 @@ const googleLogin = catchAsync(async (req, res) => {
       },
     });
   }
+
+  // ✅ পুরাতন user login / নতুন user registered — দুটোতেই token দাও
+  res.cookie('refreshToken', result.refreshToken, {
+    httpOnly: true,
+    secure: config.env === 'production',
+    sameSite: 'strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+
+  return sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: result.status === 'registered'
+      ? 'Account created successfully'
+      : 'Login successful',
+    data: {
+      needsRole: false,
+      accessToken: result.accessToken,
+      user: result.user,
+    },
+  });
 });
 
 const refreshToken = catchAsync(async (req, res) => {

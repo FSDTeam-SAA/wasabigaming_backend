@@ -177,74 +177,103 @@ export const loginUser = async (
 
 // auth.service.ts
 const googleLogin = async (idToken: string, role?: string) => {
-  try {
-    console.log('=== GOOGLE LOGIN BACKEND START ===');
+  console.log('=== GOOGLE LOGIN START ===');
 
-    const payload = await jwtHelpers.verifyGoogleToken(idToken);
+  // ১. Google token verify করো
+  const payload = await jwtHelpers.verifyGoogleToken(idToken);
 
-    const email = payload.email!;
-    const firstName = payload.given_name || payload.name || 'Google User';
-    const lastName = payload.family_name || '';
-    const profileImage = payload.picture;
+  const email = payload.email!;
+  const firstName = payload.given_name || payload.name || 'Google User';
+  const lastName = payload.family_name || '';
+  const profileImage = payload.picture;
 
-    // EXISTING USER CHECK - সবার আগে এটা check হয়
-    let user = await User.findOne({ email });
+  // ২. পুরাতন user আছে কিনা check করো
+  const existingUser = await User.findOne({ email });
 
-    // পুরাতন user হলে DIRECTLY LOGIN (কোন role popup নেই)
-    if (user) {
-      console.log('👤 Existing user login - Direct login');
-      console.log('🔒 Role locked as:', user.role);
+  if (existingUser) {
+    // ✅ পুরাতন user → সরাসরি login
+    console.log('👤 Existing user:', existingUser.email, '| Role:', existingUser.role);
 
-      const accessToken = jwtHelpers.genaretToken(
-        { id: user._id, role: user.role, email: user.email },
-        config.jwt.accessTokenSecret as Secret,
-        config.jwt.accessTokenExpires,
-      );
+    const accessToken = jwtHelpers.genaretToken(
+      { id: existingUser._id, role: existingUser.role, email: existingUser.email },
+      config.jwt.accessTokenSecret as Secret,
+      config.jwt.accessTokenExpires,
+    );
 
-      const refreshToken = jwtHelpers.genaretToken(
-        { id: user._id, role: user.role, email: user.email },
-        config.jwt.refreshTokenSecret as Secret,
-        config.jwt.refreshTokenExpires,
-      );
+    const refreshToken = jwtHelpers.genaretToken(
+      { id: existingUser._id, role: existingUser.role, email: existingUser.email },
+      config.jwt.refreshTokenSecret as Secret,
+      config.jwt.refreshTokenExpires,
+    );
 
-      const { password, ...userWithoutPassword } = user.toObject();
+    const { password, ...userWithoutPassword } = existingUser.toObject();
 
-      return {
-        accessToken, // এখানে token আছে
-        refreshToken, // এখানে token আছে
-        user: userWithoutPassword,
-      };
-    }
+    return {
+      status: 'logged_in',         // পুরাতন user
+      accessToken,
+      refreshToken,
+      user: userWithoutPassword,
+    };
+  }
 
-    // নতুন user হলে ONLY THEN role selection popup দেখাবে
-    console.log('🆕 New Google user detected - role selection required');
+  // ৩. নতুন user — role দেওয়া হয়েছে কিনা দেখো
+  if (!role) {
+    // ❗ role নেই → frontend কে বলো role চাইতে
+    console.log('🆕 New user, role needed');
 
     const tempToken = jwtHelpers.genaretToken(
-      {
-        email,
-        firstName,
-        lastName,
-        profileImage,
-        isTemp: true,
-      },
+      { email, firstName, lastName, profileImage, isTemp: true },
       config.jwt.accessTokenSecret as Secret,
       '15m',
     );
 
     return {
-      needsRole: true, // নতুন user এর জন্য role চাইবে
+      status: 'needs_role',        // নতুন user, role দরকার
       tempToken,
-      userInfo: {
-        email,
-        firstName,
-        lastName,
-        profileImage,
-      },
+      userInfo: { email, firstName, lastName, profileImage },
     };
-  } catch (error) {
-    console.error('Google login error:', error);
-    throw error;
   }
+
+  // ৪. নতুন user + role আছে → account বানাও
+  console.log('✅ Creating new user with role:', role);
+
+  const validRoles = ['student', 'school', 'admin'];
+  if (!validRoles.includes(role)) {
+    throw new AppError(400, 'Invalid role');
+  }
+
+  const newUser = await User.create({
+    email,
+    firstName,
+    lastName,
+    profileImage,
+    role,
+    password: 'GOOGLE_OAUTH_USER',   // Google user এর password নেই
+    verified: true,
+    registered: true,
+    status: 'active',
+  });
+
+  const accessToken = jwtHelpers.genaretToken(
+    { id: newUser._id, role: newUser.role, email: newUser.email },
+    config.jwt.accessTokenSecret as Secret,
+    config.jwt.accessTokenExpires,
+  );
+
+  const refreshToken = jwtHelpers.genaretToken(
+    { id: newUser._id, role: newUser.role, email: newUser.email },
+    config.jwt.refreshTokenSecret as Secret,
+    config.jwt.refreshTokenExpires,
+  );
+
+  const { password, ...userWithoutPassword } = newUser.toObject();
+
+  return {
+    status: 'registered',          // নতুন account তৈরি হয়েছে
+    accessToken,
+    refreshToken,
+    user: userWithoutPassword,
+  };
 };
 
 const refreshToken = async (token: string) => {
