@@ -395,7 +395,7 @@ const getNotMyAppliedJobs = async (
   const andCondition: any[] = [];
 
   const searchableFields = [
-    'status',
+    'jobStatus',
     'additionalInfo',
     'responsibilities',
     'description',

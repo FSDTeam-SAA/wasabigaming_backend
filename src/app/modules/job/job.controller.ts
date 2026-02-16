@@ -59,7 +59,7 @@ const getNotMyAppliedJobs = catchAsync(async (req, res) => {
   const userId = req.user.id;
   const filters = pick(req.query, [
     'searchTerm',
-    'status',
+    'jobStatus',
     'additionalInfo',
     'responsibilities',
     'description',
