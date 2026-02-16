@@ -14,7 +14,6 @@ router.post(
 router.get(
   '/',
   auth(userRole.admin, userRole.student),
-  checkStudentSubscription,
   cvbuilderController.getAllCVbuilder,
 );
 router.post(

@@ -53,6 +53,7 @@ export interface ICVbuilder {
   educationLevel: IEducation[];
   leadership: ILeadership[];
   achievements: IAchievements;
+  attemptNumber?: number;
 
   summary: string;
 
