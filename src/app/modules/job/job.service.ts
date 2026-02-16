@@ -417,13 +417,20 @@ const getNotMyAppliedJobs = async (
     });
   }
 
+  // if (Object.keys(filterData).length) {
+  //   andCondition.push({
+  //     $and: Object.entries(filterData).map(([field, value]) => ({
+  //       [field]: value,
+  //     })),
+  //   });
+  // }
   if (Object.keys(filterData).length) {
-    andCondition.push({
-      $and: Object.entries(filterData).map(([field, value]) => ({
-        [field]: value,
-      })),
-    });
-  }
+  andCondition.push({
+    $and: Object.entries(filterData).map(([field, value]) => ({
+      [field]: { $regex: value, $options: 'i' },
+    })),
+  });
+}
 
   if (year) {
     const startDate = new Date(`${year}-01-01T00:00:00.000Z`);

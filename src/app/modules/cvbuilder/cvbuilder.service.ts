@@ -10,6 +10,7 @@ import {
   cvBuilderSummary,
 } from '../../helper/aiEndpoint';
 import Premium from '../premium/premium.model';
+import mongoose from 'mongoose';
 
 const createCVbuilder = async (userId: string, payload: ICVbuilder) => {
   const user = await User.findById(userId);
@@ -262,6 +263,31 @@ const leaderShip = async (userId: string, payload: any) => {
     return enhancedLeadership;
   }
 };
+const getUserAverageScore = async (userId: string) => {
+  const result = await CVbuilder.aggregate([
+    {
+      $match: {
+        createBy: new mongoose.Types.ObjectId(userId),
+        score: { $ne: null },
+      },
+    },
+    {
+      $group: {
+        _id: '$createBy',
+        averageScore: { $avg: '$score' },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        averageScore: { $round: ['$averageScore', 2] },
+      },
+    },
+  ]);
+
+  return result[0] || { averageScore: 0 };
+};
+
 
 export const cvbuilderService = {
   createCVbuilder,
@@ -270,4 +296,5 @@ export const cvbuilderService = {
   updateCVbuilder,
   deleteCVbuilder,
   leaderShip,
+  getUserAverageScore,
 };
