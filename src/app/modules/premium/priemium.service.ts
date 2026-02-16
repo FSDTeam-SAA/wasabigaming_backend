@@ -21,7 +21,7 @@ const createPremium = async (payload: IPremium) => {
 
 
   const result = await Premium.create(payload);
-  if (!result) throw new AppError(400, 'Failed to create premium');
+  if (!result) throw new AppError(400, 'Fai led to create premium');
   return result;
 };
 
