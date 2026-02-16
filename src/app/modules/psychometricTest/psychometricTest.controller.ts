@@ -173,6 +173,19 @@ const removedSingleQuestion = catchAsync(async (req, res) => {
   });
 });
 
+const getMyAverageScore = catchAsync(async (req, res) => {
+  const userId = req.user.id;
+
+  const result = await psychometricTestService.getUserAverageScore(userId);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Your average psychometric test score retrieved successfully',
+    data: result,
+  });
+});
+
 
 export const psychometricTestController = {
   createPsychometricTest,
@@ -182,4 +195,5 @@ export const psychometricTestController = {
   deletePsychometricTest,
   addQusestion,
   removedSingleQuestion,
+  getMyAverageScore
 };

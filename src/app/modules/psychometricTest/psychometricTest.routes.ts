@@ -38,6 +38,7 @@ router.post(
 );
 
 router.get('/', psychometricTestController.getMyAllPsychometricTests);
+router.get('/average-score', auth(userRole.student), psychometricTestController.getMyAverageScore);
 router.put(
   '/add/:id',
   auth(userRole.admin),

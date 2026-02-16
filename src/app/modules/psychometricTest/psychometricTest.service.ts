@@ -6,6 +6,7 @@
 // import { psychometricResultService } from '../psychometricResult/psychometricResult.service';
 // import pagination, { IOption } from '../../helper/pagenation';
 
+import mongoose from 'mongoose';
 import AppError from '../../error/appError';
 import pagination, { IOption } from '../../helper/pagenation';
 import User from '../user/user.model';
@@ -473,6 +474,31 @@ const removedSingleQuestion = async (id: string, questionId: string) => {
   return result;
 };
 
+const getUserAverageScore = async (userId: string) => {
+  const result = await PsychometricTest.aggregate([
+    {
+      $match: {
+        createdBy: new mongoose.Types.ObjectId(userId),
+        score: { $ne: null },
+      },
+    },
+    {
+      $group: {
+        _id: '$createdBy',
+        averageScore: { $avg: '$score' },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        averageScore: { $round: ['$averageScore', 2] },
+      },
+    },
+  ]);
+
+  return result[0] || { averageScore: 0 };
+};
+
 export const psychometricTestService = {
   createPsychometricTest,
   getAllPsychometricTests,
@@ -481,4 +507,5 @@ export const psychometricTestService = {
   deletePsychometricTests,
   addQusestion,
   removedSingleQuestion,
+  getUserAverageScore
 };
