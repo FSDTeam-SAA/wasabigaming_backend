@@ -171,7 +171,7 @@ const sanitizeFileName = (name: string) => {
 const upload = multer({
   storage: multer.memoryStorage(),
   fileFilter: (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|gif|mp4|mov|avi|mkv|csv|pdf/;
+    const allowedTypes = /jpeg|jpg|png|gif|mp4|mov|avi|mkv|csv|pdf|webp/;
     const ext = path.extname(file.originalname).toLowerCase();
 
     if (!allowedTypes.test(ext)) {

@@ -313,7 +313,7 @@ export const cvBuilderDescription = async (
 export const cvBuilderSummary = async (
   user_data: any,
   user_summary?: string,
-): Promise<string | null> => {
+): Promise<{ text: string | null; score: any } | null> => {
   try {
     const formData = new FormData();
     formData.append('user_data', JSON.stringify(user_data));
@@ -334,11 +334,10 @@ export const cvBuilderSummary = async (
       typeof response.data === 'string'
         ? JSON.parse(response.data)
         : response.data;
-
-    return data?.status && data?.text ? data.text : null;
+    return { text: data?.status && data?.text ? data.text : null, score: data?.score ? data.score : null };
   } catch (error: any) {
     console.error('SUMMARY AI ERROR:', error.response?.data);
-    return null; // fail-safe
+    return { text: null, score: null }; // fail-safe
   }
 };
 
