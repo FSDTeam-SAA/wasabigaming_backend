@@ -19,7 +19,7 @@ const createCVbuilder = async (userId: string, payload: ICVbuilder) => {
   const subscription = await Premium.findById(user.subscription);
   if (!subscription) throw new AppError(404, 'subscription is not found');
   
-  if (subscription.name === 'Free Plan') {
+  if (subscription.name === 'Free') {
     if (cvCount >= 1) {
       throw new AppError(
         403,

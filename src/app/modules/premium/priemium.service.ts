@@ -11,7 +11,9 @@ const stripe = new Stripe(config.stripe.secretKey!);
 
 const createPremium = async (payload: IPremium) => {
   const premium = await Premium.findOne({ name: payload.name });
-  if (premium) throw new AppError(400, 'Premium already exists');
+
+  if (premium?.subscriptionCategory === payload.subscriptionCategory) throw new AppError(400, 'Premium already exists');
+  
   const result = await Premium.create(payload);
   if (!result) throw new AppError(400, 'Failed to create premium');
   return result;
