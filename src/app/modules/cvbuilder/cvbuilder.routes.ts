@@ -21,6 +21,11 @@ router.post(
   auth(userRole.admin, userRole.student),
   cvbuilderController.leaderShip,
 );
+router.get(
+  '/average-score',
+  auth(userRole.admin, userRole.student),
+  cvbuilderController.getMyAverageScore,
+);
 
 router.get('/:id', cvbuilderController.getSingleCVbuilder);
 

@@ -93,11 +93,26 @@ const leaderShip = catchAsync(async(req , res) => {
     data: result,
   });
 })
+
+const getMyAverageScore = catchAsync(async (req, res) => {
+  const userId = req.user.id;
+
+  const result = await cvbuilderService.getUserAverageScore(userId);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Your average CV score retrieved successfully',
+    data: result,
+  });
+});
+
 export const cvbuilderController = {
   createCVbuilder,
   getAllCVbuilder,
   getSingleCVbuilder,
   updateCVbuilder,
   deleteCVbuilder,
-  leaderShip
+  leaderShip,
+  getMyAverageScore
 };
