@@ -17,8 +17,8 @@ router.post(
 
 router.get(
   '/',
-  checkStudentSubscription,
   auth(userRole.admin, userRole.school),
+  checkStudentSubscription,
   inviteStudentController.getAllInviteStudents,
 );
 router.put(
