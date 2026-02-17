@@ -69,6 +69,7 @@ const getAllUser = async (params: any, options: IOption) => {
     'schoolType',
     'schoolStatus',
     'aboutSchool',
+    'grade'
   ];
 
   if (searchTerm) {
