@@ -3,18 +3,21 @@ import { inviteStudentController } from './invite_students.controller';
 import auth from '../../middlewares/auth';
 import { userRole } from '../user/user.constant';
 import { fileUploader } from '../../helper/fileUploder';
+import { checkStudentSubscription } from '../../middlewares/checkSubscription';
 
 const router = Router();
 
 router.post(
   '/',
   auth(userRole.school),
+  checkStudentSubscription,
   fileUploader.upload.single('url'),
   inviteStudentController.sendInvite,
 );
 
 router.get(
   '/',
+  checkStudentSubscription,
   auth(userRole.admin, userRole.school),
   inviteStudentController.getAllInviteStudents,
 );
