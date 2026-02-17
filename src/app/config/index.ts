@@ -93,6 +93,7 @@ export default {
   },
   frontendUrl: process.env.FRONTEND_URL,
   backendUrl: process.env.BACKEND_URL,
+  Ai_URL: process.env.Ai_URL,
   rateLimit: {
     window: process.env.RATE_LIMIT_WINDOW,
     max: process.env.RATE_LIMIT_MAX,

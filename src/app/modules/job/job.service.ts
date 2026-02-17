@@ -637,6 +637,21 @@ const filterJobCvBased = async (
 
   return aiApiCall;
 };
+const getUniqueLocations = async () => {
+  const locations = await Job.distinct('location');
+
+  const locationList = [
+    ...locations
+      .filter((location) => location) // filter out null/undefined/empty
+      .map((location, index) => ({
+        id: index + 1,
+        name: location,
+        value: location,
+      })),
+  ];
+
+  return locationList;
+};
 
 export const jobService = {
   createJob,
@@ -652,4 +667,5 @@ export const jobService = {
   getNotMyAppliedJobs,
   getMyAppliedJobs,
   updateApplicationStatus,
+  getUniqueLocations,
 };

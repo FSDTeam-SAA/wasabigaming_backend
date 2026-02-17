@@ -75,6 +75,7 @@ export interface IUser {
   ];
   shareLink?: string;
   applicationJob?: IApplication[];
+  authType?: string;
 
   createdAt: Date;
   updatedAt: Date;

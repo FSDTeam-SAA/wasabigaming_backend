@@ -107,6 +107,7 @@ const userSchema = new Schema<IUser>(
     ],
     shareLink: { type: String },
     applicationJob: [applicationSchema],
+    authType: { type: String, default: "manual" },
   },
   { timestamps: true },
 );
