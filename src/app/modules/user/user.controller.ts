@@ -32,6 +32,7 @@ const getAllUser = catchAsync(async (req, res) => {
     'schoolStatus',
     'aboutSchool',
     'year',
+    'grade'
   ]);
   const options = pick(req.query, ['page', 'limit', 'sortBy', 'sortOrder']);
   const result = await userService.getAllUser(filters, options);
