@@ -80,13 +80,24 @@ const getAllUser = async (params: any, options: IOption) => {
     });
   }
 
-  if (Object.keys(filterData).length) {
-    andCondition.push({
-      $and: Object.entries(filterData).map(([field, value]) => ({
-        [field]: value,
-      })),
-    });
-  }
+  // if (Object.keys(filterData).length) {
+  //   andCondition.push({
+  //     $and: Object.entries(filterData).map(([field, value]) => ({
+  //       [field]: value,
+  //     })),
+  //   });
+  // }
+  const cleanedFilter = Object.fromEntries(
+  Object.entries(filterData).filter(([_, value]) => value !== '' && value !== null && value !== undefined)
+);
+
+if (Object.keys(cleanedFilter).length) {
+  andCondition.push({
+    $and: Object.entries(cleanedFilter).map(([field, value]) => ({
+      [field]: value,
+    })),
+  });
+}
 
   // YEAR Filter → createdAt
   if (year) {
