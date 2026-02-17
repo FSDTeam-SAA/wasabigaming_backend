@@ -1,6 +1,7 @@
 import axios from 'axios';
 import FormData from 'form-data';
 import fs from 'fs';
+import config from '../config';
 
 const lawFirmAi = async (jobTitle: string) => {
   try {
@@ -8,7 +9,7 @@ const lawFirmAi = async (jobTitle: string) => {
     formData.append('job_title', jobTitle);
 
     const response = await axios.post(
-      'https://ai-api-wasabigamning.onrender.com/api/find-jobs/',
+      `${config.Ai_URL}/api/find-jobs/`,
       formData,
       {
         headers: {
@@ -39,7 +40,7 @@ export const aiwrittencaseStudyQuestion = async () => {
 
   try {
     const response = await axios.post(
-      'https://ai-api-wasabigamning.onrender.com/api/generate_ai_assessment/',
+      `${config.Ai_URL}/api/generate_ai_assessment/`,
       formData,
       {
         headers: {
@@ -67,7 +68,7 @@ export const aiwrittencaseStudySubmission = async (caseStudy: string) => {
 
   try {
     const response = await axios.post(
-      'https://ai-api-wasabigamning.onrender.com/api/ai-assessment/',
+      `${config.Ai_URL}/api/ai-assessment/`,
       formData,
       {
         headers: {
@@ -92,7 +93,7 @@ export const aiwrittencaseStudySubmission = async (caseStudy: string) => {
 export const aiPresentationTaskQuestion = async () => {
   try {
     const response = await axios.post(
-      'https://ai-api-wasabigamning.onrender.com/api/generate_written_presentation_ques/',
+      `${config.Ai_URL}/api/generate_written_presentation_ques/`,
       {},
       {
         headers: {
@@ -125,7 +126,7 @@ export const aiPresentationTaskSubmission = async (presentation: string, videoBu
 
   try {
     const response = await axios.post(
-      'https://ai-api-wasabigamning.onrender.com/api/written_presentation_result/',
+      `${config.Ai_URL}/api/written_presentation_result/`,
       formData,
       {
         headers: formData.getHeaders(),
@@ -148,7 +149,7 @@ export const aiPresentationTaskSubmission = async (presentation: string, videoBu
 export const aiintrayemailquestion = async () => {
   try {
     const response = await axios.post(
-      'https://ai-api-wasabigamning.onrender.com/api/generate_email_task/',
+      `${config.Ai_URL}/api/generate_email_task/`,
       {},
       {
         headers: {
@@ -176,7 +177,7 @@ export const aiintrayemailSubmission = async (caseStudy: string) => {
 
   try {
     const response = await axios.post(
-      'https://ai-api-wasabigamning.onrender.com/api/in_tray_email/',
+      `${config.Ai_URL}/api/in_tray_email/`,
       formData,
       {
         headers: {
@@ -201,7 +202,7 @@ export const aiintrayemailSubmission = async (caseStudy: string) => {
 export const aicareanalysisquestion = async () => {
   try {
     const response = await axios.post(
-      'https://ai-api-wasabigamning.onrender.com/api/case_summary_gen/',
+      `${config.Ai_URL}/api/case_summary_gen/`,
       {},
       {
         headers: {
@@ -228,7 +229,7 @@ export const aiareanalysisSubmission = async (analysis: string) => {
 
   try {
     const response = await axios.post(
-      'https://ai-api-wasabigamning.onrender.com/api/case_law_summary/',
+      `${config.Ai_URL}/api/case_law_summary/`,
       formData,
       {
         headers: {
@@ -253,7 +254,7 @@ export const aiareanalysisSubmission = async (analysis: string) => {
 export const aipsychometricTestResult = async (id: string) => {
   try {
     const response = await axios.post(
-      'https://ai-api-wasabigamning.onrender.com/api/anlz-psychometric/',
+      `${config.Ai_URL}/api/anlz-psychometric/`,
       {
         test_id: id,
       },
@@ -288,7 +289,7 @@ export const cvBuilderDescription = async (
     formData.append('job_summary', job_summary);
 
     const response = await axios.post(
-      'https://ai-api-wasabigamning.onrender.com/api/enhance-desc/',
+      `${config.Ai_URL}/api/enhance-desc/`,
       formData,
       {
         headers: formData.getHeaders(),
@@ -325,7 +326,7 @@ export const cvBuilderSummary = async (
     }
 
     const response = await axios.post(
-      'https://ai-api-wasabigamning.onrender.com/api/enhance-summ/',
+      `${config.Ai_URL}/api/enhance-summ/`,
       formData,
       {
         headers: formData.getHeaders(),
@@ -373,7 +374,7 @@ export const updatedCoverLetter = async (
   });
 
   const response = await axios.post(
-    'https://ai-api-wasabigamning.onrender.com/api/gen-cover-letter/',
+    `${config.Ai_URL}/api/gen-cover-letter/`,
     formData,
     {
       headers: formData.getHeaders(),
@@ -396,7 +397,7 @@ export const mockInterviewQuestionGenerate = async (
     }
 
     const response = await axios.post(
-      'https://ai-api-wasabigamning.onrender.com/api/mock-question/',
+      `${config.Ai_URL}/api/mock-question/`,
       payload,
       {
         headers: {
@@ -440,7 +441,7 @@ export const mockInterviewAnswerCheck = async (
     });
 
     const response = await axios.post(
-      'https://ai-api-wasabigamning.onrender.com/api/mock-interview/',
+      `${config.Ai_URL}/api/mock-interview/`,
       formData,
       {
         headers: {
@@ -467,12 +468,12 @@ export const cvBasedJobFilter = async (
   });
 
   const response = await axios.post(
-    'https://ai-api-wasabigamning.onrender.com/api/find-jobs-by-cv/',
+    `${config.Ai_URL}/api/find-jobs-by-cv/`,
     formData,
     {
       headers: formData.getHeaders(),
       maxBodyLength: Infinity,
-      timeout: 120000,
+      timeout: 1200000,
     },
   );
 

@@ -230,6 +230,17 @@ const filterJobCvBased = catchAsync(async (req, res) => {
   });
 });
 
+const getUniqueLocations = catchAsync(async (req, res) => {
+  const result = await jobService.getUniqueLocations();
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Unique locations retrieved successfully',
+    data: result,
+  });
+});
+
 export const jobController = {
   createJob,
   getAllJobs,
@@ -243,5 +254,6 @@ export const jobController = {
   applicationJobUser,
   getMyAppliedJobs,
   getNotMyAppliedJobs,
-  updateApplicationStatus
+  updateApplicationStatus,
+  getUniqueLocations,
 };

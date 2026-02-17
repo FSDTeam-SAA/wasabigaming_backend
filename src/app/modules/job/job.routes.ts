@@ -12,6 +12,7 @@ router.post(
   jobController.createJob,
 );
 
+router.get('/locations', jobController.getUniqueLocations);
 router.get('/applied-job', auth(userRole.student), jobController.appliedJob);
 router.post(
   '/filter-job-cv-based',
