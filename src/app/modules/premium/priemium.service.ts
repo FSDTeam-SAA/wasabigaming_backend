@@ -10,19 +10,18 @@ import Payment from '../payment/payment.model';
 const stripe = new Stripe(config.stripe.secretKey!);
 
 const createPremium = async (payload: IPremium) => {
-  const premium = await Premium.findOne({ name: payload.name });
+  const existingPremium = await Premium.findOne({
+  name: payload.name,
+  type: payload.type,
+  subscriptionCategory: payload.subscriptionCategory,
+});
 
-  if(payload.subscriptionCategory ==='school') {
-    if (premium?.type === payload?.type) throw new AppError(400, 'Premium already exists');
-  }
-   if(payload.subscriptionCategory ==='students') {
-    if (premium?.type === payload?.type) throw new AppError(400, 'Premium already exists');
-  }
+if (existingPremium) {
+  throw new AppError(400, 'Premium already exists');
+}
 
-
-  const result = await Premium.create(payload);
-  if (!result) throw new AppError(400, 'Fai led to create premium');
-  return result;
+const result = await Premium.create(payload);
+return result;
 };
 
 const getAllPremium = async (params: any, options: IOption) => {
