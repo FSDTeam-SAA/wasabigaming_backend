@@ -183,6 +183,7 @@ const updateInviteStudentStatus = async (payload: any) => {
   const { email, status, schoolId } = payload;
 
   const school = await User.findById(schoolId);
+  console.log('School found:', school);
   if (!school) {
     throw new AppError(404, 'School not found');
   }

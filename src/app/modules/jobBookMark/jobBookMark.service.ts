@@ -30,7 +30,7 @@ const removeJobBookmark = async (userId: string, jobId: string) => {
     user: userId,
     job: jobId,
   });
-
+  
   if (!deleted) {
     throw new AppError(404, 'Bookmark not found');
   }
