@@ -4,6 +4,7 @@ import { ICommunity } from './joinCommunity.interface';
 
 const communitySchema = new Schema<ICommunity>(
   {
+    // About You
     fullName: {
       type: String,
       trim: true,
@@ -16,19 +17,43 @@ const communitySchema = new Schema<ICommunity>(
     },
     age: {
       type: Number,
-      min: [1, 'Age must be at least 1'],
+      min: [16, 'Minimum age is 16'],
     },
-    cityOrTown: {
+    location: {
       type: String,
       trim: true,
     },
-    phoneNumber: {
+    raceEthnicity: {
       type: String,
       trim: true,
     },
     yearGroup: {
       type: String,
     },
+
+    // Career Interests
+    industry: {
+      type: String,
+    },
+    pathway: {
+      type: String,
+    },
+
+    // Help Us Support You
+    firstInFamilyToAttendUni: {
+      type: String,
+    },
+    receivedFreeSchoolMeals: {
+      type: String,
+    },
+    careExperience: {
+      type: String,
+    },
+    homePostcode: {
+      type: String,
+      trim: true,
+    },
+
     status: {
       type: String,
       enum: ['active', 'inactive', 'pending'],
