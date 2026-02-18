@@ -101,9 +101,9 @@ export const loginUser = catchAsync(async (req, res) => {
 // });
 
 export const googleLogin = catchAsync(async (req, res) => {
-    const { token } = req.body;
+    const { idToken } = req.body;
 
-    if (!token) {
+    if (!idToken ) {
       return res.status(400).json({ message: "Token is required" });
     }
 
@@ -114,7 +114,7 @@ export const googleLogin = catchAsync(async (req, res) => {
     }
     const client = new OAuth2Client(googleClientId);
     const ticket = await client.verifyIdToken({
-      idToken: token,
+      idToken: idToken,
       audience: googleClientId,
     });
 
