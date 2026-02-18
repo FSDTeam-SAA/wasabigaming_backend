@@ -1,14 +1,29 @@
 // community.interface.ts
-import { Document, Types } from 'mongoose';
+import { Document } from 'mongoose';
+
+export type CommunityStatus = 'active' | 'inactive' | 'pending';
 
 export interface ICommunity extends Document {
-  fullName?: string;
-  email?: string;
-  age?: number;
-  cityOrTown?: string;
-  phoneNumber?: string;
-  yearGroup?: string;
-  status?: 'active' | 'inactive' | 'pending';
+  // About You
+  fullName: string;
+  email: string;
+  age: number;
+  location: string;
+  raceEthnicity?: string;
+  yearGroup: string;
+
+  // Career Interests
+  industry: string;
+  pathway: string;
+
+  // Support Section
+  firstInFamilyToAttendUni?: string;
+  receivedFreeSchoolMeals?: string;
+  careExperience?: string;
+  homePostcode?: string;
+
+  status: CommunityStatus;
+
   createdAt: Date;
   updatedAt: Date;
 }
