@@ -20,11 +20,11 @@ const createCVbuilder = async (userId: string, payload: ICVbuilder) => {
     throw new AppError(404, 'User not found');
   }
 
-  // 🔒 Must have subscription (Free or Pro)
+  // 🔒 Must have subscription (Free or Premium)
   if (!user.subscription) {
     throw new AppError(
       403,
-      'You must purchase a Free or Pro plan to create CVs.'
+      'You must purchase a Free or Premium plan to create CVs.'
     );
   }
 
@@ -33,11 +33,11 @@ const createCVbuilder = async (userId: string, payload: ICVbuilder) => {
     throw new AppError(400, 'Subscription plan not found');
   }
 
-  const isPro = subscription.name === 'pro';
+  const isPremium = subscription.name === 'premium';
 
 
   // ❌ Free plan attempt limit
-  if (!isPro && attemptCount >= 1) {
+  if (!isPremium && attemptCount >= 1) {
     throw new AppError(
       403,
       'Free plan allows only 1 mock interview attempt.'
