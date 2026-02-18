@@ -16,7 +16,7 @@ export const checkStudentSubscription = catchAsync(async (req, res, next) => {
     if (!subscription) {
       throw new AppError(400, "Subscription not found");
     }
-    if(subscription.name === "pro"){
+    if(subscription.name === "premium"){
       return next();
     }
   }
@@ -34,7 +34,7 @@ export const checkStudentSubscription = catchAsync(async (req, res, next) => {
     if (!subscription) {
       throw new AppError(400, "Subscription not found");
     }
-    if(subscription.name === "pro"){
+    if(subscription.name === "premium"){
       return next();
     }
 

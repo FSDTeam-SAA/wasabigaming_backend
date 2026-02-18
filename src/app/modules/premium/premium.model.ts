@@ -6,7 +6,7 @@ const premiumSchema = new mongoose.Schema<IPremium>(
     name: {
       type: String,
       required: true,
-      enum: ['pro', 'free'],
+      enum: ['premium', 'free'],
     },
     price: {
       type: Number,
