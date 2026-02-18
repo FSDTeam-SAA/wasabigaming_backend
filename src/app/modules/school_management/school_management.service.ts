@@ -236,6 +236,8 @@ const deleteStudent = async (studentId: string, schoolId: string) => {
 // };
 
 const schoolOverview = async (schoolId: string) => {
+
+  console.log('Generating school overview for school ID:', schoolId);
   // Get all students that belong to this school
   const totalStudents = await User.countDocuments({
     role: 'student',
