@@ -23,7 +23,7 @@ router.get(
 );
 router.put(
   '/status',
-  auth(userRole.admin, userRole.school),
+  // auth(userRole.admin, userRole.school),
   inviteStudentController.updateInviteStudentStatus,
 );
 router.put(
