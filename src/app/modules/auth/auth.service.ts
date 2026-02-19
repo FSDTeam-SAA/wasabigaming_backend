@@ -10,7 +10,8 @@ import sendMailer from '../../helper/sendMailer';
 import bcrypt from 'bcryptjs';
 import createOtpTemplate from '../../utils/createOtpTemplate';
 import { userRole } from '../user/user.constant';
-import { UAParser } from 'ua-parser-js';
+// import { UAParser } from 'ua-parser-js';
+import { modernOtpTemplate } from '../../utils/modernOtpTemplate';
 
 const registerUser = async (payload: Partial<IUser>) => {
   let user = await User.findOne({ email: payload.email });
@@ -177,7 +178,6 @@ const registerVerifyEmail = async (email: string, otp: string) => {
 
 // auth.service.ts
 
-
 const googleLogin = async (idToken: string, role?: string) => {
   console.log('=== GOOGLE LOGIN START ===');
 
@@ -319,10 +319,18 @@ const forgotPassword = async (email: string) => {
   user.otpExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 mins
   await user.save();
 
+  // await sendMailer(
+  //   user.email,
+  //   user.firstName + ' ' + user.lastName || user.schoolName,
+  //   createOtpTemplate(otp, user.email, 'Aspiring Legal Network'),
+  // );
+
   await sendMailer(
     user.email,
-    user.firstName + ' ' + user.lastName,
-    createOtpTemplate(otp, user.email, 'Your Company'),
+    user.firstName && user.lastName
+      ? `${user.firstName} ${user.lastName}`
+      : user.schoolName,
+    modernOtpTemplate(otp, user.email, 'Aspiring Legal Network'),
   );
 
   return { message: 'OTP sent to your email' };

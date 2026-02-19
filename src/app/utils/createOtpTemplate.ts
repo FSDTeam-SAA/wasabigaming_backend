@@ -3,14 +3,14 @@ import config from '../config';
 const createOtpTemplate = (
   code: string,
   email?: string,
-  companyName: string = 'Your Company',
+  companyName: string = 'Aspiring Legal Network',
 ): string => `
   <div style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 20px auto; background-color: #f9fafb; padding: 24px;">
     <div style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.08);">
       
       <!-- Header -->
       <header style="background: linear-gradient(90deg, #4f46e5, #6366f1); padding: 28px; text-align: center; color: #ffffff;">
-        <h2 style="margin: 0; font-size: 22px; font-weight: 600;">Verify your Email</h2>
+        <h2 style="margin: 0; font-size: 22px; font-weight: 600;">Reset your password</h2>
         <p style="margin: 6px 0 0; font-size: 14px; opacity: 0.9;">Secure your ${companyName} account</p>
       </header>
       
