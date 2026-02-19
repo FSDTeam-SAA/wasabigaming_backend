@@ -8,7 +8,7 @@ const router = express.Router();
 router.post(
   '/',
   auth(userRole.admin),
-  fileUploader.upload.single('thamble'),
+  fileUploader.upload.single('thumbnail'),
   eventController.createEvent,
 );
 
