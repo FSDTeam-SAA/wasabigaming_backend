@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import AppError from '../../error/appError';
 import { aiIntregation, cvBasedJobFilter } from '../../helper/aiEndpoint';
 import pagination, { IOption } from '../../helper/pagenation';
@@ -381,6 +382,91 @@ const appliedJob = async (userId: string, params: any, options: IOption) => {
 };
 
 //================== update applicated user ===========================
+// const getNotMyAppliedJobs = async (
+//   userId: string,
+//   params: any,
+//   options: IOption,
+// ) => {
+//   const user = await User.findById(userId);
+//   if (!user) throw new AppError(404, 'User not found');
+
+//   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
+//   const { searchTerm, year, ...filterData } = params;
+
+//   console.log(filterData);
+
+//   const andCondition: any[] = [];
+
+//   const searchableFields = [
+//     'jobStatus',
+//     'additionalInfo',
+//     'responsibilities',
+//     'description',
+//     'jobStatus',
+//     'salaryRange',
+//     'level',
+//     'postedBy',
+//     'companyType',
+//     'companyName',
+//     'location',
+//     'title',
+//     'status',
+//   ];
+
+//   if (searchTerm !== undefined && searchTerm !== null) {
+//     andCondition.push({
+//       $or: searchableFields.map((field) => ({
+//         [field]: { $regex: searchTerm, $options: 'i' },
+//       })),
+//     });
+//   }
+
+//   // if (Object.keys(filterData).length) {
+//   //   andCondition.push({
+//   //     $and: Object.entries(filterData).map(([field, value]) => ({
+//   //       [field]: value,
+//   //     })),
+//   //   });
+//   // }
+//   if (Object.keys(filterData).length) {
+//     andCondition.push({
+//       $and: Object.entries(filterData).map(([field, value]) => ({
+//         [field]: { $regex: value, $options: 'i' },
+//       })),
+//     });
+//   }
+
+//   if (year) {
+//     const startDate = new Date(`${year}-01-01T00:00:00.000Z`);
+//     const endDate = new Date(`${year}-12-31T23:59:59.999Z`);
+
+//     andCondition.push({
+//       createdAt: { $gte: startDate, $lte: endDate },
+//     });
+//   }
+
+//   const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
+
+//   const finalQuery = {
+//     ...whereCondition,
+//     applicants: { $nin: [userId] },
+//   };
+
+//   const result = await Job.find(finalQuery)
+//     .skip(skip)
+//     .limit(limit)
+//     .sort({ [sortBy]: sortOrder } as any);
+
+//   const total = await Job.countDocuments(finalQuery);
+
+//   return {
+//     data: result,
+//     meta: { total, page, limit },
+//   };
+// };
+
+
+
 const getNotMyAppliedJobs = async (
   userId: string,
   params: any,
@@ -389,50 +475,55 @@ const getNotMyAppliedJobs = async (
   const user = await User.findById(userId);
   if (!user) throw new AppError(404, 'User not found');
 
+  // convert to ObjectId
+  const userObjectId = new Types.ObjectId(userId);
+
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
   const { searchTerm, year, ...filterData } = params;
 
   const andCondition: any[] = [];
 
+  // searchable text fields only
   const searchableFields = [
-    'jobStatus',
     'additionalInfo',
-    'responsibilities',
     'description',
-    'jobStatus',
     'salaryRange',
     'level',
     'postedBy',
-    'companyType',
     'companyName',
     'location',
     'title',
-    'status',
   ];
 
-  if (searchTerm !== undefined && searchTerm !== null) {
+  // search term
+  if (searchTerm) {
     andCondition.push({
-      $or: searchableFields.map((field) => ({
+      $or: searchableFields.map(field => ({
         [field]: { $regex: searchTerm, $options: 'i' },
       })),
     });
   }
 
-  // if (Object.keys(filterData).length) {
-  //   andCondition.push({
-  //     $and: Object.entries(filterData).map(([field, value]) => ({
-  //       [field]: value,
-  //     })),
-  //   });
-  // }
+  // exact filters (VERY IMPORTANT)
   if (Object.keys(filterData).length) {
     andCondition.push({
-      $and: Object.entries(filterData).map(([field, value]) => ({
-        [field]: { $regex: value, $options: 'i' },
-      })),
+      $and: Object.entries(filterData).map(([field, value]) => {
+        // exact match fields
+        const exactFields = ['status', 'jobStatus', 'companyType'];
+
+        if (exactFields.includes(field)) {
+          return { [field]: value };
+        }
+
+        // partial match fields
+        return {
+          [field]: { $regex: value, $options: 'i' },
+        };
+      }),
     });
   }
 
+  // year filter
   if (year) {
     const startDate = new Date(`${year}-01-01T00:00:00.000Z`);
     const endDate = new Date(`${year}-12-31T23:59:59.999Z`);
@@ -442,17 +533,21 @@ const getNotMyAppliedJobs = async (
     });
   }
 
-  const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
+  const whereCondition =
+    andCondition.length > 0 ? { $and: andCondition } : {};
 
+  // MAIN FIX HERE
   const finalQuery = {
     ...whereCondition,
-    applicants: { $nin: [userId] },
+    applicants: { $nin: [userObjectId] },
   };
 
   const result = await Job.find(finalQuery)
     .skip(skip)
     .limit(limit)
-    .sort({ [sortBy]: sortOrder } as any);
+    .sort({
+      [sortBy || 'createdAt']: sortOrder === 'asc' ? 1 : -1,
+    });
 
   const total = await Job.countDocuments(finalQuery);
 

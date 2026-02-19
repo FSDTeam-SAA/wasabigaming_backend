@@ -39,6 +39,7 @@ import { lawBookmarkRoutes } from '../modules/lawbookmark/lawbookmark.routes';
 import path from 'path';
 import { communityRoutes } from '../modules/joinCommunity/joinCommunity.routes';
 import { dynamicWebsiteRoutes } from '../modules/dynamicWebsite/dynamicWebsite.route';
+import { reviewRoutes } from '../modules/review/review.routes';
 
 const router = Router();
 
@@ -176,13 +177,17 @@ const moduleRoutes = [
     route: lawBookmarkRoutes,
   },
   {
-    path:"/community",
-    route:communityRoutes
+    path: '/community',
+    route: communityRoutes,
   },
-   {
-    path:"/dynamic-website",
-    route:dynamicWebsiteRoutes
-  }
+  {
+    path: '/dynamic-website',
+    route: dynamicWebsiteRoutes,
+  },
+  {
+    path: '/review',
+    route: reviewRoutes,
+  },
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
