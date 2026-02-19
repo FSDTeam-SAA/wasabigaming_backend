@@ -17,5 +17,6 @@ export interface ICourse {
   enrolledStudents?: Types.ObjectId[];
   coursePrice?: number;
   isCourseFree?: boolean;
-  thumbnail?:string
+  thumbnail?: string;
+  reviews?: Types.ObjectId[];
 }

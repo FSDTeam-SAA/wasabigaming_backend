@@ -407,6 +407,7 @@ const getNotMyAppliedJobs = async (
     'companyName',
     'location',
     'title',
+    'status',
   ];
 
   if (searchTerm !== undefined && searchTerm !== null) {
@@ -425,12 +426,12 @@ const getNotMyAppliedJobs = async (
   //   });
   // }
   if (Object.keys(filterData).length) {
-  andCondition.push({
-    $and: Object.entries(filterData).map(([field, value]) => ({
-      [field]: { $regex: value, $options: 'i' },
-    })),
-  });
-}
+    andCondition.push({
+      $and: Object.entries(filterData).map(([field, value]) => ({
+        [field]: { $regex: value, $options: 'i' },
+      })),
+    });
+  }
 
   if (year) {
     const startDate = new Date(`${year}-01-01T00:00:00.000Z`);

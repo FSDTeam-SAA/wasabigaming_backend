@@ -71,6 +71,7 @@ const getNotMyAppliedJobs = catchAsync(async (req, res) => {
     'companyName',
     'location',
     'title',
+    'status',
   ]);
   const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
   const result = await jobService.getNotMyAppliedJobs(userId, filters, options);
@@ -98,6 +99,7 @@ const getMyAppliedJobs = catchAsync(async (req, res) => {
     'companyName',
     'location',
     'title',
+    'status'
   ]);
   const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
   const result = await jobService.getMyAppliedJobs(userId, filters, options);
