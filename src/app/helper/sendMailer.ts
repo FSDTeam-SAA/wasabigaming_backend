@@ -16,7 +16,7 @@ const sendMailer = async (
     },
   });
   const info = await transporter.sendMail({
-    from: `"your company name" ${config.email.from}`,
+    from: `"Aspiring Legal Network" ${config.email.from}`,
     to: email,
     subject,
     html,
