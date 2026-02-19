@@ -15,7 +15,7 @@ const createReview = catchAsync(async (req, res) => {
 });
 
 const getAllReview = catchAsync(async (req, res) => {
-  const filters = pick(req.query, ['searchTerm', 'comment', 'rating']);
+  const filters = pick(req.query, ['searchTerm', 'comment', 'rating', 'ratingMin', 'ratingMax']);
   const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
   const result = await reviewService.getAllReview(filters, options);
   sendResponse(res, {
@@ -28,7 +28,7 @@ const getAllReview = catchAsync(async (req, res) => {
 });
 const getMyAllReview = catchAsync(async (req, res) => {
   const userId = req.user?.id;
-  const filters = pick(req.query, ['searchTerm', 'comment', 'rating']);
+  const filters = pick(req.query, ['searchTerm', 'comment', 'rating', 'ratingMin', 'ratingMax']);
   const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
   const result = await reviewService.getMyAllReview(userId!, filters, options);
   sendResponse(res, {

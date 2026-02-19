@@ -8,7 +8,7 @@ const router = express.Router();
 
 const fileFields = fileUploader.upload.fields([
   { name: 'logo', maxCount: 1 },
-  { name: 'coverImage', maxCount: 1 }
+  { name: 'coverImage', maxCount: 1 },
 ]);
 
 router.post(
@@ -19,11 +19,11 @@ router.post(
 );
 router.get('/', lawfirmController.getAllLawfirm);
 router.get(
-  '/law-firm-based-job', 
-  auth(userRole.admin, 
-  userRole.student), 
-  checkStudentSubscription, 
-  lawfirmController.getJobLawFirmBased);
+  '/law-firm-based-job',
+  auth(userRole.admin, userRole.student),
+  checkStudentSubscription,
+  lawfirmController.getJobLawFirmBased,
+);
 
 router.put(
   '/:id/approved',
@@ -31,7 +31,11 @@ router.put(
   lawfirmController.approvedLawfirm,
 );
 
-router.get('/:id', lawfirmController.getSingleLawfirm);
+router.get(
+  '/:id',
+  checkStudentSubscription,
+  lawfirmController.getSingleLawfirm,
+);
 
 router.put(
   '/:id',

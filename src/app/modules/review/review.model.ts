@@ -5,7 +5,7 @@ const reviewSchema = new mongoose.Schema<IReview>(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     courseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' },
-    rating: { type: Number },
+    rating: { type: Number, min: 1, max: 5 },
     comment: { type: String },
   },
   { timestamps: true },
