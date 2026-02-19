@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import AppError from '../../error/appError';
 import pagination, { IOption } from '../../helper/pagenation';
 import Course from '../course/course.model';
@@ -18,22 +19,41 @@ const createReview = async (userId: string, payload: IReview) => {
 
 const getAllReview = async (params: any, options: IOption) => {
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
-  const { searchTerm, ...filterData } = params;
+  const { searchTerm, rating, ratingMin, ratingMax, ...filterData } = params;
+
   const andConditions: any[] = [];
 
   const searchableFields = ['comment'];
 
+  // search
   if (searchTerm) {
     andConditions.push({
       $or: searchableFields.map((field) => ({
-        [field]: {
-          $regex: searchTerm,
-          $options: 'i',
-        },
+        [field]: { $regex: searchTerm, $options: 'i' },
       })),
     });
   }
 
+  // rating exact filter
+  if (rating) {
+    andConditions.push({
+      rating: Number(rating),
+    });
+  }
+
+  // rating range filter (VERY IMPORTANT)
+  if (ratingMin || ratingMax) {
+    const range: any = {};
+
+    if (ratingMin) range.$gte = Number(ratingMin);
+    if (ratingMax) range.$lte = Number(ratingMax);
+
+    andConditions.push({
+      rating: range,
+    });
+  }
+
+  // other filters
   if (Object.keys(filterData).length > 0) {
     andConditions.push({
       $and: Object.entries(filterData).map(([key, value]) => ({
@@ -46,26 +66,30 @@ const getAllReview = async (params: any, options: IOption) => {
     andConditions.length > 0 ? { $and: andConditions } : {};
 
   const result = await Review.find(whereConditions)
-    .sort({ [sortBy]: sortOrder } as any)
+    .sort({
+      [sortBy || 'createdAt']: sortOrder === 'asc' ? 1 : -1,
+    })
     .skip(skip)
-    .limit(limit);
+    .limit(limit)
+    .populate('userId')
+    .populate('courseId');
+
   const total = await Review.countDocuments(whereConditions);
+
   return {
-    meta: {
-      page,
-      limit,
-      total,
-    },
+    meta: { page, limit, total },
     data: result,
   };
 };
+
 const getMyAllReview = async (
   userId: string,
   params: any,
   options: IOption,
 ) => {
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
-  const { searchTerm, ...filterData } = params;
+  const { searchTerm, rating, ratingMin, ratingMax, ...filterData } = params;
+
   const andConditions: any[] = [];
 
   const searchableFields = ['comment'];
@@ -73,44 +97,53 @@ const getMyAllReview = async (
   if (searchTerm) {
     andConditions.push({
       $or: searchableFields.map((field) => ({
-        [field]: {
-          $regex: searchTerm,
-          $options: 'i',
-        },
+        [field]: { $regex: searchTerm, $options: 'i' },
       })),
     });
   }
 
-  if (Object.keys(filterData).length > 0) {
-    andConditions.push({
-      $and: Object.entries(filterData).map(([key, value]) => ({
-        [key]: value,
-      })),
-    });
+  // rating filters
+  if (rating) {
+    andConditions.push({ rating: Number(rating) });
   }
 
-  andConditions.push({ userId: userId });
+  if (ratingMin || ratingMax) {
+    const range: any = {};
+    if (ratingMin) range.$gte = Number(ratingMin);
+    if (ratingMax) range.$lte = Number(ratingMax);
+
+    andConditions.push({ rating: range });
+  }
+
+  // VERY IMPORTANT FIX
+  andConditions.push({
+    userId: new Types.ObjectId(userId),
+  });
 
   const whereConditions =
     andConditions.length > 0 ? { $and: andConditions } : {};
 
   const result = await Review.find(whereConditions)
-    .sort({ [sortBy]: sortOrder } as any)
+    .sort({
+      [sortBy || 'createdAt']: sortOrder === 'asc' ? 1 : -1,
+    })
     .skip(skip)
-    .limit(limit);
+    .limit(limit)
+    .populate('userId')
+    .populate('courseId');
+
   const total = await Review.countDocuments(whereConditions);
+
   return {
-    meta: {
-      page,
-      limit,
-      total,
-    },
+    meta: { page, limit, total },
     data: result,
   };
 };
 
 const getSingleReview = async (id: string) => {
-  const result = await Review.findById(id);
+  const result = await Review.findById(id)
+    .populate('userId')
+    .populate('courseId');
   return result;
 };
 
@@ -121,7 +154,7 @@ const updateReview = async (userId: string, id: string, payload: IReview) => {
   if (!review) throw new AppError(404, 'Review not found');
 
   if (user.role !== 'admin') {
-    if (review.userId.toString() !== userId) {
+    if (review.userId.toString() !== user._id.toString()) {
       throw new AppError(400, 'You are not authorized to update this review');
     }
   }
