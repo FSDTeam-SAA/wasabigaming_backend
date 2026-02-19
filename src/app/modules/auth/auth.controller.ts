@@ -28,32 +28,32 @@ const registerVerifyEmail = catchAsync(async (req, res) => {
     data: result,
   });
 });
-// export const loginUser = catchAsync(async (req, res) => {
-//   const { email, password, deviceInfo } = req.body;
+const loginUser = catchAsync(async (req, res) => {
+  const { email, password, deviceInfo } = req.body;
 
-//   const result = await authService.loginUser(
-//     { email, password },
-//     deviceInfo,
-//     req.headers['user-agent'],
-//     req.ip,
-//   );
+  const result = await authService.loginUser(
+    { email, password },
+    deviceInfo,
+    req.headers['user-agent'],
+    req.ip,
+  );
 
-//   res.cookie('refreshToken', result.refreshToken, {
-//     httpOnly: true,
-//     secure: config.env === 'production',
-//     // sameSite: 'strict',
-//   });
+  res.cookie('refreshToken', result.refreshToken, {
+    httpOnly: true,
+    secure: config.env === 'production',
+    // sameSite: 'strict',
+  });
 
-//   sendResponse(res, {
-//     statusCode: 200,
-//     success: true,
-//     message: 'User logged in successfully',
-//     data: {
-//       accessToken: result.accessToken,
-//       user: result.user,
-//     },
-//   });
-// });
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'User logged in successfully',
+    data: {
+      accessToken: result.accessToken,
+      user: result.user,
+    },
+  });
+});
 
 const googleLogin = catchAsync(async (req, res) => {
   const { idToken, role } = req.body;
@@ -189,7 +189,7 @@ export const authController = {
   registerUser,
   registerVerifyEmail,
   verifyEmail,
-  // loginUser,
+  loginUser,
   refreshToken,
   forgotPassword,
   resetPassword,

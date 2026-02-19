@@ -12,6 +12,7 @@ import createOtpTemplate from '../../utils/createOtpTemplate';
 import { userRole } from '../user/user.constant';
 // import { UAParser } from 'ua-parser-js';
 import { modernOtpTemplate } from '../../utils/modernOtpTemplate';
+import { UAParser } from 'ua-parser-js';
 
 const registerUser = async (payload: Partial<IUser>) => {
   let user = await User.findOne({ email: payload.email });
@@ -119,64 +120,62 @@ const registerVerifyEmail = async (email: string, otp: string) => {
   return { message: 'user registered successfully' };
 };
 
-// export const loginUser = async (
-//   payload: Partial<IUser>,
-//   deviceInfo: any,
-//   userAgentHeader?: string,
-//   ipAddress?: string,
-// ) => {
-//   const user = await User.findOne({ email: payload.email });
-//   if (!user) throw new AppError(401, 'User not found');
-//   if (!payload.password) throw new AppError(400, 'Password is required');
-//   if (!user.registered)
-//     throw new AppError(401, 'Please verify your email first');
+const loginUser = async (
+  payload: Partial<IUser>,
+  deviceInfo: any,
+  userAgentHeader?: string,
+  ipAddress?: string,
+) => {
+  const user = await User.findOne({ email: payload.email });
+  if (!user) throw new AppError(401, 'User not found');
+  if (!payload.password) throw new AppError(400, 'Password is required');
+  if (!user.registered)
+    throw new AppError(401, 'Please verify your email first');
 
-//   const isPasswordMatched = await bcrypt.compare(
-//     payload.password,
-//     user.password,
-//   );
-//   if (!isPasswordMatched) throw new AppError(401, 'Password not matched');
+  const isPasswordMatched = await bcrypt.compare(
+    payload.password,
+    user.password,
+  );
+  if (!isPasswordMatched) throw new AppError(401, 'Password not matched');
 
-//   // Generate tokens
-//   const accessToken = jwtHelpers.genaretToken(
-//     { id: user._id, role: user.role, email: user.email },
-//     config.jwt.accessTokenSecret as Secret,
-//     config.jwt.accessTokenExpires,
-//   );
+  // Generate tokens
+  const accessToken = jwtHelpers.genaretToken(
+    { id: user._id, role: user.role, email: user.email },
+    config.jwt.accessTokenSecret as Secret,
+    config.jwt.accessTokenExpires,
+  );
 
-//   const refreshToken = jwtHelpers.genaretToken(
-//     { id: user._id, role: user.role, email: user.email },
-//     config.jwt.refreshTokenSecret as Secret,
-//     config.jwt.refreshTokenExpires,
-//   );
+  const refreshToken = jwtHelpers.genaretToken(
+    { id: user._id, role: user.role, email: user.email },
+    config.jwt.refreshTokenSecret as Secret,
+    config.jwt.refreshTokenExpires,
+  );
 
-//   // Determine device name
-//   let deviceName = 'Unknown Device';
-//   if (deviceInfo && deviceInfo.name) {
-//     deviceName = `${deviceInfo.name} (${deviceInfo.os || ''})`.trim();
-//   } else if (userAgentHeader) {
-//     const parser = new UAParser(userAgentHeader);
-//     const result = parser.getResult();
-//     deviceName =
-//       result.device.model ||
-//       `${result.browser.name || 'Unknown Browser'} on ${result.os.name || 'Unknown OS'}`;
-//   }
+  // Determine device name
+  let deviceName = 'Unknown Device';
+  if (deviceInfo && deviceInfo.name) {
+    deviceName = `${deviceInfo.name} (${deviceInfo.os || ''})`.trim();
+  } else if (userAgentHeader) {
+    const parser = new UAParser(userAgentHeader);
+    const result = parser.getResult();
+    deviceName =
+      result.device.model ||
+      `${result.browser.name || 'Unknown Browser'} on ${result.os.name || 'Unknown OS'}`;
+  }
 
-//   // Save login history
-//   user.loginHistory.unshift({
-//     device: deviceName,
-//     ipAddress: ipAddress || 'Unknown IP',
-//     loginTime: { type: new Date() },
-//   });
+  // Save login history
+  user.loginHistory.unshift({
+    device: deviceName,
+    ipAddress: ipAddress || 'Unknown IP',
+    loginTime: { type: new Date() },
+  });
 
-//   await user.save({ validateBeforeSave: false });
+  await user.save({ validateBeforeSave: false });
 
-//   const { password, ...userWithoutPassword } = user.toObject();
+  const { password, ...userWithoutPassword } = user.toObject();
 
-//   return { accessToken, refreshToken, user: userWithoutPassword };
-// };
-
-// auth.service.ts
+  return { accessToken, refreshToken, user: userWithoutPassword };
+};
 
 const googleLogin = async (idToken: string, role?: string) => {
   console.log('=== GOOGLE LOGIN START ===');
@@ -400,7 +399,7 @@ const changePassword = async (
 export const authService = {
   registerUser,
   registerVerifyEmail,
-  // loginUser,
+  loginUser,
   refreshToken,
   forgotPassword,
   verifyEmail,

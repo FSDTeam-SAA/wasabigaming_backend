@@ -15,7 +15,13 @@ const createReview = catchAsync(async (req, res) => {
 });
 
 const getAllReview = catchAsync(async (req, res) => {
-  const filters = pick(req.query, ['searchTerm', 'comment', 'rating', 'ratingMin', 'ratingMax']);
+  const filters = pick(req.query, [
+    'searchTerm',
+    'comment',
+    'rating',
+    'ratingMin',
+    'ratingMax',
+  ]);
   const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
   const result = await reviewService.getAllReview(filters, options);
   sendResponse(res, {
@@ -28,7 +34,13 @@ const getAllReview = catchAsync(async (req, res) => {
 });
 const getMyAllReview = catchAsync(async (req, res) => {
   const userId = req.user?.id;
-  const filters = pick(req.query, ['searchTerm', 'comment', 'rating', 'ratingMin', 'ratingMax']);
+  const filters = pick(req.query, [
+    'searchTerm',
+    'comment',
+    'rating',
+    'ratingMin',
+    'ratingMax',
+  ]);
   const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
   const result = await reviewService.getMyAllReview(userId!, filters, options);
   sendResponse(res, {
@@ -75,6 +87,27 @@ const deleteReview = catchAsync(async (req, res) => {
   });
 });
 
+const avarageRating = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await reviewService.avarageRating(id!);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Average rating retrieved successfully',
+    data: result,
+  });
+});
+
+const allAvarageRating = catchAsync(async (req, res) => {
+  const result = await reviewService.allAvarageRating();
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Average rating retrieved successfully',
+    data: result,
+  });
+});
+
 export const reviewController = {
   createReview,
   getAllReview,
@@ -82,4 +115,6 @@ export const reviewController = {
   getSingleReview,
   updateReview,
   deleteReview,
+  avarageRating,
+  allAvarageRating,
 };
