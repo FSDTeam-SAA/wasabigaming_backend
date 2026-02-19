@@ -10,6 +10,13 @@ router.post(
   reviewController.createReview,
 );
 router.get('/', reviewController.getAllReview);
+router.get(
+  '/my-review',
+  auth(userRole.admin, userRole.student),
+  reviewController.getMyAllReview,
+);
+router.get('/course', reviewController.allAvarageRating);
+router.get('/course/:id', reviewController.avarageRating);
 router.get('/:id', reviewController.getSingleReview);
 router.put(
   '/:id',

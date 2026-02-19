@@ -11,7 +11,7 @@ const createReview = async (userId: string, payload: IReview) => {
   if (!user) throw new AppError(404, 'User not found');
   const course = await Course.findById(payload.courseId);
   if (!course) throw new AppError(404, 'Course not found');
-  const result = await Review.create({ ...payload, userID: user._id });
+  const result = await Review.create({ ...payload, userId: user._id });
 
   await course.updateOne({ $push: { reviews: result._id } });
   return result;
@@ -185,6 +185,31 @@ const deleteReview = async (userId: string, id: string) => {
   return result;
 };
 
+const avarageRating = async (courseId: string) => {
+  const result = await Review.aggregate([
+    { $match: { courseId } },
+    {
+      $group: {
+        _id: null,
+        averageRating: { $avg: '$rating' },
+      },
+    },
+  ]);
+  return result;
+};
+
+const allAvarageRating = async () => {
+  const result = await Review.aggregate([
+    {
+      $group: {
+        _id: null,
+        averageRating: { $avg: '$rating' },
+      },
+    },
+  ]);
+  return result;
+};
+
 export const reviewService = {
   createReview,
   getAllReview,
@@ -192,4 +217,6 @@ export const reviewService = {
   updateReview,
   deleteReview,
   getMyAllReview,
+  allAvarageRating,
+  avarageRating,
 };
