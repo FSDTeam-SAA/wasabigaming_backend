@@ -28,136 +28,78 @@ const registerVerifyEmail = catchAsync(async (req, res) => {
     data: result,
   });
 });
-export const loginUser = catchAsync(async (req, res) => {
-  const { email, password, deviceInfo } = req.body;
+// export const loginUser = catchAsync(async (req, res) => {
+//   const { email, password, deviceInfo } = req.body;
 
-  const result = await authService.loginUser(
-    { email, password },
-    deviceInfo,
-    req.headers['user-agent'],
-    req.ip,
-  );
+//   const result = await authService.loginUser(
+//     { email, password },
+//     deviceInfo,
+//     req.headers['user-agent'],
+//     req.ip,
+//   );
 
-  res.cookie('refreshToken', result.refreshToken, {
-    httpOnly: true,
-    secure: config.env === 'production',
-    // sameSite: 'strict',
-  });
-
-  sendResponse(res, {
-    statusCode: 200,
-    success: true,
-    message: 'User logged in successfully',
-    data: {
-      accessToken: result.accessToken,
-      user: result.user,
-    },
-  });
-});
-
-// const googleLogin = catchAsync(async (req, res) => {
-//   const { idToken, role } = req.body;
-
-//   if (!idToken) {
-//     throw new AppError(400, 'Google ID token is required');
-//   }
-
-//   const result = await authService.googleLogin(idToken, role);
-
-//   // নতুন user, role দরকার
-//   if (result.status === 'needs_role') {
-//     return sendResponse(res, {
-//       statusCode: 200,
-//       success: true,
-//       message: 'Role selection required',
-//       data: {
-//         needsRole: true,
-//         tempToken: result.tempToken,
-//         userInfo: result.userInfo,
-//       },
-//     });
-//   }
-
-//   //পুরাতন user login / নতুন user registered — দুটোতেই token দাও
 //   res.cookie('refreshToken', result.refreshToken, {
 //     httpOnly: true,
 //     secure: config.env === 'production',
-//     sameSite: 'strict',
-//     maxAge: 7 * 24 * 60 * 60 * 1000,
+//     // sameSite: 'strict',
 //   });
 
-//   return sendResponse(res, {
+//   sendResponse(res, {
 //     statusCode: 200,
 //     success: true,
-//     message: result.status === 'registered'
-//       ? 'Account created successfully'
-//       : 'Login successful',
+//     message: 'User logged in successfully',
 //     data: {
-//       needsRole: false,
 //       accessToken: result.accessToken,
 //       user: result.user,
 //     },
 //   });
 // });
 
-export const googleLogin = catchAsync(async (req, res) => {
-    const { idToken } = req.body;
+const googleLogin = catchAsync(async (req, res) => {
+  const { idToken, role } = req.body;
 
-    if (!idToken ) {
-      return res.status(400).json({ message: "Token is required" });
-    }
+  if (!idToken) {
+    throw new AppError(400, 'Google ID token is required');
+  }
 
-    // Step 1: Verify token with Google
-    const googleClientId = process.env.GOOGLE_CLIENT_ID;
-    if (!googleClientId) {
-      return res.status(500).json({ message: "Google client ID is not configured" });
-    }
-    const client = new OAuth2Client(googleClientId);
-    const ticket = await client.verifyIdToken({
-      idToken: idToken,
-      audience: googleClientId,
-    });
+  const result = await authService.googleLogin(idToken, role);
 
-    const payload = ticket.getPayload();
-    if (!payload) {
-      return res.status(401).json({ message: "Invalid Google token" });
-    }
-
-    const { email, name, picture } = payload;
-
-    // Step 2: Check if user already exists in MongoDB
-    let user = await User.findOne({ email });
-
-    if (!user) {
-      // Step 3: Create new user if first time
-      user = await User.create({
-        name,
-        email,
-        picture,
-        password: null, // no password for Google users
-        authType: "google",
-      });
-    }
-
-    // Step 4: Generate your own JWT token
-    const jwtToken = jwt.sign(
-      { userId: user._id, email: user.email },
-      process.env.JWT_SECRET as string,
-      { expiresIn: "7d" }
-    );
-
-    // Step 5: Return token to frontend
-    return res.status(200).json({
+  // নতুন user, role দরকার
+  if (result.status === 'needs_role') {
+    return sendResponse(res, {
+      statusCode: 200,
       success: true,
-      token: jwtToken,
-      user: {
-        id: user._id,
-        name: (user as any)?.name || '',
-        email: (user as any)?.email || '',
-        picture: (user as any)?.picture || '',
+      message: 'Role selection required',
+      data: {
+        needsRole: true,
+        tempToken: result.tempToken,
+        userInfo: result.userInfo,
       },
     });
+  }
+
+  //পুরাতন user login / নতুন user registered — দুটোতেই token দাও
+  res.cookie('refreshToken', result.refreshToken, {
+    httpOnly: true,
+    secure: config.env === 'production',
+    sameSite: 'strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+
+  return sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: result.status === 'registered'
+      ? 'Account created successfully'
+      : 'Login successful',
+    data: {
+      needsRole: false,
+      accessToken: result.accessToken,
+      user: result.user,
+    },
+  });
 });
+
 
 const refreshToken = catchAsync(async (req, res) => {
   const { refreshToken } = req.cookies;
@@ -247,7 +189,7 @@ export const authController = {
   registerUser,
   registerVerifyEmail,
   verifyEmail,
-  loginUser,
+  // loginUser,
   refreshToken,
   forgotPassword,
   resetPassword,
