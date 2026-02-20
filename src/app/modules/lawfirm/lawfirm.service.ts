@@ -2,6 +2,7 @@ import AppError from '../../error/appError';
 import { fileUploader } from '../../helper/fileUploder';
 import pagination, { IOption } from '../../helper/pagenation';
 import Job from '../job/job.model';
+import Premium from '../premium/premium.model';
 import { userRole } from '../user/user.constant';
 import User from '../user/user.model';
 import { ILawfirm } from './lawfirm.interface';
@@ -97,17 +98,16 @@ const getAllLawfirm = async (params: any, options: IOption) => {
   };
 };
 
-const getSingleLawfirm = async (id: string) => {
-  // const user = await User.findById(userId);
-  // if (!user) throw new AppError(404, 'user is not found');
+const getSingleLawfirm = async (userId: string, id: string) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(404, 'user is not found');
 
-  // const
-
-  // if (user.role !== 'admin') {
-  //   if (user.role === userRole.student) {
-  //     if(user.isSubscription)
-  //   }
-  // }
+  if (user.role !== 'admin') {
+    const subscribe = await Premium.findById(user.subscription);
+    if (subscribe?.name !== 'premium') {
+      throw new AppError(403, 'This is a premium feature');
+    }
+  }
   const result = await LawFirm.findById(id);
   return result;
 };

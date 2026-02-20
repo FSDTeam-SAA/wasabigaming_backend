@@ -34,7 +34,7 @@ router.put(
 router.get(
   '/:id',
   auth(userRole.admin, userRole.student),
-  checkStudentSubscription,
+  // checkStudentSubscription,
   lawfirmController.getSingleLawfirm,
 );
 

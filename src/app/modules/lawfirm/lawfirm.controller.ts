@@ -41,9 +41,9 @@ const getAllLawfirm = catchAsync(async (req, res) => {
   });
 });
 const getSingleLawfirm = catchAsync(async (req, res) => {
-  // const userId = req.user?.id;
+  const userId = req.user?.id;
   const { id } = req.params;
-  const result = await lawfirmService.getSingleLawfirm(id!);
+  const result = await lawfirmService.getSingleLawfirm(userId, id!);
   sendResponse(res, {
     statusCode: 200,
     success: true,
