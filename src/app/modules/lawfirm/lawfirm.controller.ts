@@ -28,7 +28,7 @@ const getAllLawfirm = catchAsync(async (req, res) => {
     'tags',
     'firmName',
     'firmType',
-    'headquarters'
+    'headquarters',
   ]);
   const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
   const result = await lawfirmService.getAllLawfirm(filters, options);
@@ -41,6 +41,7 @@ const getAllLawfirm = catchAsync(async (req, res) => {
   });
 });
 const getSingleLawfirm = catchAsync(async (req, res) => {
+  // const userId = req.user?.id;
   const { id } = req.params;
   const result = await lawfirmService.getSingleLawfirm(id!);
   sendResponse(res, {
@@ -90,20 +91,18 @@ const approvedLawfirm = catchAsync(async (req, res) => {
     data: result,
   });
 });
-const getJobLawFirmBased = catchAsync(async(req , res) => {
-
+const getJobLawFirmBased = catchAsync(async (req, res) => {
   const firmName = req.query.firmName as string;
 
   const result = await lawfirmService.getJobLawFirmBased(firmName);
 
-   sendResponse(res, {
+  sendResponse(res, {
     statusCode: 200,
     success: true,
     message: 'Get all law firm based job successfully',
     data: result,
   });
-
-})
+});
 
 export const lawfirmController = {
   createLawfirm,
@@ -112,5 +111,5 @@ export const lawfirmController = {
   uploadLawfirm,
   deleteLawfirm,
   approvedLawfirm,
-  getJobLawFirmBased
+  getJobLawFirmBased,
 };
