@@ -18,7 +18,7 @@ const LawfirmSchema = new Schema<ILawfirm>(
     firmName: { type: String, required: true },
     firmType: { type: String, required: true },
     tags: [{ type: String }],
-    headquarters: { type: String, required: true },
+    headquarters: { type: String},
 
     numberOfAttorneys: { type: Number, default: 0 },
     foundationYear: { type: Number, default: null },
@@ -49,9 +49,9 @@ const LawfirmSchema = new Schema<ILawfirm>(
     expertise: { type: String, default: '' },
     internshipOpportunities: [{ type: String }],
 
-    description: { type: String, required: true },
+    description: { type: String},
     location: { type: String, required: true },
-    practiceAreas: { type: String, required: true },
+    practiceAreas: { type: String},
 
     createdBy: { type: Types.ObjectId, ref: 'User', default: null },
 
