@@ -557,48 +557,127 @@ const getNotMyAppliedJobs = async (
   };
 };
 
+// const getMyAppliedJobs = async (
+//   userId: string,
+//   params: any,
+//   options: IOption,
+// ) => {
+//   const user = await User.findById(userId).populate('applicationJob.job');
+//   if (!user) throw new AppError(404, 'User not found');
+
+//   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
+
+//   // Map applications with job info
+//   let applications = user.applicationJob || [];
+
+//   // Optional: Filter/search
+//   if (params.searchTerm) {
+//     const term = params.searchTerm.toLowerCase();
+//     applications = applications.filter(
+//       (app) =>
+//         app.job &&
+//         typeof app.job !== 'string' &&
+//         ((app.job as any).title?.toLowerCase().includes(term) ||
+//           (app.job as any).companyName?.toLowerCase().includes(term)),
+//     );
+//   }
+
+//   const total = applications.length;
+
+//   // Pagination
+//   const paginated = applications.slice(skip, skip + limit);
+
+//   return {
+//     data: paginated.map((app) => ({
+//       jobId: (app.job as any)._id,
+//       title: (app.job as any).title,
+//       companyName: (app.job as any).companyName,
+//       location: (app.job as any).location,
+//       level: (app.job as any).level,
+//       status: app.status, // include status
+//       interviewDate: app.interviewDate,
+//       notes: app.notes,
+//       createdAt: (app.job as any).createdAt,
+//     })),
+//     meta: { total, page, limit },
+//   };
+// };
+
 const getMyAppliedJobs = async (
   userId: string,
   params: any,
   options: IOption,
 ) => {
-  const user = await User.findById(userId).populate('applicationJob.job');
+  const user = await User.findById(userId).populate({
+    path: 'applicationJob.job',
+    model: 'Job',
+    select: 'title companyName location level createdAt',
+  });
+
   if (!user) throw new AppError(404, 'User not found');
 
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
 
-  // Map applications with job info
+  // ensure array exists
   let applications = user.applicationJob || [];
 
-  // Optional: Filter/search
+  // remove broken job references (CRITICAL FIX)
+  applications = applications.filter(
+    (app: any) => app.job && typeof app.job !== 'string',
+  );
+
+  // search filter
   if (params.searchTerm) {
     const term = params.searchTerm.toLowerCase();
-    applications = applications.filter(
-      (app) =>
-        app.job &&
-        typeof app.job !== 'string' &&
-        ((app.job as any).title?.toLowerCase().includes(term) ||
-          (app.job as any).companyName?.toLowerCase().includes(term)),
-    );
+
+    applications = applications.filter((app: any) => {
+      const job = app.job as any;
+
+      return (
+        job?.title?.toLowerCase().includes(term) ||
+        job?.companyName?.toLowerCase().includes(term)
+      );
+    });
+  }
+
+  // sorting (SAFE)
+  if (sortBy) {
+    const direction = sortOrder === 'asc' ? 1 : -1;
+
+    applications.sort((a: any, b: any) => {
+      const aVal = (a.job as any)?.[sortBy];
+      const bVal = (b.job as any)?.[sortBy];
+
+      if (aVal > bVal) return direction;
+      if (aVal < bVal) return -direction;
+      return 0;
+    });
   }
 
   const total = applications.length;
 
-  // Pagination
+  // pagination
   const paginated = applications.slice(skip, skip + limit);
 
+  // final mapping (SAFE)
+  const data = paginated.map((app: any) => {
+    const job = app.job as any;
+
+    return {
+      jobId: job?._id,
+      title: job?.title,
+      companyName: job?.companyName,
+      location: job?.location,
+      level: job?.level,
+      status: app?.status,
+      interviewDate: app?.interviewDate,
+      notes: app?.notes,
+      createdAt: job?.createdAt,
+    };
+  });
+
   return {
-    data: paginated.map((app) => ({
-      jobId: (app.job as any)._id,
-      title: (app.job as any).title,
-      companyName: (app.job as any).companyName,
-      location: (app.job as any).location,
-      level: (app.job as any).level,
-      status: app.status, // include status
-      interviewDate: app.interviewDate,
-      notes: app.notes,
-      createdAt: (app.job as any).createdAt,
-    })),
+    data,
     meta: { total, page, limit },
   };
 };
