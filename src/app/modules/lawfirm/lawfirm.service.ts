@@ -105,7 +105,7 @@ const getSingleLawfirm = async (userId: string, id: string) => {
   if (user.role !== 'admin') {
     const subscribe = await Premium.findById(user.subscription);
     if (subscribe?.name !== 'premium') {
-      throw new AppError(403, 'This is a premium feature');
+      throw new AppError(403, 'Subscription plan error');
     }
   }
   const result = await LawFirm.findById(id);
