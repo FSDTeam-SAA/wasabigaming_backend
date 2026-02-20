@@ -2,6 +2,7 @@ import AppError from '../../error/appError';
 import { fileUploader } from '../../helper/fileUploder';
 import pagination, { IOption } from '../../helper/pagenation';
 import Job from '../job/job.model';
+import { userRole } from '../user/user.constant';
 import User from '../user/user.model';
 import { ILawfirm } from './lawfirm.interface';
 import LawFirm from './lawfirm.model';
@@ -15,11 +16,13 @@ const createLawfirm = async (
   if (!user) {
     throw new AppError(404, 'User not found');
   }
- const logoFile = files?.logo?.[0];
- const coverFile = files?.coverImage?.[0];
+  const logoFile = files?.logo?.[0];
+  const coverFile = files?.coverImage?.[0];
 
-  if (logoFile) payload.logo = (await fileUploader.uploadToCloudinary(logoFile)).url;
-  if (coverFile) payload.coverImage = (await fileUploader.uploadToCloudinary(coverFile)).url;
+  if (logoFile)
+    payload.logo = (await fileUploader.uploadToCloudinary(logoFile)).url;
+  if (coverFile)
+    payload.coverImage = (await fileUploader.uploadToCloudinary(coverFile)).url;
   const result = await LawFirm.create({ ...payload, createdBy: user._id });
   return result;
 };
@@ -39,7 +42,7 @@ const getAllLawfirm = async (params: any, options: IOption) => {
     'tags',
     'firmName',
     'firmType',
-    'headquarters'
+    'headquarters',
   ];
 
   if (searchTerm) {
@@ -95,6 +98,16 @@ const getAllLawfirm = async (params: any, options: IOption) => {
 };
 
 const getSingleLawfirm = async (id: string) => {
+  // const user = await User.findById(userId);
+  // if (!user) throw new AppError(404, 'user is not found');
+
+  // const
+
+  // if (user.role !== 'admin') {
+  //   if (user.role === userRole.student) {
+  //     if(user.isSubscription)
+  //   }
+  // }
   const result = await LawFirm.findById(id);
   return result;
 };
@@ -165,14 +178,13 @@ const approvedLawfirm = async (id: string) => {
   return result;
 };
 
-const getJobLawFirmBased = async(firmName:string) => {
-
-  const job = await Job.find({companyName: firmName});
-  if(!job){
-    throw new AppError(404, "Job not found");
+const getJobLawFirmBased = async (firmName: string) => {
+  const job = await Job.find({ companyName: firmName });
+  if (!job) {
+    throw new AppError(404, 'Job not found');
   }
   return job;
-}
+};
 
 export const lawfirmService = {
   createLawfirm,
@@ -181,5 +193,5 @@ export const lawfirmService = {
   uploadLawfirm,
   deleteLawfirm,
   approvedLawfirm,
-  getJobLawFirmBased
+  getJobLawFirmBased,
 };
