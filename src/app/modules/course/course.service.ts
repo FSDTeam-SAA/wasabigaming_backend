@@ -148,7 +148,7 @@ const uploadCourse = async (
   const course = await Course.findById(courseId);
   if (!course) throw new AppError(404, 'Course not found');
 
-  // ✅ Upload new videos (append)
+  // Upload new videos (append)
   if (files?.courseVideo?.length) {
     const uploadedVideos = await Promise.all(
       files.courseVideo.map(async (file, index) => {
@@ -164,7 +164,7 @@ const uploadCourse = async (
     course.courseVideo = [...(course.courseVideo || []), ...uploadedVideos];
   }
 
-  // ✅ Replace thumbnail if provided
+  // Replace thumbnail if provided
   if (files?.thumbnail?.[0]) {
     const uploadedThumbnail = await fileUploader.uploadToCloudinary(
       files.thumbnail[0],
@@ -172,12 +172,63 @@ const uploadCourse = async (
     course.thumbnail = uploadedThumbnail.url;
   }
 
-  // ✅ Update other fields
+  // Update other fields
   Object.assign(course, payload);
 
   await course.save();
   return course;
 };
+
+// const getAllCourse = async (params: any, options: IOption) => {
+//   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
+//   const { searchTerm, year, ...filterData } = params;
+
+//   const andCondition: any[] = [];
+//   const userSearchableFields = [
+//     'name',
+//     'description',
+//     'gradeLevel',
+//     'category',
+//   ];
+
+//   if (searchTerm) {
+//     andCondition.push({
+//       $or: userSearchableFields.map((field) => ({
+//         [field]: { $regex: searchTerm, $options: 'i' },
+//       })),
+//     });
+//   }
+
+//   if (Object.keys(filterData).length) {
+//     andCondition.push({
+//       $and: Object.entries(filterData).map(([field, value]) => ({
+//         [field]: value,
+//       })),
+//     });
+//   }
+
+//   if (year) {
+//     const startDate = new Date(`${year}-01-01T00:00:00.000Z`);
+//     const endDate = new Date(`${year}-12-31T23:59:59.999Z`);
+//     andCondition.push({ createdAt: { $gte: startDate, $lte: endDate } });
+//   }
+
+//   const whereCondition = andCondition.length ? { $and: andCondition } : {};
+
+//   const result = await Course.find(whereCondition)
+//     .skip(skip)
+//     .limit(limit)
+//     .sort({ [sortBy]: sortOrder } as any)
+//     .populate({
+//       path: 'courseVideo.quiz',
+//       model: 'Quizzes',
+//     })
+//     .populate('reviews');
+
+//   const total = await Course.countDocuments(whereCondition);
+
+//   return { data: result, meta: { total, page, limit } };
+// };
 
 const getAllCourse = async (params: any, options: IOption) => {
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
@@ -215,14 +266,37 @@ const getAllCourse = async (params: any, options: IOption) => {
 
   const whereCondition = andCondition.length ? { $and: andCondition } : {};
 
-  const result = await Course.find(whereCondition)
-    .skip(skip)
-    .limit(limit)
-    .sort({ [sortBy]: sortOrder } as any)
-    .populate({
-      path: 'courseVideo.quiz',
-      model: 'Quizzes',
-    });
+  const sortDirection = sortOrder === 'asc' ? 1 : -1;
+
+  const result = await Course.aggregate([
+    { $match: whereCondition },
+
+    {
+      $lookup: {
+        from: 'reviews',
+        localField: '_id',
+        foreignField: 'courseId',
+        as: 'reviewData',
+      },
+    },
+
+    {
+      $addFields: {
+        averageRating: {
+          $cond: [
+            { $eq: [{ $size: '$reviewData' }, 0] },
+            0,
+            { $avg: '$reviewData.rating' },
+          ],
+        },
+        totalReviews: { $size: '$reviewData' },
+      },
+    },
+
+    { $sort: { [sortBy || 'createdAt']: sortDirection } },
+    { $skip: skip },
+    { $limit: limit },
+  ]);
 
   const total = await Course.countDocuments(whereCondition);
 
@@ -480,7 +554,6 @@ const couseHeader = async (userId: string) => {
 };
 
 const dashboardOverview = async () => {
- 
   const totalStudents = await User.countDocuments({
     role: 'student',
     status: 'active',
@@ -497,8 +570,6 @@ const dashboardOverview = async () => {
   };
 };
 
-
-
 export const courseService = {
   createCourse,
   uploadCourse,
@@ -511,5 +582,5 @@ export const courseService = {
   couseEnroleuser,
   getUserSingleCourse,
   couseHeader,
-  dashboardOverview
+  dashboardOverview,
 };
