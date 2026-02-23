@@ -12,6 +12,13 @@ router.post(
   jobController.createJob,
 );
 
+router.post(
+  '/manual-job',
+  auth(userRole.admin),
+  fileUploader.upload.none(),
+  jobController.manualJob,
+);
+
 router.get('/locations', jobController.getUniqueLocations);
 router.get('/applied-job', auth(userRole.student), jobController.appliedJob);
 router.post(
