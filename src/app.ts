@@ -11,17 +11,19 @@ const app = express();
 
 // app.use(cors({ origin: '*', credentials: true }));
 // app.use(cors({ origin: ['http://127.0.0.1:5500', 'http://localhost:3000','http://localhost:3001'], credentials: true }));
-app.use(cors({ 
-  origin: [
-    'http://127.0.0.1:5500', 
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://localhost:5173', 
-    'https://aspiringlegalnetwork.co.uk',
-    'https://admin.aspiringlegalnetwork.co.uk' 
-  ], 
-  credentials: true 
-}));
+app.use(
+  cors({
+    origin: [
+      'http://127.0.0.1:5500',
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:5173',
+      'https://www.aspiringlegalnetwork.co.uk',
+      'https://admin.aspiringlegalnetwork.co.uk',
+    ],
+    credentials: true,
+  }),
+);
 app.use(cookieParser());
 app.post(
   '/webhook',
