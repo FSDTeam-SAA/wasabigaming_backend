@@ -26,6 +26,17 @@ const createJob = catchAsync(async (req, res) => {
   });
 });
 
+const manualJob = catchAsync(async (req, res) => {
+  const userId = req.user.id;
+  const result = await jobService.manualJob(userId, req.body);
+  sendResponse(res, {
+    statusCode: 201,
+    success: true,
+    message: 'Job created successfully',
+    data: result,
+  });
+});
+
 const getAllJobs = catchAsync(async (req, res) => {
   const filters = pick(req.query, [
     'searchTerm',
@@ -258,4 +269,5 @@ export const jobController = {
   getNotMyAppliedJobs,
   updateApplicationStatus,
   getUniqueLocations,
+  manualJob,
 };

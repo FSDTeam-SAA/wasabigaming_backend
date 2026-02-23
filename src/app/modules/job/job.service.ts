@@ -143,10 +143,10 @@ const createJob = async (userId: string, job_title: string) => {
           firmName: data.employer,
         });
 
-        // ✅ robust date parsing
+        // robust date parsing
         const applicationDeadline = extractClosingDate(data.closing_text);
 
-        // ✅ UPSERT — prevents duplicates + race condition
+        // UPSERT — prevents duplicates + race condition
         const job = await Job.findOneAndUpdate(
           { jobId: data.vacancy_id },
           {
@@ -174,7 +174,7 @@ const createJob = async (userId: string, job_title: string) => {
           },
         );
 
-        // ✅ prevent duplicate push into lawfirm.jobs
+        // prevent duplicate push into lawfirm.jobs
         if (lawfirm && job) {
           const alreadyExists = lawfirm.jobs?.some(
             (id: any) => id.toString() === job._id.toString(),
@@ -194,8 +194,22 @@ const createJob = async (userId: string, job_title: string) => {
     }),
   );
 
-  // ✅ remove null safely
+  // remove null safely
   return results.filter(Boolean);
+};
+
+const manualJob = async (userId: string, payload: IJob) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(404, 'User not found');
+
+  payload.jobId = `MAN${Date.now()}`;
+
+  const result = await Job.create({
+    ...payload,
+    createBy: userId,
+  });
+
+  return result;
 };
 
 const getAllJobs = async (params: any, options: IOption) => {
@@ -465,8 +479,6 @@ const appliedJob = async (userId: string, params: any, options: IOption) => {
 //   };
 // };
 
-
-
 const getNotMyAppliedJobs = async (
   userId: string,
   params: any,
@@ -498,7 +510,7 @@ const getNotMyAppliedJobs = async (
   // search term
   if (searchTerm) {
     andCondition.push({
-      $or: searchableFields.map(field => ({
+      $or: searchableFields.map((field) => ({
         [field]: { $regex: searchTerm, $options: 'i' },
       })),
     });
@@ -533,8 +545,7 @@ const getNotMyAppliedJobs = async (
     });
   }
 
-  const whereCondition =
-    andCondition.length > 0 ? { $and: andCondition } : {};
+  const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
 
   // MAIN FIX HERE
   const finalQuery = {
@@ -843,4 +854,5 @@ export const jobService = {
   getMyAppliedJobs,
   updateApplicationStatus,
   getUniqueLocations,
+  manualJob,
 };
