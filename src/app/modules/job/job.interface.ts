@@ -6,7 +6,7 @@ export interface IJob {
   location: string;
   companyName: string;
   companyType: string;
-  postedBy: string; 
+  postedBy: string;
   level?: string;
   salaryRange: string;
   startDate: string;
@@ -22,4 +22,6 @@ export interface IJob {
   url: string;
   companyId?: Types.ObjectId;
   applicants?: Types.ObjectId[];
+  // applicationJob?: 'pending' | 'accepted' | 'rejected';
+  applicationUserId?: Types.ObjectId;
 }

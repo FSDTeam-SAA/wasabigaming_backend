@@ -12,13 +12,6 @@ router.post(
   jobController.createJob,
 );
 
-router.post(
-  '/manual-job',
-  auth(userRole.admin),
-  fileUploader.upload.none(),
-  jobController.manualJob,
-);
-
 router.get('/locations', jobController.getUniqueLocations);
 router.get('/applied-job', auth(userRole.student), jobController.appliedJob);
 router.post(
@@ -29,6 +22,19 @@ router.post(
 );
 
 //================================update job==============================
+
+router.post(
+  '/manual-job',
+  auth(userRole.admin, userRole.student),
+  fileUploader.upload.none(),
+  jobController.manualJob,
+);
+
+// router.get(
+//   '/manual-job-students',
+//   // auth(userRole.admin),
+//   jobController.getStudentAllJobs,
+// );
 
 router.get(
   '/my-applied-job',
@@ -50,7 +56,17 @@ router.put(
   auth(userRole.student),
   jobController.updateApplicationStatus,
 );
+
+
+// router.put(
+//   '/status/:jobId',
+//   auth(userRole.admin),
+//   jobController.adminApplicationJobStatus,
+// );
+
+
 router.get('/recommended-jobs', auth(userRole.student, userRole.admin), jobController.getRecommendedJobs);
+
 //=========================================================================
 
 router.post('/', auth(userRole.admin), jobController.createManualJob);
