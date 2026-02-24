@@ -1,6 +1,7 @@
 import pick from '../../helper/pick';
 import catchAsync from '../../utils/catchAsycn';
 import sendResponse from '../../utils/sendResponse';
+import { cvbuilderService } from '../cvbuilder/cvbuilder.service';
 import { jobService } from './job.service';
 
 const createManualJob = catchAsync(async (req, res) => {
@@ -254,6 +255,17 @@ const getUniqueLocations = catchAsync(async (req, res) => {
   });
 });
 
+const getRecommendedJobs = catchAsync(async (req, res) => {
+  const userId = req.user?.id;
+  const result = await jobService.getRecommendedJobs(userId);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Recommended jobs retrieved successfully',
+    data: result,
+  });
+});
+
 export const jobController = {
   createJob,
   getAllJobs,
@@ -270,4 +282,5 @@ export const jobController = {
   updateApplicationStatus,
   getUniqueLocations,
   manualJob,
+  getRecommendedJobs
 };

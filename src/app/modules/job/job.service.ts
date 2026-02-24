@@ -8,6 +8,7 @@ import User from '../user/user.model';
 import { IJob } from './job.interface';
 import Job from './job.model';
 import dayjs from 'dayjs';
+import CVbuilder from '../cvbuilder/cvbuilder.model';
 
 // export const extractClosingDate = (text?: string): Date | null => {
 //   if (!text) return null;
@@ -839,6 +840,37 @@ const getUniqueLocations = async () => {
   return locationList;
 };
 
+const getRecommendedJobs = async (userId: string) => {
+  // Get the user's latest CV
+  const cv = await CVbuilder.findOne({ createBy: userId }).sort({ createdAt: -1 });
+  // console.log('User CV:', cv, userId);
+
+  if (!cv) {
+    throw new AppError(404, 'No CV found for this user');
+  }
+
+  // Extract all jobTitles from legalWorkExperience
+  const jobTitles = cv.legalWorkExperience
+    ?.map((exp) => exp.jobTitle)
+    .filter(Boolean);
+
+  if (!jobTitles || jobTitles.length === 0) {
+    throw new AppError(404, 'No legal work experience found in your CV');
+  }
+  // console.log('Extracted Job Titles from CV:', jobTitles);
+
+  // Match job.level with legalWorkExperience.jobTitle (case-insensitive)
+  const recommendedJobs = await Job.find({
+    level: {
+      $in: jobTitles.map((title) => new RegExp(`^${title}$`, 'i')),
+    },
+    status: 'active',
+    jobStatus: 'Open',
+  });
+
+  return recommendedJobs;
+};
+
 export const jobService = {
   createJob,
   getAllJobs,
@@ -855,4 +887,5 @@ export const jobService = {
   updateApplicationStatus,
   getUniqueLocations,
   manualJob,
+  getRecommendedJobs
 };
