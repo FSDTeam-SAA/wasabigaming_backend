@@ -207,6 +207,7 @@ const manualJob = async (userId: string, payload: IJob) => {
     payload.status = 'inactive';
   } else if (user.role === userRole.admin) {
     payload.status = 'active';
+    payload.jobStatus = 'Open';
   }
   payload.jobId = `MAN${Date.now()}`;
 
