@@ -40,6 +40,7 @@ import path from 'path';
 import { communityRoutes } from '../modules/joinCommunity/joinCommunity.routes';
 import { dynamicWebsiteRoutes } from '../modules/dynamicWebsite/dynamicWebsite.route';
 import { reviewRoutes } from '../modules/review/review.routes';
+import { cvRoutes } from '../modules/cv/cv.routes';
 
 const router = Router();
 
@@ -187,6 +188,10 @@ const moduleRoutes = [
   {
     path: '/review',
     route: reviewRoutes,
+  },
+  {
+    path: '/cv',
+    route: cvRoutes,
   },
 ];
 
