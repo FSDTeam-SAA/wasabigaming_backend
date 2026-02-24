@@ -287,8 +287,7 @@ const getStudentAllJobs = async (
     });
   }
 
-  const whereCondition =
-    andCondition.length > 0 ? { $and: andCondition } : {};
+  const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
 
   // 🔹 Find jobs with role filter
   const jobs = await Job.find(whereCondition)
@@ -950,7 +949,9 @@ const getUniqueLocations = async () => {
 
 const getRecommendedJobs = async (userId: string) => {
   // Get the user's latest CV
-  const cv = await CVbuilder.findOne({ createBy: userId }).sort({ createdAt: -1 });
+  const cv = await CVbuilder.findOne({ createBy: userId }).sort({
+    createdAt: -1,
+  });
   // console.log('User CV:', cv, userId);
 
   if (!cv) {
@@ -999,6 +1000,5 @@ export const jobService = {
   // adminApplicationJobStatus,
   //getStudentAllJobs,
 
-  getRecommendedJobs
->
+  getRecommendedJobs,
 };

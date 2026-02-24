@@ -1,5 +1,7 @@
+import { Types } from 'mongoose';
+
 export interface ICv {
-  applicationId: string;
-  studentId: string;
+  applicationId: Types.ObjectId;
+  studentId: Types.ObjectId;
   cvUrl: string;
 }
