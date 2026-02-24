@@ -57,11 +57,15 @@ router.put(
   jobController.updateApplicationStatus,
 );
 
+
 // router.put(
 //   '/status/:jobId',
 //   auth(userRole.admin),
 //   jobController.adminApplicationJobStatus,
 // );
+
+
+router.get('/recommended-jobs', auth(userRole.student, userRole.admin), jobController.getRecommendedJobs);
 
 //=========================================================================
 
