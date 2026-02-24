@@ -304,14 +304,57 @@ const getUniqueLocations = catchAsync(async (req, res) => {
   });
 });
 
+// const getRecommendedJobs = catchAsync(async (req, res) => {
+//   const userId = req.user?.id;
+//   const filters = pick(req.query, [
+//     'searchTerm',
+//     'jobStatus',
+//     'additionalInfo',
+//     'responsibilities',
+//     'description',
+//     'jobStatus',
+//     'salaryRange',
+//     'level',
+//     'postedBy',
+//     'companyType',
+//     'companyName',
+//     'location',
+//     'title',
+//     'status',
+//   ]);
+//   const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+//   const result = await jobService.getRecommendedJobs(userId, filters, options);
+//   sendResponse(res, {
+//     statusCode: 200,
+//     success: true,
+//     message: 'Recommended jobs retrieved successfully',
+//     data: result,
+//   });
+// });
+
 const getRecommendedJobs = catchAsync(async (req, res) => {
   const userId = req.user?.id;
-  const result = await jobService.getRecommendedJobs(userId);
+  const filters = pick(req.query, [
+    'searchTerm',
+    'title',
+    'location',
+    'companyName',
+    'companyType',
+    'level',
+    'salaryRange',
+    'postedBy',
+    'jobStatus',
+    'status',
+    'year',
+  ]);
+  const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+  const result = await jobService.getRecommendedJobs(userId, filters, options);
   sendResponse(res, {
     statusCode: 200,
     success: true,
     message: 'Recommended jobs retrieved successfully',
-    data: result,
+    meta: result.meta,
+    data: result.data,
   });
 });
 

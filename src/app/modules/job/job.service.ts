@@ -947,37 +947,106 @@ const getUniqueLocations = async () => {
   return locationList;
 };
 
-const getRecommendedJobs = async (userId: string) => {
+const getRecommendedJobs = async (
+  userId: string,
+  params: any,
+  options: IOption,
+) => {
+  const userObjectId = new Types.ObjectId(userId);
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(404, 'User not found');
+
   // Get the user's latest CV
   const cv = await CVbuilder.findOne({ createBy: userId }).sort({
     createdAt: -1,
   });
   // console.log('User CV:', cv, userId);
 
-  if (!cv) {
-    throw new AppError(404, 'No CV found for this user');
-  }
+//   if (!cv) {
+//     throw new AppError(404, 'No CV found for this user');
+//   }
 
   // Extract all jobTitles from legalWorkExperience
-  const jobTitles = cv.legalWorkExperience
+  const jobTitles = cv?.legalWorkExperience
     ?.map((exp) => exp.jobTitle)
     .filter(Boolean);
 
   if (!jobTitles || jobTitles.length === 0) {
     throw new AppError(404, 'No legal work experience found in your CV');
   }
-  // console.log('Extracted Job Titles from CV:', jobTitles);
 
-  // Match job.level with legalWorkExperience.jobTitle (case-insensitive)
-  const recommendedJobs = await Job.find({
+  const { page, limit, skip, sortBy, sortOrder } = pagination(options);
+  const { searchTerm, year, ...filterData } = params;
+  const andCondition: any[] = [];
+
+  const searchableFields = [
+    'additionalInfo',
+    'description',
+    'salaryRange',
+    'level',
+    'postedBy',
+    'companyName',
+    'location',
+    'title',
+  ];
+
+  // Search term
+  if (searchTerm) {
+    andCondition.push({
+      $or: searchableFields.map((field) => ({
+        [field]: { $regex: searchTerm, $options: 'i' },
+      })),
+    });
+  }
+
+  // Exact / partial filters
+  if (Object.keys(filterData).length) {
+    andCondition.push({
+      $and: Object.entries(filterData).map(([field, value]) => {
+        const exactFields = ['status', 'jobStatus', 'companyType'];
+        if (exactFields.includes(field)) {
+          return { [field]: value };
+        }
+        return { [field]: { $regex: value, $options: 'i' } };
+      }),
+    });
+  }
+
+  // Year filter
+  if (year) {
+    const startDate = new Date(`${year}-01-01T00:00:00.000Z`);
+    const endDate = new Date(`${year}-12-31T23:59:59.999Z`);
+    andCondition.push({
+      createdAt: { $gte: startDate, $lte: endDate },
+    });
+  }
+
+  const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
+
+  // ✅ Core recommendation filter merged with search/filter conditions
+  const finalQuery = {
+    ...whereCondition,
+    applicants: { $nin: [userObjectId] },
     level: {
       $in: jobTitles.map((title) => new RegExp(`^${title}$`, 'i')),
     },
     status: 'active',
     jobStatus: 'Open',
-  });
+  };
 
-  return recommendedJobs;
+  const result = await Job.find(finalQuery)
+    .skip(skip)
+    .limit(limit)
+    .sort({
+      [sortBy || 'createdAt']: sortOrder === 'asc' ? 1 : -1,
+    });
+
+  const total = await Job.countDocuments(finalQuery);
+
+  return {
+    data: result,
+    meta: { total, page, limit },
+  };
 };
 
 export const jobService = {
