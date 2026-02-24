@@ -12,7 +12,7 @@ const jobSchema = new Schema<IJob>(
     salaryRange: { type: String },
     startDate: { type: String },
     applicationDeadline: { type: String },
-    jobId: { type: Schema.Types.Mixed, unique:true},
+    jobId: { type: Schema.Types.Mixed, unique: true },
     jobStatus: { type: String, enum: ['Open', 'Closed'] },
     description: { type: String },
     additionalInfo: { type: String },
@@ -22,6 +22,11 @@ const jobSchema = new Schema<IJob>(
     url: { type: String },
     companyId: { type: Types.ObjectId, ref: 'Company' },
     applicants: [{ type: Types.ObjectId, ref: 'User' }],
+    // applicationJob: {
+    //   type: String,
+    //   enum: ['pending', 'accepted', 'rejected'],
+    //   default: 'accepted',
+    // },
   },
   { timestamps: true },
 );
