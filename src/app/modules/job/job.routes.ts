@@ -50,7 +50,7 @@ router.put(
   auth(userRole.student),
   jobController.updateApplicationStatus,
 );
-
+router.get('/recommended-jobs', auth(userRole.student, userRole.admin), jobController.getRecommendedJobs);
 //=========================================================================
 
 router.post('/', auth(userRole.admin), jobController.createManualJob);
