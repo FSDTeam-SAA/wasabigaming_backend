@@ -203,6 +203,11 @@ const manualJob = async (userId: string, payload: IJob) => {
   const user = await User.findById(userId);
   if (!user) throw new AppError(404, 'User not found');
 
+  if (user.role === userRole.student) {
+    payload.status = 'inactive';
+  } else if (user.role === userRole.admin) {
+    payload.status = 'active';
+  }
   payload.jobId = `MAN${Date.now()}`;
 
   const result = await Job.create({
@@ -211,6 +216,108 @@ const manualJob = async (userId: string, payload: IJob) => {
   });
 
   return result;
+};
+
+// const adminApplicationJobStatus = async (jobId: string, status: string) => {
+//   const job = await Job.findById(jobId);
+//   if (!job) throw new AppError(404, 'Job not found');
+
+//   if (job.status === 'active' || job.status === 'inactive') {
+//     throw new AppError(
+//       400,
+//       `Cannot update application with current status: ${job.status}`,
+//     );
+//   }
+
+//   job.status = status;
+//   await job.save();
+//   return job;
+// };
+
+const getStudentAllJobs = async (
+  params: any,
+  options: IOption,
+  userRole: 'student' | 'admin',
+) => {
+  const { page, limit, skip, sortBy, sortOrder } = pagination(options);
+  const { searchTerm, year, ...filterData } = params;
+
+  const andCondition: any[] = [];
+  const userSearchableFields = [
+    'status',
+    'additionalInfo',
+    'responsibilities',
+    'description',
+    'jobStatus',
+    'salaryRange',
+    'level',
+    'postedBy',
+    'companyType',
+    'companyName',
+    'location',
+    'title',
+    'applicationJob',
+  ];
+
+  // 🔍 Search
+  if (searchTerm) {
+    andCondition.push({
+      $or: userSearchableFields.map((field) => ({
+        [field]: { $regex: searchTerm, $options: 'i' },
+      })),
+    });
+  }
+
+  // 🎯 Filters
+  if (Object.keys(filterData).length) {
+    andCondition.push({
+      $and: Object.entries(filterData).map(([field, value]) => ({
+        [field]: value,
+      })),
+    });
+  }
+
+  // 📅 Year filter
+  if (year) {
+    const startDate = new Date(`${year}-01-01T00:00:00.000Z`);
+    const endDate = new Date(`${year}-12-31T23:59:59.999Z`);
+
+    andCondition.push({
+      createdAt: { $gte: startDate, $lte: endDate },
+    });
+  }
+
+  const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
+
+  // 🔹 Find jobs with role filter
+  const jobs = await Job.find(whereCondition)
+    .populate({
+      path: 'createBy',
+      match: { role: userRole }, // role filter
+      select: '-password',
+    })
+    .skip(skip)
+    .limit(limit)
+    .sort({ [sortBy || 'createdAt']: sortOrder || -1 } as any);
+
+  // 🔹 Remove jobs not matching role
+  const filteredJobs = jobs.filter((job) => job.createBy);
+
+  if (filteredJobs.length === 0) {
+    throw new AppError(404, 'Jobs not found for this role');
+  }
+
+  // 🔹 Total after role filter
+  const total = filteredJobs.length;
+
+  return {
+    data: filteredJobs,
+    meta: {
+      total,
+      page,
+      limit,
+    },
+  };
 };
 
 const getAllJobs = async (params: any, options: IOption) => {
@@ -850,10 +957,14 @@ const getRecommendedJobs = async (
   if (!user) throw new AppError(404, 'User not found');
 
   // Get the user's latest CV
-  const cv = await CVbuilder.findOne({ createBy: userId }).sort({ createdAt: -1 });
-  // if (!cv) {
-  //   throw new AppError(404, 'No CV found for this user');
-  // }
+  const cv = await CVbuilder.findOne({ createBy: userId }).sort({
+    createdAt: -1,
+  });
+  // console.log('User CV:', cv, userId);
+
+//   if (!cv) {
+//     throw new AppError(404, 'No CV found for this user');
+//   }
 
   // Extract all jobTitles from legalWorkExperience
   const jobTitles = cv?.legalWorkExperience
@@ -954,5 +1065,9 @@ export const jobService = {
   updateApplicationStatus,
   getUniqueLocations,
   manualJob,
-  getRecommendedJobs
+
+  // adminApplicationJobStatus,
+  //getStudentAllJobs,
+
+  getRecommendedJobs,
 };

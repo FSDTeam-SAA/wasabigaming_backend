@@ -38,6 +38,55 @@ const manualJob = catchAsync(async (req, res) => {
   });
 });
 
+// const getStudentAllJobs = catchAsync(async (req, res) => {
+//   const filters = pick(req.query, [
+//     'searchTerm',
+//     'status',
+//     'additionalInfo',
+//     'responsibilities',
+//     'description',
+//     'jobStatus',
+//     'salaryRange',
+//     'level',
+//     'postedBy',
+//     'companyType',
+//     'companyName',
+//     'location',
+//     'title',
+//     'applicationJob',
+//   ]);
+//   const roleToFilter = ((filters.role as string) || 'student') as
+//     | 'student'
+//     | 'admin';
+//   delete filters.role;
+
+//   const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+//   const result = await jobService.getStudentAllJobs(
+//     filters,
+//     options,
+//     roleToFilter,
+//   );
+//   sendResponse(res, {
+//     statusCode: 200,
+//     success: true,
+//     message: 'Jobs retrieved successfully',
+//     meta: result.meta,
+//     data: result.data,
+//   });
+// });
+
+// const adminApplicationJobStatus = catchAsync(async (req, res) => {
+//   const { jobId } = req.params;
+//   const { status } = req.body;
+//   const result = await jobService.adminApplicationJobStatus(jobId!, status);
+//   sendResponse(res, {
+//     statusCode: 200,
+//     success: true,
+//     message: 'Job status updated successfully',
+//     data: result,
+//   });
+// });
+
 const getAllJobs = catchAsync(async (req, res) => {
   const filters = pick(req.query, [
     'searchTerm',
@@ -111,7 +160,7 @@ const getMyAppliedJobs = catchAsync(async (req, res) => {
     'companyName',
     'location',
     'title',
-    'status'
+    'status',
   ]);
   const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
   const result = await jobService.getMyAppliedJobs(userId, filters, options);
@@ -325,5 +374,10 @@ export const jobController = {
   updateApplicationStatus,
   getUniqueLocations,
   manualJob,
+
+  // getStudentAllJobs,
+  // adminApplicationJobStatus,
+
   getRecommendedJobs
+
 };
