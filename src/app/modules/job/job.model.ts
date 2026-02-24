@@ -13,7 +13,7 @@ const jobSchema = new Schema<IJob>(
     startDate: { type: String },
     applicationDeadline: { type: String },
     jobId: { type: Schema.Types.Mixed, unique: true },
-    jobStatus: { type: String, enum: ['Open', 'Closed'] },
+    jobStatus: { type: String, enum: ['Open', 'Closed'], default: 'Open' },
     description: { type: String },
     additionalInfo: { type: String },
     status: { type: String, enum: ['active', 'inactive'], default: 'inactive' },
