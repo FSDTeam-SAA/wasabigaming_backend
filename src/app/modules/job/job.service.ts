@@ -204,7 +204,8 @@ const manualJob = async (userId: string, payload: IJob) => {
   if (!user) throw new AppError(404, 'User not found');
 
   if (user.role === userRole.student) {
-    payload.status = 'inactive';
+    payload.status = 'active';
+    payload.jobStatus = 'Open';
   } else if (user.role === userRole.admin) {
     payload.status = 'active';
     payload.jobStatus = 'Open';
