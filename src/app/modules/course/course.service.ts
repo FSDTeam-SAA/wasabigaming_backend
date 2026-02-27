@@ -313,11 +313,6 @@ const getUserSingleCourse = async (userId: string, courseId: string) => {
       path: 'courseVideo.quiz',
       model: 'Quizzes',
     })
-    .populate(
-      'createdBy',
-      'firstName lastName schoolName schoolType email role profileImage phone',
-    )
-    .populate('reviews');
   if (!course) throw new AppError(400, 'Course not found');
 
   // fetch all attempts of this user for this course
