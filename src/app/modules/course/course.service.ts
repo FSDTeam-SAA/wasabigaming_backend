@@ -308,10 +308,16 @@ const getUserSingleCourse = async (userId: string, courseId: string) => {
   if (!user) throw new AppError(400, 'User not found');
 
   // validate course
-  const course = await Course.findById(courseId).populate({
-    path: 'courseVideo.quiz',
-    model: 'Quizzes',
-  });
+  const course = await Course.findById(courseId)
+    .populate({
+      path: 'courseVideo.quiz',
+      model: 'Quizzes',
+    })
+    .populate(
+      'createdBy',
+      'firstName lastName schoolName schoolType email role profileImage phone',
+    )
+    .populate('reviews');
   if (!course) throw new AppError(400, 'Course not found');
 
   // fetch all attempts of this user for this course
@@ -336,10 +342,23 @@ const getUserSingleCourse = async (userId: string, courseId: string) => {
   return courseObj;
 };
 const getSingleCourse = async (id: string) => {
-  const result = await Course.findById(id).populate({
-    path: 'courseVideo.quiz',
-    model: 'Quizzes',
-  });
+  const result = await Course.findById(id)
+    .populate({
+      path: 'courseVideo.quiz',
+      model: 'Quizzes',
+    })
+    .populate(
+      'createdBy',
+      'firstName lastName schoolName schoolType email role profileImage phone',
+    )
+    .populate({
+      path: 'reviews',
+      populate: {
+        path: 'userId',
+        model: 'User',
+        select: 'firstName lastName email profileImage',
+      },
+    });
   if (!result) throw new AppError(404, 'Course not found');
   return result;
 };
