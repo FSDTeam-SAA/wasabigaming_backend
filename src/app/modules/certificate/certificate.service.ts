@@ -10,7 +10,6 @@ import Certificate from './certificate.model';
 import certificateTemplate from '../../utils/certificateTemplateInput';
 import { uploadPdfBufferToS3 } from '../../helper/s3UploadPdf.ts';
 
-
 const launchBrowser = async () => {
   if (process.env.NODE_ENV === 'production') {
     return puppeteerCore.launch({
@@ -78,7 +77,7 @@ const generateOrGetCertificate = async (userId: string, courseId: string) => {
   const issueDate = new Date().toISOString().split('T')[0] || '';
 
   const html = certificateTemplate({
-    companyName: (course as any).schoolName || 'COMPANY NAME',
+    companyName: (course as any).schoolName || 'Aspiring Legal Network',
     studentName: fullName,
     courseName: course.name,
     certificateId,
@@ -116,6 +115,3 @@ export const certificateService = {
   generateOrGetCertificate,
   isCourseCompletedByUser,
 };
-
-
-
