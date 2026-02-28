@@ -9,6 +9,8 @@ import config from '../../config';
 import Payment from '../payment/payment.model';
 import { CourseQuizAttempt } from '../courseQuizAttempt/courseQuizAttempt.model';
 import mongoose from 'mongoose';
+import Certificate from '../certificate/certificate.model';
+import VideoProgress from '../videoProgress/videoProgress.model';
 
 const stripe = new Stripe(config.stripe.secretKey!);
 
@@ -308,11 +310,10 @@ const getUserSingleCourse = async (userId: string, courseId: string) => {
   if (!user) throw new AppError(400, 'User not found');
 
   // validate course
-  const course = await Course.findById(courseId)
-    .populate({
-      path: 'courseVideo.quiz',
-      model: 'Quizzes',
-    })
+  const course = await Course.findById(courseId).populate({
+    path: 'courseVideo.quiz',
+    model: 'Quizzes',
+  });
   if (!course) throw new AppError(400, 'Course not found');
 
   // fetch all attempts of this user for this course
@@ -548,22 +549,27 @@ const couseHeader = async (userId: string) => {
     enrolledStudents: userObjectId,
   });
 
+  const totalCertificate = await Certificate.countDocuments({
+    user: userObjectId,
+  });
+
   const purchasedCourseCount = await Payment.countDocuments({
     user: userObjectId,
     status: 'completed',
     course: { $ne: null },
   });
 
-  const completedVideoCount = 0;
-  // const completedVideoCount = await VideoProgress.countDocuments({
-  //   user: userObjectId,
-  //   isCompleted: true,
-  // });
+  // const completedVideoCount = 0;
+  const completedVideoCount = await VideoProgress.countDocuments({
+    user: userObjectId,
+    isCompleted: true,
+  });
 
   return {
     enrolledCourseCount,
     purchasedCourseCount,
     completedVideoCount,
+    totalCertificate,
   };
 };
 
@@ -583,7 +589,6 @@ const dashboardOverview = async () => {
     totalFreeCourses,
   };
 };
-
 
 export const courseService = {
   createCourse,
