@@ -21,6 +21,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.990.0",
     "@aws-sdk/lib-storage": "^3.990.0",
+    "@sparticuz/chromium": "^143.0.4",
     "@types/streamifier": "^0.1.2",
     "axios": "^1.13.2",
     "bcryptjs": "^3.0.2",
@@ -38,6 +39,8 @@
     "multer": "^2.0.2",
     "node-cron": "^4.2.1",
     "nodemailer": "^7.0.5",
+    "puppeteer": "^24.37.5",
+    "puppeteer-core": "^24.37.5",
     "socket.io": "^4.8.1",
     "streamifier": "^0.1.1",
     "stripe": "^19.3.1",

@@ -41,6 +41,8 @@ import { communityRoutes } from '../modules/joinCommunity/joinCommunity.routes';
 import { dynamicWebsiteRoutes } from '../modules/dynamicWebsite/dynamicWebsite.route';
 import { reviewRoutes } from '../modules/review/review.routes';
 import { cvRoutes } from '../modules/cv/cv.routes';
+import { certificateRoutes } from '../modules/certificate/certificate.routes';
+import { videoProgressRoutes } from '../modules/videoProgress/videoProgress.routes';
 
 const router = Router();
 
@@ -192,6 +194,14 @@ const moduleRoutes = [
   {
     path: '/cv',
     route: cvRoutes,
+  },
+  {
+    path: '/certificate',
+    route: certificateRoutes,
+  },
+  {
+    path: '/video-progress',
+    route: videoProgressRoutes,
   },
 ];
 
