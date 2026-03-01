@@ -954,7 +954,7 @@ const getRecommendedJobs = async (
   params: any,
   options: IOption,
 ) => {
-  const userObjectId = new Types.ObjectId(userId);
+  // const userObjectId = new Types.ObjectId(userId);
   const user = await User.findById(userId);
   if (!user) throw new AppError(404, 'User not found');
 
@@ -964,9 +964,9 @@ const getRecommendedJobs = async (
   });
   // console.log('User CV:', cv, userId);
 
-//   if (!cv) {
-//     throw new AppError(404, 'No CV found for this user');
-//   }
+  //   if (!cv) {
+  //     throw new AppError(404, 'No CV found for this user');
+  //   }
 
   // Extract all jobTitles from legalWorkExperience
   const jobTitles = cv?.legalWorkExperience
@@ -1028,7 +1028,7 @@ const getRecommendedJobs = async (
   // ✅ Core recommendation filter merged with search/filter conditions
   const finalQuery = {
     ...whereCondition,
-    applicants: { $nin: [userObjectId] },
+    applicants: { $nin: [user._id] },
     level: {
       $in: jobTitles.map((title) => new RegExp(`^${title}$`, 'i')),
     },

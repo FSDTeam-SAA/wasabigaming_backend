@@ -46,6 +46,9 @@ router.get(
   auth(userRole.student),
   jobController.getNotMyAppliedJobs,
 );
+
+router.get('/recommended-jobs', auth(userRole.student, userRole.admin), jobController.getRecommendedJobs);
+
 router.put(
   '/applied-job/:jobId',
   auth(userRole.student),
@@ -65,7 +68,7 @@ router.put(
 // );
 
 
-router.get('/recommended-jobs', auth(userRole.student, userRole.admin), jobController.getRecommendedJobs);
+
 
 //=========================================================================
 
