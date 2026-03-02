@@ -32,7 +32,7 @@ const registerUser = async (payload: Partial<IUser>) => {
     await sendMailer(
       user.email,
       user.firstName + ' ' + user.lastName,
-      createOtpTemplate(otp, user.email, 'Wasabigaming'),
+      createOtpTemplate(otp, user.email, 'Aspiring Legal Network'),
     );
     return { message: 'OTP resent successfully', user };
   }
@@ -70,7 +70,7 @@ const registerUser = async (payload: Partial<IUser>) => {
     await sendMailer(
       user.email,
       user.firstName + ' ' + user.lastName,
-      createOtpTemplate(otp, user.email, 'Wasabigaming'),
+      createOtpTemplate(otp, user.email, 'Aspiring Legal Network'),
     );
     return user;
   }
@@ -93,7 +93,7 @@ const registerUser = async (payload: Partial<IUser>) => {
     await sendMailer(
       user.email,
       user.schoolName || user.firstName,
-      createOtpTemplate(otp, user.email, 'Wasabigaming'),
+      createOtpTemplate(otp, user.email, 'Aspiring Legal Network'),
     );
     return user;
   }
