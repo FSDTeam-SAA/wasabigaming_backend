@@ -934,17 +934,26 @@ const filterJobCvBased = async (
   return aiApiCall;
 };
 const getUniqueLocations = async () => {
-  const locations = await Job.distinct('location');
+  const locations = await Job.distinct('location', {
+    jobStatus: 'Open',
+    status: 'active',
+  });
 
-  const locationList = [
-    ...locations
-      .filter((location) => location) // filter out null/undefined/empty
-      .map((location, index) => ({
-        id: index + 1,
-        name: location,
-        value: location,
-      })),
-  ];
+  // const locationList = locations
+  //   .filter((location) => location) // remove null/empty
+  //   .map((location, index) => ({
+  //     id: index + 1,
+  //     name: location,
+  //     value: location,
+  //   }));
+  const locationList = locations
+  .filter(Boolean)
+  .sort((a, b) => a.localeCompare(b))
+  .map((location, index) => ({
+    id: index + 1,
+    name: location,
+    value: location,
+  }));
 
   return locationList;
 };
