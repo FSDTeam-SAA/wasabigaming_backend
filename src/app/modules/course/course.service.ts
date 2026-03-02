@@ -466,7 +466,7 @@ const payCourse = async (userId: string, courseId: string) => {
       line_items: [
         {
           price_data: {
-            currency: 'usd',
+            currency: 'eur',
             unit_amount: Number(course.coursePrice) * 100,
             product_data: {
               name: course.name,
@@ -493,7 +493,7 @@ const payCourse = async (userId: string, courseId: string) => {
       course: course._id,
       amount: course.coursePrice,
       stripeSessionId: session.id,
-      currency: 'usd',
+      currency: 'eur',
       status: 'pending',
     });
 
