@@ -11,17 +11,17 @@ const stripe = new Stripe(config.stripe.secretKey!);
 
 const createPremium = async (payload: IPremium) => {
   const existingPremium = await Premium.findOne({
-  name: payload.name,
-  type: payload.type,
-  subscriptionCategory: payload.subscriptionCategory,
-});
+    name: payload.name,
+    type: payload.type,
+    subscriptionCategory: payload.subscriptionCategory,
+  });
 
-if (existingPremium) {
-  throw new AppError(400, 'Premium already exists');
-}
+  if (existingPremium) {
+    throw new AppError(400, 'Premium already exists');
+  }
 
-const result = await Premium.create(payload);
-return result;
+  const result = await Premium.create(payload);
+  return result;
 };
 
 const getAllPremium = async (params: any, options: IOption) => {
@@ -29,7 +29,13 @@ const getAllPremium = async (params: any, options: IOption) => {
   const { searchTerm, year, ...filterData } = params;
 
   const andCondition: any[] = [];
-  const userSearchableFields = ['name', 'type', 'features', 'status', 'subscriptionCategory'];
+  const userSearchableFields = [
+    'name',
+    'type',
+    'features',
+    'status',
+    'subscriptionCategory',
+  ];
 
   if (searchTerm) {
     andCondition.push({
@@ -116,47 +122,175 @@ const activePremium = async (id: string) => {
   return result;
 };
 
+// const paySubscription = async (userId: string, subscriptionId: string) => {
+//   const user = await User.findById(userId);
+//   if (!user) throw new AppError(404, 'User not found');
+//   const premium = await Premium.findById(subscriptionId);
+//   if (!premium) throw new AppError(404, 'Premium not found');
+
+//   if (
+//     premium.name === 'free' &&
+//     premium.totalSubscripeUser?.includes(user._id)
+//   ) {
+//     throw new AppError(400, 'You have already subscribed to this plan');
+//   }
+
+//   // Plan features mapping
+//   const planFeatures: Record<string, string[]> = {
+//     premium: [
+//       '✅ Unlimited Legal Consultations',
+//       '✅ Priority Support 24/7',
+//       '✅ Access to All Legal Documents',
+//       '✅ Expert Attorney Network',
+//       '✅ Case Tracking Dashboard',
+//     ],
+//     basic: [
+//       '✅ 5 Legal Consultations/month',
+//       '✅ Standard Support',
+//       '✅ Basic Document Access',
+//     ],
+//     free: ['✅ 1 Legal Consultation/month', '✅ Community Support'],
+//   };
+
+//   const features: any =
+//     planFeatures[premium.name.toLowerCase()] || planFeatures['basic'];
+
+//   const session = await stripe.checkout.sessions.create({
+//     mode: 'payment',
+//     payment_method_types: ['card'],
+
+//     line_items: [
+//       {
+//         price_data: {
+//           currency: 'gbp',
+//           unit_amount: premium.price * 100,
+//           product_data: {
+//             name: `⚖️ Aspiring Legal Network — ${premium.name.charAt(0).toUpperCase() + premium.name.slice(1)} Plan`,
+//             description: [
+//               `🏛️ Plan Type: ${premium.type}`,
+//               `📋 What's included:`,
+//               ...features,
+//               ``,
+//               `🔒 Secure payment · Cancel anytime`,
+//             ].join('\n'),
+//             images: [
+//               'https://res.cloudinary.com/dlpdumtua/image/upload/v1772600652/Image_Aspiring_Logo_qhb7ht.png',
+//             ], // your logo
+//           },
+//         },
+//         quantity: 1,
+//       },
+//     ],
+
+//     custom_text: {
+//       submit: {
+//         message:
+//           '🔐 Your payment is secured by Stripe. By subscribing, you agree to our Terms of Service.',
+//       },
+//       after_submit: {
+//         message:
+//           '✅ Thank you for joining Aspiring Legal Network! Check your email for confirmation.',
+//       },
+//     },
+
+//     phone_number_collection: {
+//       enabled: false,
+//     },
+//     customer_email: user.email,
+//     success_url: `${config.frontendUrl}/payment/success`,
+//     cancel_url: `${config.frontendUrl}/payment/cancel`,
+//     metadata: {
+//       userId: user._id.toString(),
+//       subscriptionId: premium._id.toString(),
+//       paymentType: 'subscription',
+//       type: premium.type,
+//       price: premium.price.toString(),
+//     },
+//   } as Stripe.Checkout.SessionCreateParams);
+
+//   await Payment.create({
+//     user: user._id,
+//     subscription: premium._id,
+//     stripeSessionId: session.id,
+//     amount: premium.price,
+//     currency: 'gbp',
+//     status: 'pending',
+//   });
+
+//   return { url: session.url, sessionId: session.id };
+// };
+
 const paySubscription = async (userId: string, subscriptionId: string) => {
   const user = await User.findById(userId);
   if (!user) throw new AppError(404, 'User not found');
+
   const premium = await Premium.findById(subscriptionId);
   if (!premium) throw new AppError(404, 'Premium not found');
 
-
-    if (
+  if (
     premium.name === 'free' &&
     premium.totalSubscripeUser?.includes(user._id)
   ) {
     throw new AppError(400, 'You have already subscribed to this plan');
   }
 
+  // 🔥 Clean modern description
+  const description = `
+${premium.type?.toUpperCase()} MEMBERSHIP
+
+✔ Full Premium Access
+✔ Unlimited Resources
+✔ Priority Support
+✔ Cancel Anytime
+
+Secure payment powered by Stripe
+  `.trim();
+
   const session = await stripe.checkout.sessions.create({
-    mode: 'payment',
+    mode: 'subscription',
+
+    // billing_address_collection: 'required',
+
     payment_method_types: ['card'],
+
     line_items: [
       {
         price_data: {
           currency: 'gbp',
-          unit_amount: premium.price * 100,
+          unit_amount: Math.round(premium.price * 100),
+          recurring: {
+            interval: premium.type === 'monthly' ? 'month' : 'year',
+          },
           product_data: {
-            name: premium.name,
-            description: premium.type,
+            name: 'Aspiring Legal Network',
+            description: `${premium.name.toUpperCase()} PLAN — £${premium.price}/${premium.type?.toLowerCase()}`,
+            images: [
+              'https://res.cloudinary.com/dlpdumtua/image/upload/v1772602973/image_1-Picsart-AiImageEnhancer_1_x8epon.jpg',
+            ],
           },
         },
         quantity: 1,
       },
     ],
+
+    custom_text: {
+      submit: {
+        message: '🔐 Secure Checkout • Cancel Anytime • No Hidden Fees',
+      },
+    },
+
     customer_email: user.email,
-    success_url: `${config.frontendUrl}/payment/success`,
+
+    success_url: `${config.frontendUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${config.frontendUrl}/payment/cancel`,
+
     metadata: {
       userId: user._id.toString(),
       subscriptionId: premium._id.toString(),
-      paymentType: 'subscription',
-      type: premium.type,
+      planName: premium.name,
       price: premium.price.toString(),
     },
-  } as Stripe.Checkout.SessionCreateParams);
+  });
 
   await Payment.create({
     user: user._id,
@@ -167,7 +301,10 @@ const paySubscription = async (userId: string, subscriptionId: string) => {
     status: 'pending',
   });
 
-  return { url: session.url, sessionId: session.id };
+  return {
+    url: session.url,
+    sessionId: session.id,
+  };
 };
 
 export const premiumService = {
