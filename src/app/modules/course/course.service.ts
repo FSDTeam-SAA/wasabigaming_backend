@@ -469,8 +469,11 @@ const payCourse = async (userId: string, courseId: string) => {
             currency: 'gbp',
             unit_amount: Number(course.coursePrice) * 100,
             product_data: {
-              name: course.name,
+              name: `Aspiring Legal Network - ${course.name}`,
               description: course.description || 'No description',
+              images: [
+                'https://res.cloudinary.com/dlpdumtua/image/upload/v1772602973/image_1-Picsart-AiImageEnhancer_1_x8epon.jpg',
+              ],
             },
           },
           quantity: 1,
