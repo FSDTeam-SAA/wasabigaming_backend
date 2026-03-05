@@ -20,7 +20,7 @@ const getAllPremium = catchAsync(async (req, res) => {
     'type',
     'features',
     'status',
-    'subscriptionCategory'
+    'subscriptionCategory',
   ]);
   const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
   const result = await premiumService.getAllPremium(filters, options);
@@ -89,6 +89,32 @@ const paySubscription = catchAsync(async (req, res) => {
   });
 });
 
+const createSchoolSubscribe = catchAsync(async (req, res) => {
+  const result = await premiumService.createSchoolSubscribe(
+    req.params.schoolId!,
+    req.body,
+  );
+  sendResponse(res, {
+    statusCode: 201,
+    success: true,
+    message: 'School subscribe created successfully',
+    data: result,
+  });
+});
+
+const updateSchoolSubscribe = catchAsync(async (req, res) => {
+  const result = await premiumService.updateSchoolSubscribe(
+    req.params.schoolId!,
+    req.body,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'School subscribe updated successfully',
+    data: result,
+  });
+});
+
 export const premiumController = {
   createPremium,
   getAllPremium,
@@ -97,4 +123,6 @@ export const premiumController = {
   deletePremium,
   activePremium,
   paySubscription,
+  createSchoolSubscribe,
+  updateSchoolSubscribe,
 };

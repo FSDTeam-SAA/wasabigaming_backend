@@ -24,6 +24,26 @@ const createPremium = async (payload: IPremium) => {
   return result;
 };
 
+const createSchoolSubscribe = async (schoolId: string, payload: IPremium) => {
+  const school = await User.findById(schoolId);
+  if (!school) throw new AppError(404, 'School not found');
+  payload.subscriptionCategory = 'school';
+  payload.name = 'premium';
+  const result = await Premium.create({ ...payload, schoolId: school._id });
+  school.subscribedSchool = result._id;
+  await school.save();
+  return result;
+};
+
+const updateSchoolSubscribe = async (schoolId: string, payload: IPremium) => {
+  const result = await Premium.findOneAndUpdate({ schoolId }, payload, {
+    new: true,
+    runValidators: true,
+  });
+  if (!result) throw new AppError(404, 'Premium not found');
+  return result;
+};
+
 const getAllPremium = async (params: any, options: IOption) => {
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
   const { searchTerm, year, ...filterData } = params;
@@ -263,7 +283,7 @@ Secure payment powered by Stripe
           },
           product_data: {
             name: 'Aspiring Legal Network',
-            description: `${premium.name.toUpperCase()} PLAN — £${premium.price}/${premium.type?.toLowerCase()}`,
+            description: `${premium.name?.toUpperCase()} PLAN — £${premium.price}/${premium.type?.toLowerCase()}`,
             images: [
               'https://res.cloudinary.com/dlpdumtua/image/upload/v1772602973/image_1-Picsart-AiImageEnhancer_1_x8epon.jpg',
             ],
@@ -290,7 +310,7 @@ Secure payment powered by Stripe
       planName: premium.name,
       price: premium.price.toString(),
     },
-  });
+  } as Stripe.Checkout.SessionCreateParams);
 
   await Payment.create({
     user: user._id,
@@ -315,4 +335,6 @@ export const premiumService = {
   deletePremium,
   activePremium,
   paySubscription,
+  createSchoolSubscribe,
+  updateSchoolSubscribe,
 };

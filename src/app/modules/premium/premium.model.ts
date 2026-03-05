@@ -5,7 +5,6 @@ const premiumSchema = new mongoose.Schema<IPremium>(
   {
     name: {
       type: String,
-      required: true,
       enum: ['premium', 'free'],
     },
     price: {
@@ -28,7 +27,8 @@ const premiumSchema = new mongoose.Schema<IPremium>(
       type: [mongoose.Schema.Types.ObjectId],
       ref: 'User',
     },
-    subscriptionCategory:{ type: String },
+    subscriptionCategory: { type: String },
+    schoolId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   },
   {
     timestamps: true,
