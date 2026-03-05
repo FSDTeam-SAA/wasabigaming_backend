@@ -13,6 +13,7 @@ import { userRole } from '../user/user.constant';
 // import { UAParser } from 'ua-parser-js';
 import { modernOtpTemplate } from '../../utils/modernOtpTemplate';
 import { UAParser } from 'ua-parser-js';
+import { approvedAndRejectSchoolTempleted } from '../../utils/approvedandrejectTempleted';
 
 const registerUser = async (payload: Partial<IUser>) => {
   let user = await User.findOne({ email: payload.email });
@@ -189,6 +190,24 @@ const loginUser = async (
   return { accessToken, refreshToken, user: userWithoutPassword };
 };
 
+const approvedAndRejectSchool = async (schoolId: string, status: string) => {
+  const user = await User.findById(schoolId);
+  if (!user) throw new AppError(404, 'School not found');
+  user.schoolStatus = status === 'approved' ? 'approved' : 'rejected';
+
+  await user.save();
+  await sendMailer(
+    user.email,
+    user.schoolName || user.firstName,
+    approvedAndRejectSchoolTempleted(
+      status === 'approved' ? 'approved' : 'rejected',
+      user.schoolName || user.firstName || '',
+      'Aspiring Legal Network',
+    ),
+  );
+  return user;
+};
+
 const googleLogin = async (idToken: string, role?: string) => {
   console.log('=== GOOGLE LOGIN START ===');
 
@@ -198,7 +217,9 @@ const googleLogin = async (idToken: string, role?: string) => {
   const email = payload.email!;
   const firstName = payload.given_name || payload.name || 'Google User';
   const lastName = payload.family_name || '';
-  const profileImage = payload.picture;
+  const profileImage =
+    payload.picture ||
+    `https://avatar.iran.liara.run/public/${Math.floor(Math.random() * 100)}.png`;
 
   // ২. পুরাতন user আছে কিনা check করো
   const existingUser = await User.findOne({ email });
@@ -418,4 +439,5 @@ export const authService = {
   resetPassword,
   changePassword,
   googleLogin,
+  approvedAndRejectSchool,
 };

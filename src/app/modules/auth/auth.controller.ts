@@ -2,10 +2,7 @@ import config from '../../config';
 import AppError from '../../error/appError';
 import catchAsync from '../../utils/catchAsycn';
 import sendResponse from '../../utils/sendResponse';
-import User from '../user/user.model';
 import { authService } from './auth.service';
-import { OAuth2Client } from "google-auth-library";
-import jwt from "jsonwebtoken";
 
 const registerUser = catchAsync(async (req, res) => {
   const result = await authService.registerUser(req.body);
@@ -55,6 +52,21 @@ const loginUser = catchAsync(async (req, res) => {
   });
 });
 
+const approvedAndRejectSchool = catchAsync(async (req, res) => {
+  const { status } = req.body;
+  const result = await authService.approvedAndRejectSchool(
+    req.params.schoolId!,
+    status,
+  );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'School approved or rejected successfully',
+    data: result,
+  });
+});
+
 const googleLogin = catchAsync(async (req, res) => {
   const { idToken, role } = req.body;
 
@@ -89,9 +101,10 @@ const googleLogin = catchAsync(async (req, res) => {
   return sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: result.status === 'registered'
-      ? 'Account created successfully'
-      : 'Login successful',
+    message:
+      result.status === 'registered'
+        ? 'Account created successfully'
+        : 'Login successful',
     data: {
       needsRole: false,
       accessToken: result.accessToken,
@@ -99,7 +112,6 @@ const googleLogin = catchAsync(async (req, res) => {
     },
   });
 });
-
 
 const refreshToken = catchAsync(async (req, res) => {
   const { refreshToken } = req.cookies;
@@ -196,4 +208,5 @@ export const authController = {
   logoutUser,
   changePassword,
   googleLogin,
+  approvedAndRejectSchool,
 };

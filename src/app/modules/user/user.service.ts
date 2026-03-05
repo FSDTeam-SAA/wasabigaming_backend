@@ -121,7 +121,8 @@ const getAllUser = async (params: any, options: IOption) => {
     .populate('course')
     .skip(skip)
     .limit(limit)
-    .sort({ [sortBy]: sortOrder } as any);
+    .sort({ [sortBy]: sortOrder } as any)
+    .populate('subscribedSchool');
 
   if (!result) {
     throw new AppError(404, 'Users not found');
@@ -140,7 +141,7 @@ const getAllUser = async (params: any, options: IOption) => {
 };
 
 const getUserById = async (id: string) => {
-  const result = await User.findById(id);
+  const result = await User.findById(id).populate('subscribedSchool');
   if (!result) {
     throw new AppError(404, 'User not found');
   }
@@ -171,7 +172,6 @@ const updateUserById = async (
   }
   return result;
 };
-
 
 const updateMyProfile = async (
   id: string,
@@ -207,7 +207,7 @@ const deleteUserById = async (id: string) => {
 };
 
 const profile = async (id: string) => {
-  const result = await User.findById(id);
+  const result = await User.findById(id).populate('subscribedSchool');
   if (!result) {
     throw new AppError(404, 'User not found');
   }
@@ -306,5 +306,5 @@ export const userService = {
   schoolOverview,
   getJobsMatchingUserSkills,
   getLoginHistoryFromDB,
-  updateMyProfile
+  updateMyProfile,
 };

@@ -19,5 +19,10 @@ router.post(
   auth(userRole.admin, userRole.school, userRole.student),
   authController.changePassword,
 );
+router.put(
+  '/approved-and-reject-school/:schoolId',
+  auth(userRole.admin),
+  authController.approvedAndRejectSchool,
+);
 
 export const authRoutes = router;
