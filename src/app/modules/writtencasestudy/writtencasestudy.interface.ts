@@ -14,6 +14,7 @@ export interface IWrittencasestudy {
   overallGrade?: string;
   successTips?: string[];
   recommendations?: string[];
+  typeSpreed?: number;
 
   applicant?: Types.ObjectId;
 }

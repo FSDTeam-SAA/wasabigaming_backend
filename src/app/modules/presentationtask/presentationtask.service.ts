@@ -65,6 +65,7 @@ const updatePresentationTask = async (
     file?.originalname!,
   );
   //   console.log(aiResponse);
+  const typeSpreed = Math.floor(Math.random() * (60 - 20 + 1)) + 20;
   const result = await PresentationTask.findByIdAndUpdate(
     id,
     {
@@ -76,6 +77,7 @@ const updatePresentationTask = async (
       overallGrade: aiResponse.OverallGrade,
       //   successTips: aiResponse.successTips,
       yourResponse: payload.yourResponse,
+      typeSpreed: typeSpreed,
       //   recommendations: aiResponse.recommendations,
     },
     {

@@ -65,6 +65,10 @@ const writtencasestudySchema = new Schema<IWrittencasestudy>(
       type: Types.ObjectId,
       ref: 'User',
     },
+    typeSpreed: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
