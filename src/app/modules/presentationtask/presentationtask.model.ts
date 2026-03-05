@@ -47,6 +47,10 @@ const presentationTaskSchema = new mongoose.Schema<IPresentationTask>(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
     },
+    typeSpreed: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

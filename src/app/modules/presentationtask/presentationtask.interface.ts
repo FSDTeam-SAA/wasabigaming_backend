@@ -15,4 +15,5 @@ export interface IPresentationTask {
   successTips?: string[];
   recommendations?: string[];
   applicant?: Types.ObjectId;
+  typeSpreed?: number;
 }

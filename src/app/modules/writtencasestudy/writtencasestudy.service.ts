@@ -56,6 +56,7 @@ const updateWrittenCaseStudy = async (
   const existingData = await Writtencasestudy.findById(id);
   if (!existingData) throw new AppError(404, 'Data not found');
   const aiResponse = await aiwrittencaseStudySubmission(payload.yourResponse!);
+  const typeSpreed = Math.floor(Math.random() * (60 - 20 + 1)) + 20;
   const result = await Writtencasestudy.findByIdAndUpdate(
     id,
     {
@@ -68,6 +69,7 @@ const updateWrittenCaseStudy = async (
       successTips: aiResponse.successTips,
       yourResponse: payload.yourResponse,
       recommendations: aiResponse.recommendations,
+      typeSpreed: typeSpreed,
     },
     {
       new: true,
